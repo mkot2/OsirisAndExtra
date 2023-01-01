@@ -70,7 +70,7 @@ public:
         bool enabled = false;
         int pitch = 0; //Off, Down, Zero, Up
         Yaw yawBase = Yaw::off;
-        KeyBind manualForward{ std::string("manual forward"), Off},
+        KeyBind manualForward{ std::string("manual forward"), Off },
             manualBackward{ std::string("manual backward"), Off },
             manualRight{ std::string("manual right"), Off },
             manualLeft{ std::string("manual left"), Off };

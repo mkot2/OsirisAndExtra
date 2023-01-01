@@ -384,6 +384,7 @@ void AntiAim::updateInput() noexcept
     config->legitAntiAim.invert.handleToggle();
     config->fakeAngle.invert.handleToggle();
 
+    config->rageAntiAim.autoDirection.handleToggle();
     config->rageAntiAim.manualForward.handleToggle();
     config->rageAntiAim.manualBackward.handleToggle();
     config->rageAntiAim.manualRight.handleToggle();

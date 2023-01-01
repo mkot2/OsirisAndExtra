@@ -1436,6 +1436,7 @@ const bool anyActiveKeybinds() noexcept
     const bool rageBot = config->ragebotKey.canShowKeybind();
     const bool minDamageOverride = config->minDamageOverrideKey.canShowKeybind();
     const bool fakeAngle = config->fakeAngle.enabled && config->fakeAngle.invert.canShowKeybind();
+    const bool antiAimAutoDirection = config->rageAntiAim.enabled && config->rageAntiAim.manualForward.canShowKeybind();
     const bool antiAimManualForward = config->rageAntiAim.enabled && config->rageAntiAim.manualForward.canShowKeybind();
     const bool antiAimManualBackward = config->rageAntiAim.enabled && config->rageAntiAim.manualBackward.canShowKeybind();
     const bool antiAimManualRight = config->rageAntiAim.enabled && config->rageAntiAim.manualRight.canShowKeybind();
@@ -1464,7 +1465,7 @@ const bool anyActiveKeybinds() noexcept
     const bool autoPeek = config->misc.autoPeek.enabled && config->misc.autoPeekKey.canShowKeybind();
     const bool prepareRevolver = config->misc.prepareRevolver && config->misc.prepareRevolverKey.canShowKeybind();
 
-    return rageBot || minDamageOverride || fakeAngle || antiAimManualForward || antiAimManualBackward || antiAimManualRight  || antiAimManualLeft 
+    return rageBot || minDamageOverride || fakeAngle || antiAimAutoDirection || antiAimManualForward || antiAimManualBackward || antiAimManualRight  || antiAimManualLeft 
         || doubletap || hideshots
         || legitAntiAim || legitBot || triggerBot || chams || glow || esp
         || zoom || thirdperson || freeCam || blockbot || edgejump || minijump || jumpBug || edgebug || autoPixelSurf || slowwalk || fakeduck || autoPeek || prepareRevolver;
@@ -1503,6 +1504,7 @@ void Misc::showKeybinds() noexcept
         config->fakeAngle.invert.showKeybind();
     if (config->rageAntiAim.enabled)
     {
+        config->rageAntiAim.autoDirection.showKeybind();
         config->rageAntiAim.manualForward.showKeybind();
         config->rageAntiAim.manualBackward.showKeybind();
         config->rageAntiAim.manualRight.showKeybind();
