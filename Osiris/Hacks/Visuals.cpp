@@ -1268,8 +1268,13 @@ void Visuals::drawMolotovPolygon(ImDrawList* draw_list) noexcept
 {
     if (!config->visuals.molotovPolygon.enabled)
         return;
-    const unsigned int color = Helpers::calculateColor(static_cast<Color4>(config->visuals.molotovPolygon));
-    constexpr float pi{ std::numbers::pi_v<float> };
+
+    ImColor enemy = Helpers::calculateColor(config->visuals.molotovPolygon.enemy);
+    ImColor team = Helpers::calculateColor(config->visuals.molotovPolygon.team);
+    ImColor self = Helpers::calculateColor(config->visuals.molotovPolygon.self);
+
+    constexpr float pi = std::numbers::pi_v<float>;
+
     GameData::Lock lock;
     auto flame_circumference = [](const std::vector<Vector> points)
     {
@@ -1287,9 +1292,16 @@ void Visuals::drawMolotovPolygon(ImDrawList* draw_list) noexcept
     };
     for (const InfernoData& molotov : GameData::infernos())
     {
-        std::vector gift_wrapped{ gift_wrapping(flame_circumference(molotov.points)) };
-        std::vector<ImVec2> points{};
-        for (size_t i{}; i < gift_wrapped.size(); i++)
+        const auto color = !molotov.owner || molotov.owner->isOtherEnemy(localPlayer.get()) ? enemy :
+            molotov.owner->index() != localPlayer->index() ? team : self;
+
+        /* we only wanted to draw the points on the edge, use giftwrap algorithm. */
+        std::vector<Vector> giftWrapped = gift_wrapping(flameCircumference(molotov.points));
+
+        /* transforms world position to screen position. */
+        std::vector<ImVec2> points;
+
+        for (size_t i = 0; i < giftWrapped.size(); ++i)
         {
             const Vector& pos = gift_wrapped[i];
             ImVec2 screen_pos{};
