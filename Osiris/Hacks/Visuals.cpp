@@ -86,9 +86,9 @@ void Visuals::drawSmokeTimer(ImDrawList* drawList) noexcept
     for (size_t i = 0; i < smokes.size(); i++) {
         const auto& smoke = smokes[i];
 
-        auto time = smoke.destructionTime - memory->globalVars->realtime;
+        const auto time = smoke.destructionTime - memory->globalVars->realtime;
         std::ostringstream text; text << std::fixed << std::showpoint << std::setprecision(1) << time << " sec.";
-        auto textSize = ImGui::CalcTextSize(text.str().c_str());
+        const auto textSize = ImGui::CalcTextSize(text.str().c_str());
 
         ImVec2 pos;
 
@@ -161,9 +161,9 @@ void Visuals::drawMolotovTimer(ImDrawList* drawList) noexcept
     for (size_t i = 0; i < molotovs.size(); i++) {
         const auto& molotov = molotovs[i];
 
-        auto time = molotov.destructionTime - memory->globalVars->realtime;
+        const auto time = molotov.destructionTime - memory->globalVars->realtime;
         std::ostringstream text; text << std::fixed << std::showpoint << std::setprecision(1) << time << " sec.";
-        auto textSize = ImGui::CalcTextSize(text.str().c_str());
+        const auto textSize = ImGui::CalcTextSize(text.str().c_str());
 
         ImVec2 pos;
 
@@ -245,7 +245,7 @@ void Visuals::drawAimbotFov(ImDrawList* drawList) noexcept
 
     const auto& cfg = config->legitbot;
 
-    auto weaponClass = getWeaponClass(activeWeapon->itemDefinitionIndex2());
+    const auto weaponClass = getWeaponClass(activeWeapon->itemDefinitionIndex2());
     if (!cfg[weaponIndex].enabled)
         weaponIndex = weaponClass;
 
@@ -686,7 +686,7 @@ void Visuals::hitMarker(GameEvent* event, ImDrawList* drawList) noexcept
     switch (config->visuals.hitMarker) {
     case 1:
         const auto& mid = ImGui::GetIO().DisplaySize / 2.0f;
-        auto color = IM_COL32(255, 255, 255, static_cast<int>(Helpers::lerp(fabsf(lastHitTime + config->visuals.hitMarkerTime - memory->globalVars->realtime) / config->visuals.hitMarkerTime + FLT_EPSILON, 0.0f, 255.0f)));
+        const auto color = IM_COL32(255, 255, 255, static_cast<int>(Helpers::lerp(fabsf(lastHitTime + config->visuals.hitMarkerTime - memory->globalVars->realtime) / config->visuals.hitMarkerTime + FLT_EPSILON, 0.0f, 255.0f)));
         drawList->AddLine({ mid.x - 10, mid.y - 10 }, { mid.x - 4, mid.y - 4 }, color);
         drawList->AddLine({ mid.x + 10.5f, mid.y - 10.5f }, { mid.x + 4.5f, mid.y - 4.5f }, color);
         drawList->AddLine({ mid.x + 10.5f, mid.y + 10.5f }, { mid.x + 4.5f, mid.y + 4.5f }, color);
@@ -1133,7 +1133,7 @@ void Visuals::bulletImpact(GameEvent& event) noexcept
     if (event.getInt("userid") != localPlayer->getUserId())
         return;
 
-    Vector endPos = Vector{ event.getFloat("x"), event.getFloat("y"), event.getFloat("z") };
+    const Vector endPos = Vector{ event.getFloat("x"), event.getFloat("y"), event.getFloat("z") };
     positions.push_front(endPos);
 }
 
@@ -1269,14 +1269,14 @@ void Visuals::drawMolotovPolygon(ImDrawList* draw_list) noexcept
     if (!config->visuals.molotovPolygon.enabled)
         return;
 
-    ImColor enemy = Helpers::calculateColor(config->visuals.molotovPolygon.enemy);
-    ImColor team = Helpers::calculateColor(config->visuals.molotovPolygon.team);
-    ImColor self = Helpers::calculateColor(config->visuals.molotovPolygon.self);
+    const ImColor enemy = Helpers::calculateColor(config->visuals.molotovPolygon.enemy);
+    const ImColor team = Helpers::calculateColor(config->visuals.molotovPolygon.team);
+    const ImColor self = Helpers::calculateColor(config->visuals.molotovPolygon.self);
 
     constexpr float pi = std::numbers::pi_v<float>;
 
     GameData::Lock lock;
-    auto flame_circumference = [](const std::vector<Vector> points)
+    auto flame_circumference = [](const std::vector<Vector>& points)
     {
         std::vector<Vector> new_points{};
         for (size_t i{}; i < points.size(); i++)
@@ -1296,18 +1296,17 @@ void Visuals::drawMolotovPolygon(ImDrawList* draw_list) noexcept
             molotov.owner->index() != localPlayer->index() ? team : self;
 
         /* we only wanted to draw the points on the edge, use giftwrap algorithm. */
-        std::vector<Vector> giftWrapped = gift_wrapping(flameCircumference(molotov.points));
+        std::vector<Vector> gift_wrapped = gift_wrapping(flame_circumference(molotov.points));
 
         /* transforms world position to screen position. */
         std::vector<ImVec2> points;
 
-        for (size_t i = 0; i < giftWrapped.size(); ++i)
+        for (auto& pos : gift_wrapped)
         {
-            const Vector& pos = gift_wrapped[i];
-            ImVec2 screen_pos{};
+	        ImVec2 screen_pos{};
             if (!Helpers::worldToScreen(pos, screen_pos))
                 continue;
-            points.emplace_back(ImVec2{ screen_pos.x, screen_pos.y });
+            points.emplace_back(screen_pos.x, screen_pos.y);
         }
         draw_list->AddConvexPolyFilled(points.data(), points.size(), color);
     }
@@ -1318,7 +1317,7 @@ void Visuals::updateEventListeners(bool forceRemove) noexcept
 {
     class ImpactEventListener : public GameEventListener {
     public:
-        void fireGameEvent(GameEvent* event) { 
+        void fireGameEvent(GameEvent* event) override { 
             bulletTracer(*event); 
             bulletImpact(*event);
         }
