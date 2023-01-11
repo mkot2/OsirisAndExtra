@@ -3,6 +3,7 @@
 #include "Fakelag.h"
 #include "EnginePrediction.h"
 #include "Tickbase.h"
+#include "AntiAim.h"
 
 #include "../SDK/Entity.h"
 #include "../SDK/Localplayer.h"
@@ -43,8 +44,9 @@ namespace Fakelag
 	uniform_int_random_generator<int> random{ static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count()) };
 }
 
-void Fakelag::run(bool& sendPacket) noexcept
+void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
 {
+    const auto moving_flag{AntiAim::get_moving_flag(cmd) };
     if (!localPlayer || !localPlayer->isAlive())
         return;
 
@@ -54,25 +56,27 @@ void Fakelag::run(bool& sendPacket) noexcept
     if (EnginePrediction::getVelocity().length2D() < 1)
         return;
 
-    auto chokedPackets = config->legitAntiAim.enabled || config->fakeAngle.enabled ? 2 : 0;
-    if (config->fakelag.enabled && !config->tickbase.doubletap.isActive() && !config->tickbase.hideshots.isActive())
+    auto chokedPackets = config->legitAntiAim.enabled || config->fakeAngle[static_cast<int>(moving_flag)].enabled ? 2 : 0;
+    if (config->fakelag[static_cast<int>(moving_flag)].enabled && !config->tickbase.doubletap.isActive() && !config->tickbase.hideshots.isActive())
     {
         const float speed = EnginePrediction::getVelocity().length2D() >= 15.0f ? EnginePrediction::getVelocity().length2D() : 0.0f;
-        switch (config->fakelag.mode) {
+        switch (config->fakelag[static_cast<int>(moving_flag)].mode) {
         case 0: //Static
-            chokedPackets = config->fakelag.limit;
+            chokedPackets = config->fakelag[static_cast<int>(moving_flag)].limit;
             break;
         case 1: //Adaptive
-            chokedPackets = std::clamp(static_cast<int>(std::ceilf(64 / (speed * memory->globalVars->intervalPerTick))), 1, config->fakelag.limit);
+            chokedPackets = std::clamp(static_cast<int>(std::ceilf(64 / (speed * memory->globalVars->intervalPerTick))), 1, config->fakelag[static_cast<int>(moving_flag)].limit);
             break;
         case 2: // Random
-            random.set_range(config->fakelag.randomMinLimit, config->fakelag.limit);
+            random.set_range(config->fakelag[static_cast<int>(moving_flag)].randomMinLimit, config->fakelag[static_cast<int>(moving_flag)].limit);
             chokedPackets = random.get();
             break;
         }
     }
 
     chokedPackets = std::clamp(chokedPackets, 0, maxUserCmdProcessTicks - Tickbase::getTargetTickShift());
+
+    latest_chocked_packets = chokedPackets;
 
     if (interfaces->engine->isVoiceRecording())
         sendPacket = netChannel->chokedPackets >= 0;

@@ -64,16 +64,13 @@ public:
         int mode = 0;
         int limit = 1;
         int randomMinLimit = 1;
-    } fakelag;
+    };
+    std::array<Fakelag, 7> fakelag;
 
     struct RageAntiAimConfig {
         bool enabled = false;
         int pitch = 0; //Off, Down, Zero, Up
         Yaw yawBase = Yaw::off;
-        KeyBind manualForward{ std::string("manual forward"), Off },
-            manualBackward{ std::string("manual backward"), Off },
-            manualRight{ std::string("manual right"), Off },
-            manualLeft{ std::string("manual left"), Off };
         int yawModifier = 0; //Off, Jitter
         int paranoiaMin = 0;
         int paranoiaMax = 0;
@@ -81,17 +78,23 @@ public:
         int spinBase = 0; //-180/180
         int jitterRange = 0;
         bool atTargets = false;
-        KeyBind autoDirection{ std::string("auto direction"), Off };
-    } rageAntiAim;
+    };
+    std::array<RageAntiAimConfig, 7> rageAntiAim;
+    KeyBind manualForward{ std::string("manual forward"), Off },
+        manualBackward{ std::string("manual backward"), Off },
+        manualRight{ std::string("manual right"), Off },
+        manualLeft{ std::string("manual left"), Off };
+    KeyBind autoDirection{ std::string("auto direction"), Off };
 
     struct FakeAngle {
         bool enabled = false;
-        KeyBind invert{ std::string("fake angle invert") };
         int leftLimit = 60;
         int rightLimit = 60;
         int peekMode = 0; //Off, Peek real, Peek fake
-        int lbyMode = 0; // Normal, Opposite, sway, 
-    } fakeAngle;
+        int lbyMode = 0; // Normal, Opposite, sway,
+    };
+    std::array<FakeAngle, 7> fakeAngle;
+    KeyBind invert{ std::string("fake angle invert") };
 
     struct Tickbase {
         KeyBind doubletap{ std::string("doubletap"), KeyMode::Off };

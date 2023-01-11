@@ -17,6 +17,7 @@
 
 #include "EnginePrediction.h"
 #include "Misc.h"
+#include "Fakelag.h"
 
 #include "../SDK/Client.h"
 #include "../SDK/ClientMode.h"
@@ -1435,12 +1436,12 @@ const bool anyActiveKeybinds() noexcept
 {
     const bool rageBot = config->ragebotKey.canShowKeybind();
     const bool minDamageOverride = config->minDamageOverrideKey.canShowKeybind();
-    const bool fakeAngle = config->fakeAngle.enabled && config->fakeAngle.invert.canShowKeybind();
-    const bool antiAimAutoDirection = config->rageAntiAim.enabled && config->rageAntiAim.manualForward.canShowKeybind();
-    const bool antiAimManualForward = config->rageAntiAim.enabled && config->rageAntiAim.manualForward.canShowKeybind();
-    const bool antiAimManualBackward = config->rageAntiAim.enabled && config->rageAntiAim.manualBackward.canShowKeybind();
-    const bool antiAimManualRight = config->rageAntiAim.enabled && config->rageAntiAim.manualRight.canShowKeybind();
-    const bool antiAimManualLeft = config->rageAntiAim.enabled && config->rageAntiAim.manualLeft.canShowKeybind();
+    const bool fakeAngle = config->invert.canShowKeybind();
+    const bool antiAimAutoDirection = config->manualForward.canShowKeybind();
+    const bool antiAimManualForward = config->manualForward.canShowKeybind();
+    const bool antiAimManualBackward = config->manualBackward.canShowKeybind();
+    const bool antiAimManualRight =  config->manualRight.canShowKeybind();
+    const bool antiAimManualLeft = config->manualLeft.canShowKeybind();
     const bool legitAntiAim = config->legitAntiAim.enabled && config->legitAntiAim.invert.canShowKeybind();
     const bool doubletap = config->tickbase.doubletap.canShowKeybind();
     const bool hideshots = config->tickbase.hideshots.canShowKeybind();
@@ -1500,16 +1501,13 @@ void Misc::showKeybinds() noexcept
 
     config->ragebotKey.showKeybind();
     config->minDamageOverrideKey.showKeybind();
-    if (config->fakeAngle.enabled)
-        config->fakeAngle.invert.showKeybind();
-    if (config->rageAntiAim.enabled)
-    {
-        config->rageAntiAim.autoDirection.showKeybind();
-        config->rageAntiAim.manualForward.showKeybind();
-        config->rageAntiAim.manualBackward.showKeybind();
-        config->rageAntiAim.manualRight.showKeybind();
-        config->rageAntiAim.manualLeft.showKeybind();
-    }
+    config->invert.showKeybind();
+
+    config->autoDirection.showKeybind();
+    config->manualForward.showKeybind();
+    config->manualBackward.showKeybind();
+    config->manualRight.showKeybind();
+    config->manualLeft.showKeybind();
 
     config->tickbase.doubletap.showKeybind();
     config->tickbase.hideshots.showKeybind();
@@ -1642,7 +1640,7 @@ void Misc::watermark() noexcept
     frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
     GameData::Lock lock;
     const auto& [exists, alive, inReload, shooting, noScope, nextWeaponAttack, fov, handle, flashDuration, aimPunch, origin, inaccuracy, team, velocityModifier] { GameData::local() };
-    ImGui::Text("Osiris | %d fps | %d ms | %s | %s%s", frameRate != 0.0f ? static_cast<int>(1 / frameRate) : 0, GameData::getNetOutgoingLatency(), team == Team::Spectators ? "SPEC" : team == Team::TT ? "T" : team == Team::CT ? "CT" : "NONE", inReload ? "RELOADING" : "", noScope ? (inReload ? " | NO SCOPE" : "NO SCOPE") : "");
+    ImGui::Text("Osiris | %d fps | %d ms | FL: %d | %s | %s%s%s", frameRate != 0.0f ? static_cast<int>(1 / frameRate) : 0, GameData::getNetOutgoingLatency(), Fakelag::latest_chocked_packets, team == Team::Spectators ? "SPEC" : team == Team::TT ? "T" : team == Team::CT ? "CT" : "NONE", AntiAim::moving_flag_text[AntiAim::latest_moving_flag], inReload ? " | RELOADING" : "", noScope ? " | NO SCOPE" : "");
     ImGui::End();
 }
 
@@ -1830,7 +1828,7 @@ void Misc::hurtIndicator() noexcept
 
 void Misc::yawIndicator(ImDrawList* drawList) noexcept
 {
-    if (!config->misc.yawIndicator.enabled || !config->rageAntiAim.enabled)
+    if (!config->misc.yawIndicator.enabled)
         return;
     {
         GameData::Lock lock;
@@ -1839,13 +1837,13 @@ void Misc::yawIndicator(ImDrawList* drawList) noexcept
     }
     const ImVec2 pos{ ImGui::GetIO().DisplaySize / 2 };
     const ImU32 col{ Helpers::calculateColor(static_cast<Color4>(config->misc.yawIndicator)) };
-    if (config->rageAntiAim.manualForward.isToggled())
+    if (config->manualForward.isToggled())
         drawList->AddTriangleFilled(pos + ImVec2{ -20, -20 }, pos + ImVec2{ 20, -20 }, pos + ImVec2{ 0, -50 }, col);
-    if (config->rageAntiAim.manualBackward.isToggled())
+    if (config->manualBackward.isToggled())
         drawList->AddTriangleFilled(pos + ImVec2{ -20, 20 }, pos + ImVec2{ 20, 20 }, pos + ImVec2{ 0, 50 }, col);
-    if (config->rageAntiAim.manualRight.isToggled() || AntiAim::auto_direction_yaw == 1)
+    if (config->manualRight.isToggled() || AntiAim::auto_direction_yaw == 1)
         drawList->AddTriangleFilled(pos + ImVec2{ 20, 20 }, pos + ImVec2{ 20, -20 }, pos + ImVec2{ 50, 0 }, col);
-    if (config->rageAntiAim.manualLeft.isToggled() || AntiAim::auto_direction_yaw == -1)
+    if (config->manualLeft.isToggled() || AntiAim::auto_direction_yaw == -1)
         drawList->AddTriangleFilled(pos + ImVec2{ -20, 20 }, pos + ImVec2{ -20, -20 }, pos + ImVec2{ -50, 0 }, col);
 }
 

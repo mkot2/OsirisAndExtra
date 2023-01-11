@@ -668,8 +668,8 @@ public:
 
     NETVAR(didSmokeEffect, "CSmokeGrenadeProjectile", "m_bDidSmokeEffect", bool)
 
-    NETVAR(pinPulled, "CBaseCSGrenade", "m_bPinPulled", bool);
-    NETVAR(throwTime, "CBaseCSGrenade", "m_fThrowTime", float_t);
+    NETVAR(pinPulled, "CBaseCSGrenade", "m_bPinPulled", bool)
+    NETVAR(throwTime, "CBaseCSGrenade", "m_fThrowTime", float_t)
 
     NETVAR(body, "CBaseAnimating", "m_nBody", int)
     NETVAR(clientSideAnimation, "CBaseAnimating", "m_bClientSideAnimation", bool)

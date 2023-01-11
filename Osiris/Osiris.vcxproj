@@ -335,7 +335,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>shell32.lib;ole32.lib</AdditionalDependencies>
       <EntryPointSymbol>DllEntryPoint</EntryPointSymbol>
-      <LinkStatus>true</LinkStatus>
+      <LinkStatus>false</LinkStatus>
       <LargeAddressAware>true</LargeAddressAware>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
