@@ -4,6 +4,7 @@
 
 #include "AimbotFunctions.h"
 #include "AntiAim.h"
+#include "EnginePrediction.h"
 
 #include "../SDK/Engine.h"
 #include "../SDK/EngineTrace.h"
@@ -464,13 +465,13 @@ bool AntiAim::canRun(UserCmd* cmd) noexcept
 
 AntiAim::moving_flag AntiAim::get_moving_flag(const UserCmd* cmd) noexcept
 {
-    if (!localPlayer->getAnimstate()->onGround && cmd->buttons & UserCmd::IN_DUCK)
+    if ((EnginePrediction::getFlags() & 3) == 2)
         return latest_moving_flag = duck_jumping;
-    if (cmd->buttons & UserCmd::IN_DUCK)
+    if (EnginePrediction::getFlags() & 2)
         return latest_moving_flag = ducking;
     if (!localPlayer->getAnimstate()->onGround)
         return latest_moving_flag = jumping;
-    if (localPlayer->velocity().x > 0 || localPlayer->velocity().y > 0 || localPlayer->velocity().z > 0 || localPlayer->velocity().x < 0 || localPlayer->velocity().y < 0 || localPlayer->velocity().z < 0)
+    if (localPlayer->velocity().length2D() > 0.f)
     {
         if (config->misc.slowwalkKey.isActive())
             return latest_moving_flag = slow_walking;
