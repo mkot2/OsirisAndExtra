@@ -176,7 +176,7 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
             switch (config->rageAntiAim[static_cast<int>(moving_flag)].yawBase)
             {
             case Yaw::paranoia:
-                random.set_range(static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].paranoiaMin), static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].paranoiaMax));
+                random.set_range(static_cast<float>(-config->rageAntiAim[static_cast<int>(moving_flag)].paranoiaMin), static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].paranoiaMax));
                 yaw += random.get() + 180;
                 break;
             case Yaw::backward:
