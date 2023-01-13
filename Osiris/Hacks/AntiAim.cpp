@@ -192,6 +192,7 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
                 staticYaw += static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].spinBase);
                 yaw += staticYaw;
                 break;
+            case Yaw::off:
             default:
                 break;
             }

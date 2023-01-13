@@ -112,7 +112,7 @@ public:
 
     struct Legitbot {
         bool enabled{ false };
-        bool aimlock{ false };
+        bool aimlock{ false }; 
         bool silent{ false };
         bool friendlyFire{ false };
         bool visibleOnly{ true };
