@@ -81,7 +81,10 @@ void runRagebot(UserCmd* cmd, Entity* entity, Animations::Players::Record record
             {
                 const auto velocity = EnginePrediction::getVelocity();
                 const auto speed = velocity.length2D();
-                if (speed >= 15.0f)
+                const auto activeWeapon = localPlayer->getActiveWeapon();
+                const auto weaponData = activeWeapon->getWeaponData();
+                const float maxSpeed = (localPlayer->isScoped() ? weaponData->maxSpeedAlt : weaponData->maxSpeed) / 3;
+                if (speed >= maxSpeed)
                 {
                     Vector direction = velocity.toAngle();
                     direction.y = cmd->viewangles.y - direction.y;
@@ -315,12 +318,15 @@ void Ragebot::run(UserCmd* cmd) noexcept
             clamped = true;
         }
 
-        cmd->viewangles += angle;
-        if (!cfg[weaponIndex].silent)
-            interfaces->engine->setViewAngles(cmd->viewangles);
+        if (activeWeapon->nextPrimaryAttack() <= memory->globalVars->serverTime())
+        {
+            cmd->viewangles += angle;
+            if (!cfg[weaponIndex].silent)
+                interfaces->engine->setViewAngles(cmd->viewangles);
 
-        if (cfg[weaponIndex].autoShot && activeWeapon->nextPrimaryAttack() <= memory->globalVars->serverTime() && !clamped)
-            cmd->buttons |= UserCmd::IN_ATTACK;
+            if (cfg[weaponIndex].autoShot && !clamped)
+                cmd->buttons |= UserCmd::IN_ATTACK;
+        }
 
         if (clamped)
             cmd->buttons &= ~UserCmd::IN_ATTACK;
