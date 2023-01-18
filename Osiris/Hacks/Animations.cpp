@@ -7,7 +7,7 @@
 #include "Animations.h"
 #include "Backtrack.h"
 #include "EnginePrediction.h"
-#include "Resolver.h"
+#include "resolver.h"
 
 #include "../SDK/LocalPlayer.h"
 #include "../SDK/Cvar.h"
@@ -426,7 +426,7 @@ void Animations::handlePlayers(FrameStage stage) noexcept
                 player.velocity.y = 0.f;
             }
 
-            Resolver::runPreUpdate(player, entity);
+            resolver::run_pre_update(player, entity);
 
             //Run animations
 
@@ -475,7 +475,7 @@ void Animations::handlePlayers(FrameStage stage) noexcept
             }
             updatingEntity = false;
 
-            Resolver::runPostUpdate(player, entity);
+            resolver::run_post_update(player, entity);
 
             //Fix jump pose
             if (!(entity->flags() & 1) && !player.oldlayers.empty())// && entity->moveType() != MoveType::NOCLIP)

@@ -9,7 +9,7 @@
 #include "Logger.h"
 
 #include "Hacks/Misc.h"
-#include "Hacks/Resolver.h"
+#include "Hacks/resolver.h"
 #include "Hacks/SkinChanger.h"
 #include "Hacks/Visuals.h"
 
@@ -58,7 +58,7 @@ void EventListener::fireGameEvent(GameEvent* event)
         GameData::clearProjectileList();
         Misc::preserveKillfeed(true);
         Misc::autoBuy(event);
-        Resolver::getEvent(event);
+        resolver::get_event(event);
         Visuals::bulletTracer(*event);
         [[fallthrough]];
     case fnv::hash("round_freeze_end"):
@@ -70,7 +70,7 @@ void EventListener::fireGameEvent(GameEvent* event)
         Misc::killfeedChanger(*event);
         Misc::killMessage(*event);
         Misc::killSound(*event);
-        Resolver::getEvent(event);
+        resolver::get_event(event);
         break;
     case fnv::hash("player_hurt"):
         Misc::playHitSound(*event);
@@ -79,11 +79,11 @@ void EventListener::fireGameEvent(GameEvent* event)
         break;
     case fnv::hash("bullet_impact"):
         Logger::getEvent(event);
-        Resolver::getEvent(event);
+        resolver::get_event(event);
         break;
     case fnv::hash("weapon_fire"):
         Visuals::bulletTracer(*event);
-        Resolver::getEvent(event);
+        resolver::get_event(event);
         break;
     case fnv::hash("vote_cast"):
         Misc::voteRevealer(*event);

@@ -251,7 +251,7 @@
     <ClCompile Include="SDK\EngineTrace.cpp">
       <Filter>SDK</Filter>
     </ClCompile>
-    <ClCompile Include="Hacks\Resolver.cpp">
+    <ClCompile Include="Hacks\resolver.cpp">
       <Filter>Hacks</Filter>
     </ClCompile>
     <ClCompile Include="Hacks\Tickbase.cpp">
@@ -661,7 +661,7 @@
     <ClInclude Include="Threading.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hacks\Resolver.h">
+    <ClInclude Include="Hacks\resolver.h">
       <Filter>Hacks</Filter>
     </ClInclude>
     <ClInclude Include="SDK\CommandContext.h">

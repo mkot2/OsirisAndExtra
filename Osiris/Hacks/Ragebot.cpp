@@ -7,7 +7,7 @@
 #include "Backtrack.h"
 #include "Ragebot.h"
 #include "EnginePrediction.h"
-#include "Resolver.h"
+#include "resolver.h"
 
 #include "../SDK/Entity.h"
 #include "../SDK/UserCmd.h"
@@ -334,7 +334,7 @@ void Ragebot::run(UserCmd* cmd) noexcept
         if (cmd->buttons & UserCmd::IN_ATTACK)
         {
             cmd->tickCount = timeToTicks(bestSimulationTime + Backtrack::getLerp());
-            Resolver::saveRecord(bestIndex, bestSimulationTime);
+            resolver::save_record(bestIndex, bestSimulationTime);
         }
 
         if (clamped) lastAngles = cmd->viewangles;
