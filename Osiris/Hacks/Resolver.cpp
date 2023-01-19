@@ -50,6 +50,9 @@ void resolver::save_record(const int player_index, const float player_simulation
 
 void resolver::get_event(GameEvent* event) noexcept
 {
+	const auto active_weapon = localPlayer->getActiveWeapon();
+	if (!active_weapon || !active_weapon->clip())
+		return;
 	if (!event || !localPlayer || interfaces->engine->isHLTV())
 		return;
 
@@ -131,13 +134,17 @@ void resolver::get_event(GameEvent* event) noexcept
 	default:
 		break;
 	}
-	if (!config->ragebot[0].resolver)
+
+	if (!config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].resolver)
 		snapshots.clear();
 }
 
 void resolver::process_missed_shots() noexcept
 {
-	if (!config->ragebot[0].resolver)
+	const auto active_weapon = localPlayer->getActiveWeapon();
+	if (!active_weapon || !active_weapon->clip())
+		return;
+	if (!config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].resolver)
 	{
 		snapshots.clear();
 		return;
@@ -179,7 +186,7 @@ void resolver::process_missed_shots() noexcept
 	const auto angle = AimbotFunction::calculateRelativeAngle(eyePosition, bulletImpact, Vector{ });
 	const auto end = bulletImpact + Vector::fromAngle(angle) * 2000.f;
 
-	const matrix3x4* matrix{};
+	const matrix3x4* matrix;
 	try
 	{
 		matrix = backtrackRecord == -1 ? player.matrix.data() : player.backtrackRecords.at(backtrackRecord).matrix;
@@ -225,7 +232,10 @@ float get_forward_yaw(Entity* entity) {
 
 void resolver::run_pre_update(Animations::Players& player, Entity* entity) noexcept
 {
-	if (!config->ragebot[0].resolver)
+	const auto active_weapon = localPlayer->getActiveWeapon();
+	if (!active_weapon || !active_weapon->clip())
+		return;
+	if (!config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].resolver)
 		return;
 
 	if (!entity || !entity->isAlive())
@@ -256,7 +266,10 @@ void resolver::run_pre_update(Animations::Players& player, Entity* entity) noexc
 
 void resolver::run_post_update(Animations::Players& player, Entity* entity) noexcept
 {
-	if (!config->ragebot[0].resolver)
+	const auto active_weapon = localPlayer->getActiveWeapon();
+	if (!active_weapon || !active_weapon->clip())
+		return;
+	if (!config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].resolver)
 		return;
 	
 	if (!entity || !entity->isAlive())
@@ -601,14 +614,18 @@ void resolver::update_event_listeners(const bool force_remove) noexcept
 
 	static std::array<impact_event_listener, 4> listener{};
 
-	if (static bool listener_registered = false; config->ragebot[0].resolver && !listener_registered) {
+	const auto active_weapon = localPlayer->getActiveWeapon();
+	if (!active_weapon || !active_weapon->clip())
+		return;
+	const auto weapon_index = getWeaponIndex(active_weapon->itemDefinitionIndex2());
+	if (static bool listener_registered = false; config->ragebot[weapon_index].resolver && !listener_registered) {
 		interfaces->gameEventManager->addListener(listener.data(), "bullet_impact");
 		interfaces->gameEventManager->addListener(&listener[1], "player_hurt");
 		interfaces->gameEventManager->addListener(&listener[2], "round_start");
 		interfaces->gameEventManager->addListener(&listener[3], "weapon_fire");
 		listener_registered = true;
 	}
-	else if ((!config->ragebot[0].resolver || force_remove) && listener_registered) {
+	else if ((!config->ragebot[weapon_index].resolver || force_remove) && listener_registered) {
 		interfaces->gameEventManager->removeListener(listener.data());
 		interfaces->gameEventManager->removeListener(&listener[1]);
 		interfaces->gameEventManager->removeListener(&listener[2]);
