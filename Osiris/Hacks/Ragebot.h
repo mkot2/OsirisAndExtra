@@ -4,8 +4,9 @@ struct UserCmd;
 
 namespace Ragebot
 {
-	void run(UserCmd*) noexcept;
-	void updateInput() noexcept;
+    inline std::string latest_player{};
+    void run(UserCmd*) noexcept;
+    void updateInput() noexcept;
 
     struct Enemies {
         int id;

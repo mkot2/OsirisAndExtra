@@ -5,6 +5,7 @@
 #include "AimbotFunctions.h"
 #include "AntiAim.h"
 #include "EnginePrediction.h"
+#include "Misc.h"
 
 #include "../SDK/Engine.h"
 #include "../SDK/EngineTrace.h"
@@ -143,7 +144,6 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
             && config->rageAntiAim[static_cast<int>(moving_flag)].enabled)   //AntiAim
         {
             float yaw = 0.f;
-            static float staticYaw = 0.f;
             static bool flipJitter = false;
             if (sendPacket)
                 flipJitter ^= 1;
@@ -171,7 +171,7 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
             }
 
             if (config->rageAntiAim[static_cast<int>(moving_flag)].yawBase != Yaw::spin)
-                staticYaw = 0.f;
+                static_yaw = 0.f;
                 
             switch (config->rageAntiAim[static_cast<int>(moving_flag)].yawBase)
             {
@@ -189,8 +189,8 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
                 yaw += 90.f;
                 break;
             case Yaw::spin:
-                staticYaw += static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].spinBase);
-                yaw += staticYaw;
+                static_yaw += static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].spinBase);
+                yaw += static_yaw;
                 break;
             case Yaw::off:
             default:
@@ -264,7 +264,9 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
             switch (config->rageAntiAim[static_cast<int>(moving_flag)].yawModifier)
             {
             case 1: //Jitter
-                yaw -= flipJitter ? config->rageAntiAim[static_cast<int>(moving_flag)].jitterRange : -config->rageAntiAim[static_cast<int>(moving_flag)].jitterRange;
+                yaw -= static_cast<float>(flipJitter
+                                              ? config->rageAntiAim[static_cast<int>(moving_flag)].jitterRange
+                                              : -config->rageAntiAim[static_cast<int>(moving_flag)].jitterRange);
                 break;
             default:
                 break;

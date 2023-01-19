@@ -1,15 +1,16 @@
 #pragma once
 
 #include "../ConfigStructs.h"
-
-struct UserCmd;
 struct Vector;
+struct UserCmd;
 
 namespace AntiAim
 {
+    inline float static_yaw{};
+
     enum moving_flag
     {
-	    freestanding,
+        freestanding,
         moving,
         jumping,
         ducking,
@@ -26,7 +27,22 @@ namespace AntiAim
         "Ducking",
         "Duck-jumping",
         "Slow-walking",
-        "Fake-ducking",
+        "Fake-ducking"
+    };
+
+    inline const char* peek_mode_text[]
+    {
+        "Off",
+        "Peek Real",
+        "Peek Fake",
+        "Jitter"
+    };
+
+    inline const char* lby_mode_text[]
+    {
+        "Normal",
+        "Opposite",
+        "Sway"
     };
 
     void rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector& currentViewAngles, bool& sendPacket) noexcept;

@@ -26,8 +26,10 @@ void Ragebot::updateInput() noexcept
     config->minDamageOverrideKey.handleToggle();
 }
 
-void runRagebot(UserCmd* cmd, Entity* entity, Animations::Players::Record record, Ragebot::Enemies target, std::array<bool, Hitboxes::Max> hitbox, Entity* activeWeapon, int weaponIndex, Vector localPlayerEyePosition, Vector aimPunch, int multiPoint, int minDamage, float& damageDiff, Vector& bestAngle, Vector& bestTarget, int& bestIndex, float& bestSimulationTime) noexcept
+void runRagebot(UserCmd* cmd, Entity* entity, const Animations::Players::Record record, const Ragebot::Enemies target, const std::array<bool,
+                                                                                                                                        Max> hitbox, Entity* activeWeapon, const int weaponIndex, const Vector localPlayerEyePosition, const Vector aimPunch, const int multiPoint, const int minDamage, float& damageDiff, Vector& bestAngle, Vector& bestTarget, int& bestIndex, float& bestSimulationTime) noexcept
 {
+    Ragebot::latest_player = entity->getPlayerName();
     const auto& cfg = config->ragebot;
 
     damageDiff = FLT_MAX;
@@ -53,7 +55,7 @@ void runRagebot(UserCmd* cmd, Entity* entity, Animations::Players::Record record
         if (!hitbox)
             continue;
 
-        for (auto& bonePosition : AimbotFunction::multiPoint(entity, record.matrix, hitbox, localPlayerEyePosition, i, multiPoint))
+        for (const auto& bonePosition : AimbotFunction::multiPoint(entity, record.matrix, hitbox, localPlayerEyePosition, i, multiPoint))
         {
             const auto angle{ AimbotFunction::calculateRelativeAngle(localPlayerEyePosition, bonePosition, cmd->viewangles + aimPunch) };
             const auto fov{ angle.length2D() };
@@ -64,11 +66,11 @@ void runRagebot(UserCmd* cmd, Entity* entity, Animations::Players::Record record
                 continue;
 
             float damage = AimbotFunction::getScanDamage(entity, bonePosition, activeWeapon->getWeaponData(), minDamage, cfg[weaponIndex].friendlyFire);
-            damage = std::clamp(damage, 0.0f, (float)entity->maxHealth());
+            damage = std::clamp(damage, 0.0f, static_cast<float>(entity->maxHealth()));
             if (damage <= 0.f)
                 continue;
 
-            if (!entity->isVisible(bonePosition) && (cfg[weaponIndex].visibleOnly || !damage))
+            if (!entity->isVisible(bonePosition) && (cfg[weaponIndex].visibleOnly || !static_cast<bool>(damage)))
                 continue;
 
             if (cfg[weaponIndex].autoScope && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !activeWeapon->zoomLevel() && localPlayer->flags() & 1 && !(cmd->buttons & UserCmd::IN_JUMP))
@@ -95,10 +97,10 @@ void runRagebot(UserCmd* cmd, Entity* entity, Animations::Players::Record record
                 }
             }
 
-            if (std::fabsf((float)target.health - damage) <= damageDiff)
+            if (std::fabsf(static_cast<float>(target.health) - damage) <= damageDiff)
             {
                 bestAngle = angle;
-                damageDiff = std::fabsf((float)target.health - damage);
+                damageDiff = std::fabsf(static_cast<float>(target.health) - damage);
                 bestTarget = bonePosition;
                 bestSimulationTime = record.simulationTime;
                 bestIndex = target.id;
@@ -164,30 +166,30 @@ void Ragebot::run(UserCmd* cmd) noexcept
     const auto localPlayerEyePosition = localPlayer->getEyePosition();
     const auto aimPunch = localPlayer->getAimPunch();
 
-    std::array<bool, Hitboxes::Max> hitbox{ false };
+    std::array<bool, Max> hitbox{ false };
 
     // Head
-    hitbox[Hitboxes::Head] = (cfg[weaponIndex].hitboxes & 1 << 0) == 1 << 0;
+    hitbox[Head] = (cfg[weaponIndex].hitboxes & 1 << 0) == 1 << 0;
     // Chest
-    hitbox[Hitboxes::UpperChest] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
-    hitbox[Hitboxes::Thorax] = (cfg[weaponIndex].hitboxes & 1 << 2) == 1 << 2;
-    hitbox[Hitboxes::LowerChest] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+    hitbox[UpperChest] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
+    hitbox[Thorax] = (cfg[weaponIndex].hitboxes & 1 << 2) == 1 << 2;
+    hitbox[LowerChest] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
     //Stomach
-    hitbox[Hitboxes::Belly] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
-    hitbox[Hitboxes::Pelvis] = (cfg[weaponIndex].hitboxes & 1 << 5) == 1 << 5;
+    hitbox[Belly] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
+    hitbox[Pelvis] = (cfg[weaponIndex].hitboxes & 1 << 5) == 1 << 5;
     //Arms
-    hitbox[Hitboxes::RightUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 6) == 1 << 6;
-    hitbox[Hitboxes::RightForearm] = (cfg[weaponIndex].hitboxes & 1 << 7) == 1 << 7;
-    hitbox[Hitboxes::LeftUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 8) == 1 << 8;
-    hitbox[Hitboxes::LeftForearm] = (cfg[weaponIndex].hitboxes & 1 << 9) == 1 << 9;
+    hitbox[RightUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 6) == 1 << 6;
+    hitbox[RightForearm] = (cfg[weaponIndex].hitboxes & 1 << 7) == 1 << 7;
+    hitbox[LeftUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 8) == 1 << 8;
+    hitbox[LeftForearm] = (cfg[weaponIndex].hitboxes & 1 << 9) == 1 << 9;
     //Legs
-    hitbox[Hitboxes::RightCalf] = (cfg[weaponIndex].hitboxes & 1 << 10) == 1 << 10;
-    hitbox[Hitboxes::RightThigh] = (cfg[weaponIndex].hitboxes & 1 << 11) == 1 << 11;
-    hitbox[Hitboxes::LeftCalf] = (cfg[weaponIndex].hitboxes & 1 << 12) == 1 << 12;
-    hitbox[Hitboxes::LeftThigh] = (cfg[weaponIndex].hitboxes & 1 << 13) == 1 << 13;
+    hitbox[RightCalf] = (cfg[weaponIndex].hitboxes & 1 << 10) == 1 << 10;
+    hitbox[RightThigh] = (cfg[weaponIndex].hitboxes & 1 << 11) == 1 << 11;
+    hitbox[LeftCalf] = (cfg[weaponIndex].hitboxes & 1 << 12) == 1 << 12;
+    hitbox[LeftThigh] = (cfg[weaponIndex].hitboxes & 1 << 13) == 1 << 13;
 
 
-    std::vector<Ragebot::Enemies> enemies;
+    std::vector<Enemies> enemies;
     const auto localPlayerOrigin{ localPlayer->getAbsOrigin() };
     for (int i = 1; i <= interfaces->engine->getMaxClients(); ++i) {
         const auto player = Animations::getPlayer(i);
@@ -213,13 +215,13 @@ void Ragebot::run(UserCmd* cmd) noexcept
     switch (cfg[weaponIndex].priority)
     {
     case 0:
-        std::sort(enemies.begin(), enemies.end(), healthSort);
+        std::ranges::sort(enemies, healthSort);
         break;
     case 1:
-        std::sort(enemies.begin(), enemies.end(), distanceSort);
+        std::ranges::sort(enemies, distanceSort);
         break;
     case 2:
-        std::sort(enemies.begin(), enemies.end(), fovSort);
+        std::ranges::sort(enemies, fovSort);
         break;
     default:
         break;
@@ -252,7 +254,7 @@ void Ragebot::run(UserCmd* cmd) noexcept
                 if (!Backtrack::valid(player.simulationTime))
                     continue;
                 record.absAngle = player.absAngle;
-                std::copy(player.matrix.begin(), player.matrix.end(), record.matrix);
+                std::ranges::copy(player.matrix, record.matrix);
                 record.maxs = player.maxs;
                 record.mins = player.mins;
                 record.origin = player.origin;

@@ -18,6 +18,7 @@
 #include "EnginePrediction.h"
 #include "Misc.h"
 #include "Fakelag.h"
+#include "Ragebot.h"
 
 #include "../SDK/Client.h"
 #include "../SDK/ClientMode.h"
@@ -348,12 +349,12 @@ public:
                 memory->clientMode->getHudChat()->printf(0,
                     " \x0C\u2022Osiris\u2022\x01 %c%s: %.2f units \x01[\x05%d\x01 Strafes | \x05%.0f\x01 Pre | \x05%.0f\x01 Max | \x05%.1f\x01 Height | \x05%d\x01 Bhops | \x05%.0f\x01 Sync]",
                     color, jump.c_str(),
-                    jumpStatsCalculations.units, jumpStatsCalculations.strafes, jumpStatsCalculations.pre, jumpStatsCalculations.maxVelocity, jumpStatsCalculations.maxHeight, jumpStatsCalculations.jumps, jumpStatsCalculations.sync);
+                    units, strafes, pre, maxVelocity, maxHeight, jumps, sync);
             else
                 memory->clientMode->getHudChat()->printf(0,
                     " \x0C\u2022Osiris\u2022\x01 %c%s: %.2f units \x01[\x05%d\x01 Strafes | \x05%.0f\x01 Pre | \x05%.0f\x01 Max | \x05%.1f\x01 Height | \x05%.0f\x01 Sync]",
                     color, jump.c_str(),
-                    jumpStatsCalculations.units, jumpStatsCalculations.strafes, jumpStatsCalculations.pre, jumpStatsCalculations.maxVelocity, jumpStatsCalculations.maxHeight, jumpStatsCalculations.sync);
+                    units, strafes, pre, maxVelocity, maxHeight, sync);
         }
 
         shouldShow = false;
@@ -1405,8 +1406,8 @@ void Misc::updateClanTag(bool tagChanged) noexcept
         return;
     }
     
-    static auto lastTime = 0.0f;
-    int time = memory->globalVars->currenttime * M_PI;
+    static int lastTime = 0;
+    const int time = static_cast<int>(memory->globalVars->currenttime * 3.14159265358979323846f);
     if (config->misc.clocktag) {
         if (memory->globalVars->realtime - lastTime < 1.0f)
             return;
@@ -1416,7 +1417,7 @@ void Misc::updateClanTag(bool tagChanged) noexcept
         char s[11];
         s[0] = '\0';
         snprintf(s, sizeof(s), "[%02d:%02d:%02d]", localTime->tm_hour, localTime->tm_min, localTime->tm_sec);
-        lastTime = memory->globalVars->realtime;
+        lastTime = static_cast<int>(memory->globalVars->realtime);
         memory->setClanTag(s, s);
     } else if (config->misc.customClanTag) {
         if (memory->globalVars->realtime - lastTime < 0.6f)
@@ -1636,11 +1637,49 @@ void Misc::watermark() noexcept
     ImGui::SetNextWindowBgAlpha(0.3f);
     ImGui::Begin("Watermark", nullptr, windowFlags);
 
-    static auto frameRate = 1.0f;
-    frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
+    static auto frame_rate = 1.0f;
+    frame_rate = 0.9f * frame_rate + 0.1f * memory->globalVars->absoluteFrameTime;
     GameData::Lock lock;
     const auto& [exists, alive, inReload, shooting, noScope, nextWeaponAttack, fov, handle, flashDuration, aimPunch, origin, inaccuracy, team, velocityModifier] { GameData::local() };
-    ImGui::Text("Osiris | %d fps | %d ms | FL: %d | %s | %s%s%s", frameRate != 0.0f ? static_cast<int>(1 / frameRate) : 0, GameData::getNetOutgoingLatency(), Fakelag::latest_chocked_packets, team == Team::Spectators ? "SPEC" : team == Team::TT ? "T" : team == Team::CT ? "CT" : "NONE", AntiAim::moving_flag_text[AntiAim::latest_moving_flag], inReload ? " | RELOADING" : "", noScope ? " | NO SCOPE" : "");
+    ImGui::Text("Osiris | %d FPS | %d MS | %s | %s%s%s",
+        frame_rate != 0.0f ? static_cast<int>(1 / frame_rate) : 0,
+        GameData::getNetOutgoingLatency(),
+        team == Team::Spectators ? "SPEC" : team == Team::TT ? "T" : team == Team::CT ? "CT" : "NONE",
+        AntiAim::moving_flag_text[AntiAim::latest_moving_flag], inReload ? " | RELOADING" : "",
+        noScope ? " | NO SCOPE" : "");
+    static int damage{};
+    static int hit_chance{};
+    static int min_damage{};
+    static bool resolver{};
+    if (localPlayer && localPlayer->isAlive() && localPlayer->getActiveWeapon() && localPlayer->getActiveWeapon()->clip() && getWeaponIndex(localPlayer->getActiveWeapon()->itemDefinitionIndex2()) != 0 && localPlayer->getActiveWeapon()->getWeaponData())
+    {
+        const auto active_weapon{ localPlayer->getActiveWeapon() };
+        const auto weapon_data{ active_weapon->getWeaponData() };
+        damage = weapon_data->damage;
+        hit_chance = config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].hitChance;
+        min_damage = config->minDamageOverrideKey.isActive()
+                         ? config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].minDamageOverride
+                         : config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].minDamage;
+        resolver = config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].resolver;
+    }
+    ImGui::Text("DMG %d | HC %d%% | MIN DMG %d | RSLVR %s",
+        damage,
+        hit_chance,
+        min_damage,
+        resolver ? "On" : "Off");
+    ImGui::Text("%s %s | FL %d%s%s%s | TGT %s",
+        AntiAim::peek_mode_text[
+            config->fakeAngle[AntiAim::latest_moving_flag].enabled
+                ? config->fakeAngle[AntiAim::latest_moving_flag].peekMode
+                : 0],
+        AntiAim::lby_mode_text[config->fakeAngle[AntiAim::latest_moving_flag].enabled
+                ? config->fakeAngle[AntiAim::latest_moving_flag].lbyMode
+                : 0],
+                Fakelag::latest_chocked_packets,
+                config->tickbase.doubletap.isActive() ? " | DT" : "",
+                config->tickbase.hideshots.isActive() ? " | HS" : "",
+                config->tickbase.teleport && (config->tickbase.doubletap.isActive() || config->tickbase.hideshots.isActive()) ? " | TP" : "",
+                Ragebot::latest_player.c_str());
     ImGui::End();
 }
 
