@@ -1679,7 +1679,7 @@ void Misc::watermark() noexcept
                 config->tickbase.doubletap.isActive() ? " | DT" : "",
                 config->tickbase.hideshots.isActive() ? " | HS" : "",
                 config->tickbase.teleport && (config->tickbase.doubletap.isActive() || config->tickbase.hideshots.isActive()) ? " | TP" : "",
-                Ragebot::latest_player ? Ragebot::latest_player->getPlayerName().c_str() : "unknown");
+                Ragebot::latest_player.c_str());
     ImGui::End();
 }
 

@@ -14,7 +14,6 @@
 #include "../SDK/NetworkChannel.h"
 #include "../SDK/UserCmd.h"
 
-
 #undef min
 #undef max
 template <typename T>

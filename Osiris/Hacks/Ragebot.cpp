@@ -29,7 +29,7 @@ void Ragebot::updateInput() noexcept
 void runRagebot(UserCmd* cmd, Entity* entity, const Animations::Players::Record record, const Ragebot::Enemies target, const std::array<bool,
                                                                                                                                         Max> hitbox, Entity* activeWeapon, const int weaponIndex, const Vector localPlayerEyePosition, const Vector aimPunch, const int multiPoint, const int minDamage, float& damageDiff, Vector& bestAngle, Vector& bestTarget, int& bestIndex, float& bestSimulationTime) noexcept
 {
-    Ragebot::latest_player = entity;
+    Ragebot::latest_player = entity->getPlayerName();
     const auto& cfg = config->ragebot;
 
     damageDiff = FLT_MAX;
