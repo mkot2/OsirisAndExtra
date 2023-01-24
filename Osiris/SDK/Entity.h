@@ -98,7 +98,7 @@ public:
 
     void setCollisionBounds(const Vector& mins, const Vector& maxs)
     {
-        if ((vecMins == mins) && (vecMaxs == maxs))
+        if (vecMins == mins && vecMaxs == maxs)
             return;
 
         vecMins = mins;
@@ -376,7 +376,7 @@ public:
     {
         if (!getOriginalNetworkDataObject())
             return nullptr;
-        return reinterpret_cast<void**>(this)[(frameNumber % 150) + 286];
+        return reinterpret_cast<void**>(this)[frameNumber % 150 + 286];
     }
 
     float spawnTime() noexcept
@@ -539,7 +539,7 @@ public:
         float yawModifier = (animState->walkToRunTransition * -0.3f - 0.2f) * std::clamp(animState->speedAsPortionOfWalkTopSpeed, 0.0f, 1.0f) + 1.0f;
 
         if (animState->animDuckAmount > 0.0f)
-            yawModifier += (animState->animDuckAmount * std::clamp(animState->speedAsPortionOfCrouchTopSpeed, 0.0f, 1.0f) * (0.5f - yawModifier));
+            yawModifier += animState->animDuckAmount * std::clamp(animState->speedAsPortionOfCrouchTopSpeed, 0.0f, 1.0f) * (0.5f - yawModifier);
 
         return animState->aimYawMax * yawModifier;
     }
@@ -612,7 +612,7 @@ public:
         const int buttonsChanged = getButtonLast() ^ getButtons();
 
         getButtonPressed() = buttonsChanged & getButtons();
-        getButtonReleased() = buttonsChanged & (~getButtons());
+        getButtonReleased() = buttonsChanged & ~getButtons();
 
     }
 
@@ -787,11 +787,11 @@ public:
        
     float getFlashStartTime() noexcept 
     {
-        return (flashBangTime() - flashDuration()); 
+        return flashBangTime() - flashDuration(); 
     }
     float getFlashTimeElapsed() noexcept
-    { 
-        return max(memory->globalVars->currenttime - getFlashStartTime(), 0.0f); 
+    {
+        return memory->globalVars->currenttime - getFlashStartTime() > 0.0f ? memory->globalVars->currenttime - getFlashStartTime() : 0.0f; 
     }
 
     bool isFlashed() noexcept

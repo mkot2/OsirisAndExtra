@@ -11,6 +11,7 @@
 #include "../Memory.h"
 
 #include "StreamProofESP.h"
+#include "Ragebot.h"
 
 #include "../SDK/Engine.h"
 #include "../SDK/GlobalVars.h"
@@ -321,7 +322,7 @@ static void renderPlayerBox(const PlayerData& playerData, const Player& config) 
     FontPush font{ config.font.name, playerData.distanceToLocal };
 
     if (config.name.enabled) {
-        const auto nameSize = renderText(playerData.distanceToLocal, config.textCullDistance, config.name, playerData.name.c_str(), { (bbox.min.x + bbox.max.x) / 2, bbox.min.y - 2 });
+        const auto nameSize = renderText(playerData.distanceToLocal, config.textCullDistance, config.name, std::format("{}{}", playerData.name, Ragebot::latest_player && playerData.steamID == PlayerData{ Ragebot::latest_player }.steamID ? " | TGT" : "").c_str(), { (bbox.min.x + bbox.max.x) / 2, bbox.min.y - 2 });
         offsetMins.y -= nameSize.y + 2;
     }
 
