@@ -76,6 +76,7 @@ void EventListener::fireGameEvent(GameEvent* event)
         Misc::playHitSound(*event);
         Visuals::hitEffect(event);
         Visuals::hitMarker(event);
+        Visuals::drawHitboxMatrix(event);
         break;
     case fnv::hash("bullet_impact"):
         Logger::getEvent(event);
