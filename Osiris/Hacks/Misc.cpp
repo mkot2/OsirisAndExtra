@@ -1438,7 +1438,7 @@ const bool anyActiveKeybinds() noexcept
     const bool rageBot = config->ragebotKey.canShowKeybind();
     const bool minDamageOverride = config->minDamageOverrideKey.canShowKeybind();
     const bool fakeAngle = config->invert.canShowKeybind();
-    const bool antiAimAutoDirection = config->manualForward.canShowKeybind();
+    const bool antiAimAutoDirection = config->autoDirection.canShowKeybind();
     const bool antiAimManualForward = config->manualForward.canShowKeybind();
     const bool antiAimManualBackward = config->manualBackward.canShowKeybind();
     const bool antiAimManualRight =  config->manualRight.canShowKeybind();
