@@ -147,9 +147,9 @@ struct Vector {
 
     Vector clamp() noexcept
     {
-        this->x = std::clamp(this->x, -89.f, 89.f);
+        this->x = std::clamp(this->x, -180.f, 180.f);
         this->y = std::clamp(this->y, -180.f, 180.f);
-        this->z = std::clamp(this->z, -50.f, 50.f);
+        this->z = std::clamp(this->z, -180.f, 180.f);
         return *this;
     }
 
@@ -157,7 +157,7 @@ struct Vector {
     {
         x = std::isfinite(x) ? std::remainder(x, 360.0f) : 0.0f;
         y = std::isfinite(y) ? std::remainder(y, 360.0f) : 0.0f;
-        z = 0.0f;
+        z = std::isfinite(y) ? std::remainder(y, 360.0f) : 0.0f;
         return *this;
     }
 

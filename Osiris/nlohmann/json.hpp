@@ -2913,7 +2913,7 @@ namespace nlohmann
             template<typename BasicJsonType>
             static parse_error create(int id_, const position_t& pos, const std::string& what_arg, const BasicJsonType& context)
             {
-                std::string w = exception::name("parse_error", id_) + "parse error" +
+                std::string w = name("parse_error", id_) + "parse error" +
                     position_string(pos) + ": " + exception::diagnostics(context) + what_arg;
                 return { id_, pos.chars_read_total, w.c_str() };
             }
@@ -2921,7 +2921,7 @@ namespace nlohmann
             template<typename BasicJsonType>
             static parse_error create(int id_, std::size_t byte_, const std::string& what_arg, const BasicJsonType& context)
             {
-                std::string w = exception::name("parse_error", id_) + "parse error" +
+                std::string w = name("parse_error", id_) + "parse error" +
                     (byte_ != 0 ? (" at byte " + std::to_string(byte_)) : "") +
                     ": " + exception::diagnostics(context) + what_arg;
                 return { id_, byte_, w.c_str() };
@@ -2957,7 +2957,7 @@ namespace nlohmann
             template<typename BasicJsonType>
             static invalid_iterator create(int id_, const std::string& what_arg, const BasicJsonType& context)
             {
-                std::string w = exception::name("invalid_iterator", id_) + exception::diagnostics(context) + what_arg;
+                std::string w = name("invalid_iterator", id_) + exception::diagnostics(context) + what_arg;
                 return { id_, w.c_str() };
             }
 
@@ -2975,7 +2975,7 @@ namespace nlohmann
             template<typename BasicJsonType>
             static type_error create(int id_, const std::string& what_arg, const BasicJsonType& context)
             {
-                std::string w = exception::name("type_error", id_) + exception::diagnostics(context) + what_arg;
+                std::string w = name("type_error", id_) + exception::diagnostics(context) + what_arg;
                 return { id_, w.c_str() };
             }
 
@@ -2992,7 +2992,7 @@ namespace nlohmann
             template<typename BasicJsonType>
             static out_of_range create(int id_, const std::string& what_arg, const BasicJsonType& context)
             {
-                std::string w = exception::name("out_of_range", id_) + exception::diagnostics(context) + what_arg;
+                std::string w = name("out_of_range", id_) + exception::diagnostics(context) + what_arg;
                 return { id_, w.c_str() };
             }
 
@@ -3009,7 +3009,7 @@ namespace nlohmann
             template<typename BasicJsonType>
             static other_error create(int id_, const std::string& what_arg, const BasicJsonType& context)
             {
-                std::string w = exception::name("other_error", id_) + exception::diagnostics(context) + what_arg;
+                std::string w = name("other_error", id_) + exception::diagnostics(context) + what_arg;
                 return { id_, w.c_str() };
             }
 
@@ -3344,7 +3344,7 @@ namespace nlohmann
 
     /// @brief specialization that maintains the insertion order of object keys
     /// @sa https://json.nlohmann.me/api/ordered_json/
-    using ordered_json = basic_json<nlohmann::ordered_map>;
+    using ordered_json = basic_json<ordered_map>;
 
 }  // namespace nlohmann
 
@@ -4449,7 +4449,7 @@ namespace nlohmann
         // For further reference see https://blog.tartanllama.xyz/structured-bindings/
         // And see https://github.com/nlohmann/json/pull/1391
         template<std::size_t N, typename IteratorType, enable_if_t<N == 0, int> = 0>
-        auto get(const nlohmann::detail::iteration_proxy_value<IteratorType>& i) -> decltype(i.key())
+        auto get(const iteration_proxy_value<IteratorType>& i) -> decltype(i.key())
         {
             return i.key();
         }
@@ -4457,7 +4457,7 @@ namespace nlohmann
         // For further reference see https://blog.tartanllama.xyz/structured-bindings/
         // And see https://github.com/nlohmann/json/pull/1391
         template<std::size_t N, typename IteratorType, enable_if_t<N == 1, int> = 0>
-        auto get(const nlohmann::detail::iteration_proxy_value<IteratorType>& i) -> decltype(i.value())
+        auto get(const iteration_proxy_value<IteratorType>& i) -> decltype(i.value())
         {
             return i.value();
         }
@@ -4476,16 +4476,16 @@ namespace std
 #pragma clang diagnostic ignored "-Wmismatched-tags"
 #endif
     template<typename IteratorType>
-    class tuple_size<::nlohmann::detail::iteration_proxy_value<IteratorType>>
+    class tuple_size<nlohmann::detail::iteration_proxy_value<IteratorType>>
         : public std::integral_constant<std::size_t, 2> {};
 
     template<std::size_t N, typename IteratorType>
-    class tuple_element<N, ::nlohmann::detail::iteration_proxy_value<IteratorType >>
+    class tuple_element<N, nlohmann::detail::iteration_proxy_value<IteratorType >>
     {
     public:
         using type = decltype(
             get<N>(std::declval <
-                ::nlohmann::detail::iteration_proxy_value<IteratorType >> ()));
+	            nlohmann::detail::iteration_proxy_value<IteratorType >> ()));
     };
 #if defined(__clang__)
 #pragma clang diagnostic pop
@@ -4929,30 +4929,30 @@ namespace nlohmann
         /// @sa https://json.nlohmann.me/api/adl_serializer/from_json/
         template<typename BasicJsonType, typename TargetType = ValueType>
         static auto from_json(BasicJsonType&& j, TargetType& val) noexcept(
-            noexcept(::nlohmann::from_json(std::forward<BasicJsonType>(j), val)))
-            -> decltype(::nlohmann::from_json(std::forward<BasicJsonType>(j), val), void())
+            noexcept(nlohmann::from_json(std::forward<BasicJsonType>(j), val)))
+            -> decltype(nlohmann::from_json(std::forward<BasicJsonType>(j), val), void())
         {
-            ::nlohmann::from_json(std::forward<BasicJsonType>(j), val);
+	        nlohmann::from_json(std::forward<BasicJsonType>(j), val);
         }
 
         /// @brief convert a JSON value to any value type
         /// @sa https://json.nlohmann.me/api/adl_serializer/from_json/
         template<typename BasicJsonType, typename TargetType = ValueType>
         static auto from_json(BasicJsonType&& j) noexcept(
-            noexcept(::nlohmann::from_json(std::forward<BasicJsonType>(j), detail::identity_tag<TargetType> {})))
-            -> decltype(::nlohmann::from_json(std::forward<BasicJsonType>(j), detail::identity_tag<TargetType> {}))
+            noexcept(nlohmann::from_json(std::forward<BasicJsonType>(j), detail::identity_tag<TargetType> {})))
+            -> decltype(nlohmann::from_json(std::forward<BasicJsonType>(j), detail::identity_tag<TargetType> {}))
         {
-            return ::nlohmann::from_json(std::forward<BasicJsonType>(j), detail::identity_tag<TargetType> {});
+            return nlohmann::from_json(std::forward<BasicJsonType>(j), detail::identity_tag<TargetType> {});
         }
 
         /// @brief convert any value type to a JSON value
         /// @sa https://json.nlohmann.me/api/adl_serializer/to_json/
         template<typename BasicJsonType, typename TargetType = ValueType>
         static auto to_json(BasicJsonType& j, TargetType&& val) noexcept(
-            noexcept(::nlohmann::to_json(j, std::forward<TargetType>(val))))
-            -> decltype(::nlohmann::to_json(j, std::forward<TargetType>(val)), void())
+            noexcept(nlohmann::to_json(j, std::forward<TargetType>(val))))
+            -> decltype(nlohmann::to_json(j, std::forward<TargetType>(val)), void())
         {
-            ::nlohmann::to_json(j, std::forward<TargetType>(val));
+	        nlohmann::to_json(j, std::forward<TargetType>(val));
         }
     };
 }  // namespace nlohmann
@@ -6396,7 +6396,7 @@ namespace nlohmann
                 return true;
             }
 
-            bool parse_error(std::size_t /*unused*/, const std::string& /*unused*/, const detail::exception& /*unused*/)
+            bool parse_error(std::size_t /*unused*/, const std::string& /*unused*/, const exception& /*unused*/)
             {
                 return false;
             }
@@ -10429,13 +10429,13 @@ namespace nlohmann
                 }
 
                 // parse number string
-                using ia_type = decltype(detail::input_adapter(number_vector));
-                auto number_lexer = detail::lexer<BasicJsonType, ia_type>(detail::input_adapter(number_vector), false);
+                using ia_type = decltype(input_adapter(number_vector));
+                auto number_lexer = detail::lexer<BasicJsonType, ia_type>(input_adapter(number_vector), false);
                 const auto result_number = number_lexer.scan();
                 const auto number_string = number_lexer.get_token_string();
                 const auto result_remainder = number_lexer.scan();
 
-                using token_type = typename detail::lexer_base<BasicJsonType>::token_type;
+                using token_type = typename lexer_base<BasicJsonType>::token_type;
 
                 if (JSON_HEDLEY_UNLIKELY(result_remainder != token_type::end_of_input))
                 {
@@ -11820,7 +11820,9 @@ namespace nlohmann
             @brief comparison: equal
             @pre The iterator is initialized; i.e. `m_object != nullptr`.
             */
-            template < typename IterImpl, detail::enable_if_t < (std::is_same<IterImpl, iter_impl>::value || std::is_same<IterImpl, other_iter_impl>::value), std::nullptr_t > = nullptr >
+            template < typename IterImpl, enable_if_t<
+	                       (std::is_same<IterImpl, iter_impl>::value || std::is_same<IterImpl, other_iter_impl>::value),
+	                       std::nullptr_t> = nullptr >
             bool operator==(const IterImpl& other) const
             {
                 // if objects are not the same, the comparison is undefined
@@ -11856,7 +11858,9 @@ namespace nlohmann
             @brief comparison: not equal
             @pre The iterator is initialized; i.e. `m_object != nullptr`.
             */
-            template < typename IterImpl, detail::enable_if_t < (std::is_same<IterImpl, iter_impl>::value || std::is_same<IterImpl, other_iter_impl>::value), std::nullptr_t > = nullptr >
+            template < typename IterImpl, enable_if_t<
+	                       (std::is_same<IterImpl, iter_impl>::value || std::is_same<IterImpl, other_iter_impl>::value),
+	                       std::nullptr_t> = nullptr >
             bool operator!=(const IterImpl& other) const
             {
                 return !operator==(other);
@@ -13490,7 +13494,7 @@ namespace nlohmann
                     }
                     else
                     {
-                        write_compact_float(j.m_value.number_float, detail::input_format_t::cbor);
+                        write_compact_float(j.m_value.number_float, input_format_t::cbor);
                     }
                     break;
                 }
@@ -13814,7 +13818,7 @@ namespace nlohmann
 
                 case value_t::number_float:
                 {
-                    write_compact_float(j.m_value.number_float, detail::input_format_t::msgpack);
+                    write_compact_float(j.m_value.number_float, input_format_t::msgpack);
                     break;
                 }
 
@@ -14841,7 +14845,7 @@ namespace nlohmann
                 oa->write_characters(vec.data(), sizeof(NumberType));
             }
 
-            void write_compact_float(const number_float_t n, detail::input_format_t format)
+            void write_compact_float(const number_float_t n, input_format_t format)
             {
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -14851,14 +14855,14 @@ namespace nlohmann
                     static_cast<double>(n) <= static_cast<double>((std::numeric_limits<float>::max)()) &&
                     static_cast<double>(static_cast<float>(n)) == static_cast<double>(n))
                 {
-                    oa->write_character(format == detail::input_format_t::cbor
+                    oa->write_character(format == input_format_t::cbor
                         ? get_cbor_float_prefix(static_cast<float>(n))
                         : get_msgpack_float_prefix(static_cast<float>(n)));
                     write_number(static_cast<float>(n));
                 }
                 else
                 {
-                    oa->write_character(format == detail::input_format_t::cbor
+                    oa->write_character(format == input_format_t::cbor
                         ? get_cbor_float_prefix(n)
                         : get_msgpack_float_prefix(n));
                     write_number(n);
@@ -16578,9 +16582,9 @@ namespace nlohmann
                                 }
                                 else
                                 {
-                                    string_buffer[bytes++] = detail::binary_writer<BasicJsonType, char>::to_char_type('\xEF');
-                                    string_buffer[bytes++] = detail::binary_writer<BasicJsonType, char>::to_char_type('\xBF');
-                                    string_buffer[bytes++] = detail::binary_writer<BasicJsonType, char>::to_char_type('\xBD');
+                                    string_buffer[bytes++] = binary_writer<BasicJsonType, char>::to_char_type('\xEF');
+                                    string_buffer[bytes++] = binary_writer<BasicJsonType, char>::to_char_type('\xBF');
+                                    string_buffer[bytes++] = binary_writer<BasicJsonType, char>::to_char_type('\xBD');
                                 }
 
                                 // write buffer and reset index; there must be 13 bytes
@@ -16728,12 +16732,12 @@ namespace nlohmann
             @param[in] x  integer number (signed or unsigned) to dump
             @tparam NumberType either @a number_integer_t or @a number_unsigned_t
             */
-            template < typename NumberType, detail::enable_if_t <
-                std::is_integral<NumberType>::value ||
-                std::is_same<NumberType, number_unsigned_t>::value ||
-                std::is_same<NumberType, number_integer_t>::value ||
-                std::is_same<NumberType, binary_char_t>::value,
-                int > = 0 >
+            template < typename NumberType, enable_if_t<
+	                       std::is_integral<NumberType>::value ||
+	                       std::is_same<NumberType, number_unsigned_t>::value ||
+	                       std::is_same<NumberType, number_integer_t>::value ||
+	                       std::is_same<NumberType, binary_char_t>::value,
+	                       int> = 0 >
             void dump_integer(NumberType x)
             {
                 static constexpr std::array<std::array<char, 2>, 100> digits_to_99
@@ -16843,7 +16847,7 @@ namespace nlohmann
             void dump_float(number_float_t x, std::true_type /*is_ieee_single_or_double*/)
             {
                 auto* begin = number_buffer.data();
-                auto* end = ::nlohmann::detail::to_chars(begin, begin + number_buffer.size(), x);
+                auto* end = detail::to_chars(begin, begin + number_buffer.size(), x);
 
                 o->write_characters(begin, static_cast<size_t>(end - begin));
             }
@@ -17281,66 +17285,66 @@ namespace nlohmann
     {
     private:
         template<detail::value_t> friend struct detail::external_constructor;
-        friend ::nlohmann::json_pointer<basic_json>;
+        friend json_pointer<basic_json>;
 
         template<typename BasicJsonType, typename InputType>
-        friend class ::nlohmann::detail::parser;
-        friend ::nlohmann::detail::serializer<basic_json>;
+        friend class detail::parser;
+        friend detail::serializer<basic_json>;
         template<typename BasicJsonType>
-        friend class ::nlohmann::detail::iter_impl;
+        friend class detail::iter_impl;
         template<typename BasicJsonType, typename CharType>
-        friend class ::nlohmann::detail::binary_writer;
+        friend class detail::binary_writer;
         template<typename BasicJsonType, typename InputType, typename SAX>
-        friend class ::nlohmann::detail::binary_reader;
+        friend class detail::binary_reader;
         template<typename BasicJsonType>
-        friend class ::nlohmann::detail::json_sax_dom_parser;
+        friend class detail::json_sax_dom_parser;
         template<typename BasicJsonType>
-        friend class ::nlohmann::detail::json_sax_dom_callback_parser;
-        friend class ::nlohmann::detail::exception;
+        friend class detail::json_sax_dom_callback_parser;
+        friend class detail::exception;
 
         /// workaround type for MSVC
         using basic_json_t = NLOHMANN_BASIC_JSON_TPL;
 
     JSON_PRIVATE_UNLESS_TESTED:
         // convenience aliases for types residing in namespace detail;
-        using lexer = ::nlohmann::detail::lexer_base<basic_json>;
+        using lexer = detail::lexer_base<basic_json>;
 
         template<typename InputAdapterType>
-        static ::nlohmann::detail::parser<basic_json, InputAdapterType> parser(
+        static detail::parser<basic_json, InputAdapterType> parser(
             InputAdapterType adapter,
             detail::parser_callback_t<basic_json>cb = nullptr,
             const bool allow_exceptions = true,
             const bool ignore_comments = false
         )
         {
-            return ::nlohmann::detail::parser<basic_json, InputAdapterType>(std::move(adapter),
-                std::move(cb), allow_exceptions, ignore_comments);
+            return detail::parser<basic_json, InputAdapterType>(std::move(adapter),
+                                                                std::move(cb), allow_exceptions, ignore_comments);
         }
 
     private:
-        using primitive_iterator_t = ::nlohmann::detail::primitive_iterator_t;
+        using primitive_iterator_t = detail::primitive_iterator_t;
         template<typename BasicJsonType>
-        using internal_iterator = ::nlohmann::detail::internal_iterator<BasicJsonType>;
+        using internal_iterator = detail::internal_iterator<BasicJsonType>;
         template<typename BasicJsonType>
-        using iter_impl = ::nlohmann::detail::iter_impl<BasicJsonType>;
+        using iter_impl = detail::iter_impl<BasicJsonType>;
         template<typename Iterator>
-        using iteration_proxy = ::nlohmann::detail::iteration_proxy<Iterator>;
-        template<typename Base> using json_reverse_iterator = ::nlohmann::detail::json_reverse_iterator<Base>;
+        using iteration_proxy = detail::iteration_proxy<Iterator>;
+        template<typename Base> using json_reverse_iterator = detail::json_reverse_iterator<Base>;
 
         template<typename CharType>
-        using output_adapter_t = ::nlohmann::detail::output_adapter_t<CharType>;
+        using output_adapter_t = detail::output_adapter_t<CharType>;
 
         template<typename InputType>
-        using binary_reader = ::nlohmann::detail::binary_reader<basic_json, InputType>;
-        template<typename CharType> using binary_writer = ::nlohmann::detail::binary_writer<basic_json, CharType>;
+        using binary_reader = detail::binary_reader<basic_json, InputType>;
+        template<typename CharType> using binary_writer = detail::binary_writer<basic_json, CharType>;
 
     JSON_PRIVATE_UNLESS_TESTED:
-        using serializer = ::nlohmann::detail::serializer<basic_json>;
+        using serializer = detail::serializer<basic_json>;
 
     public:
         using value_t = detail::value_t;
         /// JSON Pointer, see @ref nlohmann::json_pointer
-        using json_pointer = ::nlohmann::json_pointer<basic_json>;
+        using json_pointer = json_pointer<basic_json>;
         template<typename T, typename SFINAE>
         using json_serializer = JSONSerializer<T, SFINAE>;
         /// how to treat decoding errors
@@ -17407,9 +17411,9 @@ namespace nlohmann
         /// a const iterator for a basic_json container
         using const_iterator = iter_impl<const basic_json>;
         /// a reverse iterator for a basic_json container
-        using reverse_iterator = json_reverse_iterator<typename basic_json::iterator>;
+        using reverse_iterator = json_reverse_iterator<iterator>;
         /// a const reverse iterator for a basic_json container
-        using const_reverse_iterator = json_reverse_iterator<typename basic_json::const_iterator>;
+        using const_reverse_iterator = json_reverse_iterator<const_iterator>;
 
         /// @}
 
@@ -17533,7 +17537,7 @@ namespace nlohmann
 
         /// @brief a type for a packed binary type
         /// @sa https://json.nlohmann.me/api/basic_json/binary_t/
-        using binary_t = nlohmann::byte_container_with_subtype<BinaryType>;
+        using binary_t = byte_container_with_subtype<BinaryType>;
 
         /// @}
 
@@ -18181,8 +18185,8 @@ namespace nlohmann
         /// @brief construct a JSON container given an iterator range
         /// @sa https://json.nlohmann.me/api/basic_json/basic_json/
         template < class InputIT, typename std::enable_if <
-            std::is_same<InputIT, typename basic_json_t::iterator>::value ||
-            std::is_same<InputIT, typename basic_json_t::const_iterator>::value, int >::type = 0 >
+            std::is_same<InputIT, iterator>::value ||
+            std::is_same<InputIT, const_iterator>::value, int >::type = 0 >
         basic_json(InputIT first, InputIT last)
         {
             JSON_ASSERT(first.m_object != nullptr);
@@ -19408,8 +19412,8 @@ namespace nlohmann
         /// @brief remove element given an iterator
         /// @sa https://json.nlohmann.me/api/basic_json/erase/
         template < class IteratorType, typename std::enable_if <
-            std::is_same<IteratorType, typename basic_json_t::iterator>::value ||
-            std::is_same<IteratorType, typename basic_json_t::const_iterator>::value, int >::type
+            std::is_same<IteratorType, iterator>::value ||
+            std::is_same<IteratorType, const_iterator>::value, int >::type
             = 0 >
         IteratorType erase(IteratorType pos)
         {
@@ -19479,8 +19483,8 @@ namespace nlohmann
         /// @brief remove elements given an iterator range
         /// @sa https://json.nlohmann.me/api/basic_json/erase/
         template < class IteratorType, typename std::enable_if <
-            std::is_same<IteratorType, typename basic_json_t::iterator>::value ||
-            std::is_same<IteratorType, typename basic_json_t::const_iterator>::value, int >::type
+            std::is_same<IteratorType, iterator>::value ||
+            std::is_same<IteratorType, const_iterator>::value, int >::type
             = 0 >
         IteratorType erase(IteratorType first, IteratorType last)
         {
@@ -20336,6 +20340,7 @@ namespace nlohmann
                 JSON_THROW(type_error::create(312, "cannot use update() with " + std::string(first.m_object->type_name()), *first.m_object));
             }
 
+#pragma omp parallel for schedule(static, 1)
             for (auto it = first; it != last; ++it)
             {
                 if (merge_objects && it.value().is_object())
@@ -21730,6 +21735,7 @@ namespace nlohmann
             case value_t::object:
             {
                 // first pass: traverse this object's elements
+#pragma omp parallel for schedule(static, 1)
                 for (auto it = source.cbegin(); it != source.cend(); ++it)
                 {
                     // escape the key name to be used in a JSON patch
@@ -21861,7 +21867,7 @@ namespace std // NOLINT(cert-dcl58-cpp)
 
     // specialization for std::less<value_t>
     template<>
-    struct less< ::nlohmann::detail::value_t> // do not remove the space after '<', see https://github.com/nlohmann/json/pull/679
+    struct less<nlohmann::detail::value_t> // do not remove the space after '<', see https://github.com/nlohmann/json/pull/679
     {
         /*!
         @brief compare two value_t enum values

@@ -56,7 +56,39 @@ void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
     if (EnginePrediction::getVelocity().length2D() < 1)
         return;
 
-    auto choked_packets = config->legitAntiAim.enabled || config->fakeAngle[static_cast<int>(moving_flag)].enabled ? 2 : 0;
+    random.set_range(0, 2);
+    auto choked_packets = config->legitAntiAim.enabled || config->fakeAngle[static_cast<int>(moving_flag)].enabled ? random.get() : 0;
+
+    if (config->tickbase.disabledTickbase && config->tickbase.onshotFl && config->tickbase.readyFire)
+    {
+        choked_packets = -1;
+
+        latest_choked_packets = choked_packets;
+
+        if (interfaces->engine->isVoiceRecording())
+            sendPacket = netChannel->chokedPackets >= 0;
+        else
+            sendPacket = netChannel->chokedPackets >= choked_packets;
+
+        config->tickbase.readyFire = false;
+        return;
+    }
+
+    if (config->tickbase.disabledTickbase && config->tickbase.onshotFl && config->tickbase.lastFireShiftTick > memory->globalVars->tickCount + choked_packets)
+    {
+        choked_packets = 0;
+
+        latest_choked_packets = choked_packets;
+
+        if (interfaces->engine->isVoiceRecording())
+            sendPacket = netChannel->chokedPackets >= 0;
+        else
+            sendPacket = netChannel->chokedPackets >= choked_packets;
+
+        config->tickbase.readyFire = false;
+        return;
+    }
+
     if (config->fakelag[static_cast<int>(moving_flag)].enabled)
     {
         const float speed = EnginePrediction::getVelocity().length2D() >= 15.0f ? EnginePrediction::getVelocity().length2D() : 0.0f;
@@ -71,6 +103,40 @@ void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
             random.set_range(config->fakelag[static_cast<int>(moving_flag)].randomMinLimit, config->fakelag[static_cast<int>(moving_flag)].limit);
             choked_packets = random.get();
             break;
+        case 3: // m1tZw tank
+        {
+            static auto frame_rate = 1.0f;
+            frame_rate = 0.9f * frame_rate + 0.1f * memory->globalVars->absoluteFrameTime;
+            srand(static_cast<unsigned int>(frame_rate != 0.0f ? static_cast<int>(1 / frame_rate) : 0));
+            for (int i{}; i <= 30; ++i)
+            {
+                if (i == 29 && memory->globalVars->tickCount % 2 == 0)
+                    choked_packets = maxUserCmdProcessTicks;
+                else
+                {
+                    if (rand() % 360 - 180 < 160)
+                        choked_packets = 2;
+                    else
+                        choked_packets = 1;
+                }
+            }
+            break;
+        }
+        case 4: // Another tank
+            for (int i{}; i <= 30; ++i)
+            {
+                if (i == 29 && memory->globalVars->tickCount % 2 == 0)
+                    choked_packets = maxUserCmdProcessTicks;
+                else
+                {
+                    random.set_range(180, 360);
+                    if (random.get() < 160)
+                        choked_packets = 2;
+                    else
+                        choked_packets = 1;
+                }
+            }
+            break;
         default:
             break;
         }
@@ -78,7 +144,7 @@ void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
 
     choked_packets = std::clamp(choked_packets, 0, maxUserCmdProcessTicks - Tickbase::getTargetTickShift());
 
-    latest_chocked_packets = choked_packets;
+    latest_choked_packets = choked_packets;
 
     if (interfaces->engine->isVoiceRecording())
         sendPacket = netChannel->chokedPackets >= 0;

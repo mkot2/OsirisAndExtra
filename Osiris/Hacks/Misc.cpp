@@ -1204,7 +1204,7 @@ void Misc::autoPeek(UserCmd* cmd, Vector currentViewAngles) noexcept
             {
                 hasShot = false;
                 peekPosition = Vector{};
-                if (config->misc.autoPeekKey.keyMode == KeyMode::Toggle)
+                if (config->misc.autoPeekKey.keyMode == Toggle)
                     config->misc.autoPeekKey.setToggleTo(false);
             }
         }
@@ -1258,10 +1258,10 @@ void Misc::initHiddenCvars() noexcept {
     {
         conCommandBase* cmd = c;
 
-        if (cmd->flags & CvarFlags::DEVELOPMENTONLY)
+        if (cmd->flags & DEVELOPMENTONLY)
             dev.push_back(cmd);
 
-        if (cmd->flags & CvarFlags::HIDDEN)
+        if (cmd->flags & HIDDEN)
             hidden.push_back(cmd);
 
     }
@@ -1276,18 +1276,18 @@ void Misc::unlockHiddenCvars() noexcept {
 
     if (config->misc.unhideConvars) {
         for (unsigned x = 0; x < dev.size(); x++)
-            dev.at(x)->flags &= ~CvarFlags::DEVELOPMENTONLY;
+            dev.at(x)->flags &= ~DEVELOPMENTONLY;
 
         for (unsigned x = 0; x < hidden.size(); x++)
-            hidden.at(x)->flags &= ~CvarFlags::HIDDEN;
+            hidden.at(x)->flags &= ~HIDDEN;
 
     }
     if (!config->misc.unhideConvars) {
         for (unsigned x = 0; x < dev.size(); x++)
-            dev.at(x)->flags |= CvarFlags::DEVELOPMENTONLY;
+            dev.at(x)->flags |= DEVELOPMENTONLY;
 
         for (unsigned x = 0; x < hidden.size(); x++)
-            hidden.at(x)->flags |= CvarFlags::HIDDEN;
+            hidden.at(x)->flags |= HIDDEN;
     }
 
     toggle = config->misc.unhideConvars;
@@ -1675,7 +1675,7 @@ void Misc::watermark() noexcept
         AntiAim::lby_mode_text[config->fakeAngle[AntiAim::latest_moving_flag].enabled
                 ? config->fakeAngle[AntiAim::latest_moving_flag].lbyMode
                 : 0],
-                Fakelag::latest_chocked_packets,
+                Fakelag::latest_choked_packets,
                 config->tickbase.doubletap.isActive() ? " | DT" : "",
                 config->tickbase.hideshots.isActive() ? " | HS" : "",
                 config->tickbase.teleport && (config->tickbase.doubletap.isActive() || config->tickbase.hideshots.isActive()) ? " | TP" : "",
@@ -2161,10 +2161,17 @@ void Misc::removeCrouchCooldown(UserCmd* cmd) noexcept
         cmd->buttons |= UserCmd::IN_BULLRUSH;
 }
 
-void Misc::moonwalk(UserCmd* cmd) noexcept
+void Misc::moonwalk(UserCmd* cmd, bool& send_packet) noexcept
 {
+    const auto net_channel{ interfaces->engine->getNetworkChannel() };
+    if (!net_channel)
+        return;
     if (config->misc.moonwalk && localPlayer && localPlayer->moveType() != MoveType::LADDER)
-        cmd->buttons ^= UserCmd::IN_FORWARD | UserCmd::IN_BACK | UserCmd::IN_MOVELEFT | UserCmd::IN_MOVERIGHT;
+        if (!config->misc.leg_break || !send_packet)
+            cmd->buttons ^= UserCmd::IN_FORWARD | UserCmd::IN_BACK | UserCmd::IN_MOVELEFT | UserCmd::IN_MOVERIGHT;
+        else if (abs(cmd->forwardmove) > 3.f)
+            cmd->buttons |= UserCmd::IN_BACK;
+        else return;
 }
 
 void Misc::playHitSound(GameEvent& event) noexcept

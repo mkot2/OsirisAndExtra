@@ -5,5 +5,5 @@ struct UserCmd;
 namespace Fakelag
 {
     void run(const UserCmd* cmd, bool& sendPacket) noexcept;
-    inline int latest_chocked_packets{};
+    inline int latest_choked_packets{};
 }

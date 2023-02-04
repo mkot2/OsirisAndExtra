@@ -492,7 +492,7 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
     }
     vecArray.emplace_back(center);
 
-    Vector currentAngles = AimbotFunction::calculateRelativeAngle(center, localEyePos, Vector{});
+    Vector currentAngles = calculateRelativeAngle(center, localEyePos, Vector{});
 
     Vector forward;
     Vector::fromAngle(currentAngles, &forward);
@@ -507,7 +507,7 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 
     switch (_hitbox)
     {
-    case Hitboxes::Head:
+    case Head:
         for (auto i = 0; i < 4; ++i)
             vecArray.emplace_back(center);
 
@@ -543,7 +543,8 @@ bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitbox
     const auto weapInaccuracy = activeWeapon->getInaccuracy();
     const auto localEyePosition = localPlayer->getEyePosition();
     const auto range = activeWeapon->getWeaponData()->range;
-
+    bool plz_hit_my_ass = false;
+    
     for (int i = 0; i < maxSeed; i++)
     {
         memory->randomSeed(i + 1);
@@ -556,7 +557,7 @@ bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitbox
                            (sinf(spreadX) * inaccuracy) + (sinf(spreadY) * spread) };
         Vector direction{ (angles.forward + (angles.right * spreadView.x) + (angles.up * spreadView.y)) * range };
 
-        for (int hitbox = 0; hitbox < Hitboxes::Max; hitbox++)
+        for (int hitbox = 0; hitbox < Max; hitbox++)
         {
             if (hitboxIntersection(matrix, hitbox, set, localEyePosition, localEyePosition + direction))
             {
@@ -566,10 +567,56 @@ bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitbox
         }
 
         if (hits >= hitsNeed)
-            return true;
+            plz_hit_my_ass = true;
 
-        if ((maxSeed - i + hits) < hitsNeed)
-            return false;
+        // if ((maxSeed - i + hits) < hitsNeed)
+            // return false;
     }
-    return false;
+    return plz_hit_my_ass;
+}
+
+bool AimbotFunction::relativeHitchance(Entity* localPlayer, Entity* entity, StudioHitboxSet* set, const matrix3x4 matrix[MAXSTUDIOBONES], Entity* activeWeapon, const Vector& destination, const UserCmd* cmd, const float relativeHitchance) noexcept
+{
+    static auto isSpreadEnabled = interfaces->cvar->findVar("weapon_accuracy_nospread");
+    if (!relativeHitchance || isSpreadEnabled->getInt() >= 1)
+        return true;
+
+    constexpr int maxSeed = 255;//default is 255,if you wanna reduce calcu just made it less
+
+    const Angle angles(destination + cmd->viewangles);
+
+    int hits = 0;
+    const int hits_need = static_cast<int>(static_cast<float>(maxSeed) * relativeHitchance);
+    const auto weapSpread = activeWeapon->getSpread();
+    const auto weapInaccuracy = activeWeapon->getInaccuracy();
+    const auto localEyePosition = localPlayer->getEyePosition();
+    const auto range = activeWeapon->getWeaponData()->range;
+    bool plz_hit_my_ass = false;
+    
+    for (int i = 0; i < maxSeed; ++i)
+    {
+        memory->randomSeed(i + 1);
+        const float spreadX = memory->randomFloat(0.f, 2.f * static_cast<float>(M_PI));
+        const float spreadY = memory->randomFloat(0.f, 2.f * static_cast<float>(M_PI));
+        auto inaccuracy = weapInaccuracy * memory->randomFloat(0.f, 1.f);
+        if (inaccuracy == 0.f) inaccuracy = 0.000001f;  // NOLINT(clang-diagnostic-float-equal)
+        auto spread = weapSpread * memory->randomFloat(0.f, 1.f);
+
+        Vector spreadView{ (cosf(spreadX) * inaccuracy) + (cosf(spreadY) * spread),
+                           (sinf(spreadX) * inaccuracy) + (sinf(spreadY) * spread) };
+        Vector direction{ (angles.forward + (angles.right * spreadView.x) + (angles.up * spreadView.y)) * range };
+
+        for (int hitbox = 0; hitbox < Max; hitbox++)
+        {
+            if (hitboxIntersection(matrix, hitbox, set, localEyePosition, localEyePosition + direction))
+            {
+                hits++;
+                break;
+            }
+        }
+
+        if (hits_need * hits < i * (1.f - inaccuracy))
+            plz_hit_my_ass = true;
+    }
+    return plz_hit_my_ass;
 }

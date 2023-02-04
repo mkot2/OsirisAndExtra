@@ -283,7 +283,7 @@ void GUI::renderLegitbotWindow() noexcept
         previewvalue = "";
         for (size_t i = 0; i < ARRAYSIZE(hitboxes); i++)
         {
-            ImGui::Selectable(hitboxes[i], &hitbox[i], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups);
+            ImGui::Selectable(hitboxes[i], &hitbox[i], ImGuiSelectableFlags_DontClosePopups);
         }
         ImGui::EndCombo();
     }
@@ -455,6 +455,8 @@ void GUI::renderRagebotWindow() noexcept
     ImGui::Checkbox("Auto stop", &config->ragebot[currentWeapon].autoStop);
     ImGui::SameLine();
     ImGui::Checkbox("Between shots", &config->ragebot[currentWeapon].betweenShots);
+    ImGui::Checkbox("Full stop", &config->ragebot[currentWeapon].fullStop);
+    ImGui::Checkbox("Duck stop", &config->ragebot[currentWeapon].duckStop);
     ImGui::Checkbox("Disable multipoint if low fps", &config->ragebot[currentWeapon].disableMultipointIfLowFPS);
     ImGui::Checkbox("Disable backtrack if low fps", &config->ragebot[currentWeapon].disableBacktrackIfLowFPS);
     ImGui::Checkbox("Resolver", &config->ragebot[currentWeapon].resolver);
@@ -469,7 +471,7 @@ void GUI::renderRagebotWindow() noexcept
         previewvalue = "";
         for (size_t i = 0; i < ARRAYSIZE(hitboxes); i++)
         {
-            ImGui::Selectable(hitboxes[i], &hitbox[i], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups);
+            ImGui::Selectable(hitboxes[i], &hitbox[i], ImGuiSelectableFlags_DontClosePopups);
         }
         ImGui::EndCombo();
     }
@@ -494,9 +496,14 @@ void GUI::renderRagebotWindow() noexcept
     ImGui::NextColumn();
     ImGui::PushItemWidth(240.0f);
     ImGui::SliderFloat("Fov", &config->ragebot[currentWeapon].fov, 0.0f, 255.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
-    ImGui::SliderInt("Hitchance", &config->ragebot[currentWeapon].hitChance, 0, 100, "%d");
+    ImGui::Checkbox("Relative hitchance", &config->ragebot[currentWeapon].relativeHitchanceSwitch);
+    if (config->ragebot[currentWeapon].relativeHitchanceSwitch)
+        ImGui::SliderFloat("Relative hitchance", &config->ragebot[currentWeapon].relativeHitchance, 0, 1.0f, "%.2f");
+    else
+        ImGui::SliderInt("Absolute hitchance", &config->ragebot[currentWeapon].hitChance, 0, 100, "%d");
+    ImGui::SliderFloat("Accuracy boost", &config->ragebot[currentWeapon].accuracyBoost, 0, 1.0f, "%.2f");
     ImGui::SliderInt("Multipoint", &config->ragebot[currentWeapon].multiPoint, 0, 100, "%d");
-    ImGui::SliderInt("Min damage", &config->ragebot[currentWeapon].minDamage, 0, 101, "%d");
+    ImGui::SliderInt("Min damage", &config->ragebot[currentWeapon].minDamage, 0, 105, "%d");
     config->ragebot[currentWeapon].minDamage = std::clamp(config->ragebot[currentWeapon].minDamage, 0, 250);
     ImGui::PushID("Min damage override Key");
     ImGui::hotkey2("Min damage override Key", config->minDamageOverrideKey);
@@ -511,7 +518,9 @@ void GUI::renderRagebotWindow() noexcept
     ImGui::hotkey2("Hideshots", config->tickbase.hideshots);
     ImGui::PopID();
     ImGui::Checkbox("Teleport on shift", &config->tickbase.teleport);
-
+    ImGui::Checkbox("OnshotFl", &config->tickbase.onshotFl);
+    if (config->tickbase.onshotFl)
+        ImGui::SliderInt("OnshotFl amount", &config->tickbase.onshotFlAmount, 1, 52, "%d");
     ImGui::Columns(1);
 }
 
@@ -637,7 +646,7 @@ void GUI::renderTriggerbotWindow() noexcept
         previewvalue = "";
         for (size_t i = 0; i < ARRAYSIZE(hitboxes); i++)
         {
-            ImGui::Selectable(hitboxes[i], &hitbox[i], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups);
+            ImGui::Selectable(hitboxes[i], &hitbox[i], ImGuiSelectableFlags_DontClosePopups);
         }
         ImGui::EndCombo();
     }
@@ -674,10 +683,10 @@ void GUI::renderFakelagWindow() noexcept
     static int current_category{};
     ImGui::Combo("", &current_category, "Freestanding\0Moving\0Jumping\0Ducking\0Duck-jumping\0Slow-walking\0Fake-ducking\0");
     ImGui::Checkbox("Enabled", &config->fakelag[current_category].enabled);
-    ImGui::Combo("Mode", &config->fakelag[current_category].mode, "Static\0Adaptative\0Random\0");
+    ImGui::Combo("Mode", &config->fakelag[current_category].mode, "Static\0Adaptive\0Random\0m1tZw tank\0Another tank");
     ImGui::PushItemWidth(220.0f);
-    ImGui::SliderInt("Limit", &config->fakelag[current_category].limit, 1, 16, "%d");
-    ImGui::SliderInt("Random min limit", &config->fakelag[current_category].randomMinLimit, 1, 16, "%d");
+    ImGui::SliderInt("Limit", &config->fakelag[current_category].limit, 1, 21, "%d");
+    ImGui::SliderInt("Random min limit", &config->fakelag[current_category].randomMinLimit, 1, 21, "%d");
     ImGui::PopItemWidth();
     ImGui::NextColumn();
     ImGui::Columns(1);
@@ -754,8 +763,20 @@ void GUI::renderFakeAngleWindow() noexcept
     ImGui::SliderInt("Right limit", &config->fakeAngle[current_category].rightLimit, 0, 60, "%d");
     ImGui::PopItemWidth();
 
-    ImGui::Combo("Mode", &config->fakeAngle[current_category].peekMode, "Off\0Peek real\0Peek fake\0Jitter\0");
+    ImGui::Combo("Mode", &config->fakeAngle[current_category].peekMode, "Off\0Peek real\0Peek fake\0Jitter\0Switch\0");
     ImGui::Combo("Lby mode", &config->fakeAngle[current_category].lbyMode, "Normal\0Opposite\0Sway\0");
+    ImGui::Checkbox("Roll", &config->rageAntiAim[current_category].roll);
+    if (config->rageAntiAim[current_category].roll) {
+        ImGui::SliderInt("Roll add", &config->rageAntiAim[current_category].rollAdd, -90, 90, "%d");
+        ImGui::SliderInt("Roll jitter", &config->rageAntiAim[current_category].rollOffset, -90, 90, "%d");
+
+        ImGui::Checkbox("Using exploit pitch", &config->rageAntiAim[current_category].exploitPitchSwitch);
+        if (config->rageAntiAim[current_category].exploitPitchSwitch)
+            ImGui::SliderInt("Exploit pitch", &config->rageAntiAim[current_category].exploitPitch, -180, 180, "%d");
+        else
+            ImGui::SliderInt("Roll pitch", &config->rageAntiAim[current_category].rollPitch, -180, 180, "%d");
+        ImGui::Checkbox("Alternative roll", &config->rageAntiAim[current_category].rollAlt);
+    }
 
     ImGui::NextColumn();
     ImGui::Columns(1);
@@ -1729,6 +1750,8 @@ void GUI::renderMiscWindow() noexcept
     ImGui::Checkbox("Bunny hop", &config->misc.bunnyHop);
     ImGui::Checkbox("Fast duck", &config->misc.fastDuck);
     ImGui::Checkbox("Moonwalk", &config->misc.moonwalk);
+    ImGui::SameLine();
+    ImGui::Checkbox("Break", &config->misc.leg_break);
     ImGui::Checkbox("Knifebot", &config->misc.knifeBot);
     ImGui::SameLine();
     ImGui::Combo("Mode", &config->misc.knifeBotMode, "Trigger\0Rage\0");
@@ -2097,7 +2120,7 @@ void GUI::renderMiscWindow() noexcept
             previewvalueutility = "";
             for (size_t i = 0; i < ARRAYSIZE(utilities); i++)
             {
-                ImGui::Selectable(utility[i], &utilities[i], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups);
+                ImGui::Selectable(utility[i], &utilities[i], ImGuiSelectableFlags_DontClosePopups);
             }
             ImGui::EndCombo();
         }
@@ -2129,7 +2152,7 @@ void GUI::renderMiscWindow() noexcept
             previewvaluenades = "";
             for (size_t i = 0; i < ARRAYSIZE(nading); i++)
             {
-                ImGui::Selectable(nades[i], &nading[i], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups);
+                ImGui::Selectable(nades[i], &nading[i], ImGuiSelectableFlags_DontClosePopups);
             }
             ImGui::EndCombo();
         }
@@ -2174,7 +2197,7 @@ void GUI::renderMiscWindow() noexcept
             previewvaluemode = "";
             for (size_t i = 0; i < ARRAYSIZE(modes); i++)
             {
-                ImGui::Selectable(mode[i], &modes[i], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups);
+                ImGui::Selectable(mode[i], &modes[i], ImGuiSelectableFlags_DontClosePopups);
             }
             ImGui::EndCombo();
         }
@@ -2206,7 +2229,7 @@ void GUI::renderMiscWindow() noexcept
             previewvalueevent = "";
             for (size_t i = 0; i < ARRAYSIZE(events); i++)
             {
-                ImGui::Selectable(event[i], &events[i], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups);
+                ImGui::Selectable(event[i], &events[i], ImGuiSelectableFlags_DontClosePopups);
             }
             ImGui::EndCombo();
         }

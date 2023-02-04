@@ -121,7 +121,7 @@ public:
 
     KeyBind(KeyCode keyCode) noexcept;
     KeyBind(const char* keyName) noexcept;
-    KeyBind(const std::string name, KeyMode keyMode = KeyMode::Always) noexcept;
+    KeyBind(const std::string name, KeyMode keyMode = Always) noexcept;
 
     bool operator==(KeyCode keyCode) const noexcept { return this->keyCode == keyCode; }
     bool operator==(const KeyBind& other) const noexcept { return this->keyCode == other.keyCode && this->keyMode == other.keyMode; }
@@ -129,7 +129,7 @@ public:
     const char* toString() const noexcept;
     bool isPressed() const noexcept;
     bool isDown() const noexcept;
-    bool isSet() const noexcept { return keyCode != KeyCode::NONE; }
+    bool isSet() const noexcept { return keyCode != NONE; }
 
     bool setToPressedKey() noexcept;
 
@@ -141,9 +141,9 @@ public:
     bool canShowKeybind() noexcept;
     void showKeybind() noexcept;
 
-    void reset() noexcept { keyCode = KeyCode::NONE; }
+    void reset() noexcept { keyCode = NONE; }
 
-    KeyMode keyMode = KeyMode::Always;
+    KeyMode keyMode = Always;
     std::string activeName = { };
 private:
     KeyCode keyCode;

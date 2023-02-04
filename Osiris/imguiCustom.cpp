@@ -164,8 +164,8 @@ void ImGui::progressBarFullWidth(float fraction, float height) noexcept
 
 void ImGui::textUnformattedCentered(const char* text) noexcept
 {
-    ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(text).x) / 2.0f);
-    ImGui::TextUnformatted(text);
+	SetCursorPosX((GetWindowSize().x - CalcTextSize(text).x) / 2.0f);
+	TextUnformatted(text);
 }
 
 bool ImGui::SelectableWithBullet(const char* label, ImU32 bulletColor, bool selected, ImGuiSelectableFlags flags, const ImVec2& size_arg)
@@ -324,7 +324,7 @@ void ImGui::hotkey(const char* label, KeyBind& key, float samelineOffset, const 
     SameLine(samelineOffset);
 
     if (GetActiveID() == id) {
-        PushStyleColor(ImGuiCol_Button, ImGui::GetColorU32(ImGuiCol_ButtonActive));
+        PushStyleColor(ImGuiCol_Button, GetColorU32(ImGuiCol_ButtonActive));
         Button("...", size);
         PopStyleColor();
 
@@ -344,83 +344,83 @@ void ImGui::hotkey(const char* label, KeyBind& key, float samelineOffset, const 
 
 void ImGui::hotkey2(const char* label, KeyBind& key, float samelineOffset, const ImVec2& size) noexcept
 {
-    const auto id = ImGui::GetID(label);
+    const auto id = GetID(label);
 
-    ImGui::PushID(label);
+    PushID(label);
 
-    if (ImGui::GetActiveID() == id)
+    if (GetActiveID() == id)
     {
-        ImGui::Button("...");
+	    Button("...");
         if (key.setToPressedKey())
-            ImGui::ClearActiveID();
+	        ClearActiveID();
     }
     else
     {
-        if (key.keyMode == KeyMode::Always)
+        if (key.keyMode == Always)
         {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetColorU32(ImGuiCol_TextDisabled));
-            ImGui::ButtonEx("On", {}, ImGuiButtonFlags_Disabled);
-            ImGui::PopStyleColor();
+	        PushStyleColor(ImGuiCol_Text, GetColorU32(ImGuiCol_TextDisabled));
+	        ButtonEx("On", {}, ImGuiButtonFlags_Disabled);
+	        PopStyleColor();
         }
-        else if (key.keyMode == KeyMode::Off)
+        else if (key.keyMode == Off)
         {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetColorU32(ImGuiCol_TextDisabled));
-            ImGui::ButtonEx("Off", {}, ImGuiButtonFlags_Disabled);
-            ImGui::PopStyleColor();
+	        PushStyleColor(ImGuiCol_Text, GetColorU32(ImGuiCol_TextDisabled));
+	        ButtonEx("Off", {}, ImGuiButtonFlags_Disabled);
+	        PopStyleColor();
         }
         else if (key.isSet())
         {
-            if (ImGui::Button(key.toString(), size))
-                ImGui::SetActiveID(id, ImGui::GetCurrentWindow());
+            if (Button(key.toString(), size))
+	            SetActiveID(id, GetCurrentWindow());
         }
         else
         {
-            if (ImGui::Button("Bind"))
-                ImGui::SetActiveID(id, ImGui::GetCurrentWindow());
+            if (Button("Bind"))
+	            SetActiveID(id, GetCurrentWindow());
         }
 
-        if (ImGui::BeginPopup("##mode", ImGuiWindowFlags_AlwaysUseWindowPadding))
+        if (BeginPopup("##mode", ImGuiWindowFlags_AlwaysUseWindowPadding))
         {
-            bool selected = key.keyMode == KeyMode::Off;
-            ImGui::Selectable("Off", &selected);
+            bool selected = key.keyMode == Off;
+            Selectable("Off", &selected);
             if (selected)
-                key.keyMode = KeyMode::Off;
+                key.keyMode = Off;
 
-            selected = key.keyMode == KeyMode::Always;
-            ImGui::Selectable("Always", &selected);
+            selected = key.keyMode == Always;
+            Selectable("Always", &selected);
             if (selected)
-                key.keyMode = KeyMode::Always;
+                key.keyMode = Always;
 
-            selected = key.keyMode == KeyMode::Hold;
-            ImGui::Selectable("Hold", &selected);
+            selected = key.keyMode == Hold;
+            Selectable("Hold", &selected);
             if (selected)
-                key.keyMode = KeyMode::Hold;
+                key.keyMode = Hold;
 
-            selected = key.keyMode == KeyMode::Toggle;
-            ImGui::Selectable("Toggle", &selected);
+            selected = key.keyMode == Toggle;
+            Selectable("Toggle", &selected);
             if (selected)
-                key.keyMode = KeyMode::Toggle;
+                key.keyMode = Toggle;
 
-            if (ImGui::Selectable("Unset"))
+            if (Selectable("Unset"))
                 key.reset();
 
-            ImGui::EndPopup();
+            EndPopup();
         }
-        else if (ImGui::IsItemHovered())
+        else if (IsItemHovered())
         {
-            ImGui::SetTooltip("Right click for options");
+	        SetTooltip("Right click for options");
 
-            if (ImGui::GetIO().MouseClicked[1])
-                ImGui::OpenPopup("##mode");
+            if (GetIO().MouseClicked[1])
+	            OpenPopup("##mode");
         }
     }
 
-    ImGui::SameLine();
+    SameLine();
 
-    ImGui::AlignTextToFramePadding();
+    AlignTextToFramePadding();
     if (std::strncmp(label, "##", 2))
-        ImGui::TextUnformatted(label, std::strstr(label, "##"));
-    ImGui::PopID();
+	    TextUnformatted(label, std::strstr(label, "##"));
+    PopID();
 }
 
 bool ImGui::smallButtonFullWidth(const char* label, bool disabled) noexcept
@@ -429,7 +429,7 @@ bool ImGui::smallButtonFullWidth(const char* label, bool disabled) noexcept
     float backup_padding_y = g.Style.FramePadding.y;
     g.Style.FramePadding.y = 0.0f;
     if (disabled)
-        PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+        PushStyleVar(ImGuiStyleVar_Alpha, GetStyle().Alpha * 0.5f);
     bool pressed = ButtonEx(label, ImVec2(-1, 0), ImGuiButtonFlags_AlignTextBaseLine | (disabled ? ImGuiButtonFlags_Disabled : 0));
     if (disabled)
         PopStyleVar();

@@ -28,8 +28,8 @@ void resetMatrix(Entity* entity, matrix3x4* boneCacheData, Vector origin, Vector
 int getMaxUserCmdProcessTicks() noexcept
 {
     if (const auto gameRules = (*memory->gameRules); gameRules)
-        return (gameRules->isValveDS()) ? 8 : 16;
-    return 16;
+        return (gameRules->isValveDS()) ? 8 : 21;
+    return 21;
 }
 
 GameMode getGameMode() noexcept

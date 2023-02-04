@@ -425,7 +425,7 @@ const std::vector<SkinChanger::PaintKit>& SkinChanger::getGloveKits() noexcept
 
 const std::vector<SkinChanger::PaintKit>& SkinChanger::getStickerKits() noexcept
 {
-    static std::vector<SkinChanger::PaintKit> stickerKits;
+    static std::vector<PaintKit> stickerKits;
     if (stickerKits.empty()) {
         const auto& stickerMap = memory->itemSystem()->getItemSchema()->stickerKits;
 
@@ -465,7 +465,7 @@ const std::vector<SkinChanger::Quality>& SkinChanger::getQualities() noexcept
 
 const std::vector<SkinChanger::Item>& SkinChanger::getGloveTypes() noexcept
 {
-    static std::vector<SkinChanger::Item> gloveTypes;
+    static std::vector<Item> gloveTypes;
     if (gloveTypes.empty()) {
         gloveTypes.emplace_back(WeaponId{}, "Default");
 
@@ -481,7 +481,7 @@ const std::vector<SkinChanger::Item>& SkinChanger::getGloveTypes() noexcept
 
 const std::vector<SkinChanger::Item>& SkinChanger::getKnifeTypes() noexcept
 {
-    static std::vector<SkinChanger::Item> knifeTypes;
+    static std::vector<Item> knifeTypes;
     if (knifeTypes.empty()) {
         knifeTypes.emplace_back(WeaponId{}, "Default");
 

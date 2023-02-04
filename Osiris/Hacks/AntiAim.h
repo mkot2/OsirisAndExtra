@@ -35,7 +35,8 @@ namespace AntiAim
         "Off",
         "Peek Real",
         "Peek Fake",
-        "Jitter"
+        "Jitter",
+        "Switch"
     };
 
     inline const char* lby_mode_text[]

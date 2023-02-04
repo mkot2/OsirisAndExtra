@@ -25,7 +25,7 @@ void Glow::render() noexcept
 
     auto& glow = config->glow;
 
-    Glow::clearCustomObjects();
+    clearCustomObjects();
 
     if (!config->glowKey.isActive())
         return;

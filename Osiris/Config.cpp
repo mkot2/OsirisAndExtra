@@ -268,12 +268,17 @@ static void from_json(const json& j, Config::Ragebot& r)
     read(j, "Auto scope", r.autoScope);
     read(j, "Auto stop", r.autoStop);
     read(j, "Between shots", r.betweenShots);
+    read(j, "Full stop", r.fullStop);
+    read(j, "Duck stop", r.duckStop);
     read(j, "Disable multipoint if low fps", r.disableMultipointIfLowFPS);
     read(j, "Disable backtrack if low fps", r.disableBacktrackIfLowFPS);
     read(j, "Priority", r.priority);
     read(j, "Fov", r.fov);
     read(j, "Hitboxes", r.hitboxes);
+    read(j, "Relative hitchance switch", r.relativeHitchanceSwitch);
     read(j, "Hitchance", r.hitChance);
+    read(j, "Relative hitchance", r.relativeHitchance);
+    read(j, "Accuracy boost", r.accuracyBoost);
     read(j, "Multipoint", r.multiPoint);
     read(j, "Min damage", r.minDamage);
     read(j, "Min damage override", r.minDamageOverride);
@@ -312,6 +317,13 @@ static void from_json(const json& j, Config::RageAntiAimConfig& a)
     read(j, "Jitter Range", a.jitterRange);
     read(j, "Spin base", a.spinBase);
     read(j, "At targets", a.atTargets);
+    read(j, "Roll", a.roll);
+    read(j, "Roll add", a.rollAdd);
+    read(j, "Roll offset", a.rollOffset);
+    read(j, "Roll pitch", a.rollPitch);
+    read(j, "Exploit pitch switch", a.exploitPitchSwitch);
+    read(j, "Exploit pitch", a.exploitPitch);
+    read(j, "Roll alt", a.rollAlt);
 }
 
 static void from_json(const json& j, Config::FakeAngle& a)
@@ -336,6 +348,9 @@ static void from_json(const json& j, Config::Tickbase& t)
     read(j, "Doubletap", t.doubletap);
     read(j, "Hideshots", t.hideshots);
     read(j, "Teleport", t.teleport);
+    read(j, "OnshotFl", t.onshotFl);
+    read(j, "OnshotFl amount", t.onshotFlAmount);
+    read(j, "Onshot desync", t.onshotDesync);
 }
 
 static void from_json(const json& j, Config::Backtrack& b)
@@ -662,6 +677,7 @@ static void from_json(const json& j, Config::Misc& m)
     read(j, "Animated clan tag", m.animatedClanTag);
     read(j, "Fast duck", m.fastDuck);
     read(j, "Moonwalk", m.moonwalk);
+    read(j, "Leg break", m.leg_break);
     read(j, "Knifebot", m.knifeBot);
     read(j, "Knifebot mode", m.knifeBotMode);
     read(j, "Block bot", m.blockBot);
@@ -810,7 +826,7 @@ void Config::load(const char8_t* name, bool incremental) noexcept
     read<value_t::object>(j, "ESP", streamProofESP);
     read<value_t::object>(j, "Visuals", visuals);
     read(j, "Skin changer", skinChanger);
-    ::Sound::fromJson(j["Sound"]);
+    Sound::fromJson(j["Sound"]);
     read<value_t::object>(j, "Misc", misc);
 }
 
@@ -995,12 +1011,17 @@ static void to_json(json& j, const Config::Ragebot& o, const Config::Ragebot& du
     WRITE("Auto stop", autoStop);
     WRITE("Resolver", resolver);
     WRITE("Between shots", betweenShots);
+    WRITE("Full stop", fullStop);
+    WRITE("Duck stop", duckStop);
     WRITE("Disable multipoint if low fps", disableMultipointIfLowFPS);
     WRITE("Disable backtrack if low fps", disableMultipointIfLowFPS);
     WRITE("Priority", priority);
     WRITE("Fov", fov);
     WRITE("Hitboxes", hitboxes);
+    WRITE("Relative hitchance switch", relativeHitchanceSwitch);
     WRITE("Hitchance", hitChance);
+    WRITE("Relative hitchance", relativeHitchance);
+    WRITE("Accuracy boost", accuracyBoost);
     WRITE("Multipoint", multiPoint);
     WRITE("Min damage", minDamage);
     WRITE("Min damage override", minDamageOverride);
@@ -1097,6 +1118,13 @@ static void to_json(json& j, const Config::RageAntiAimConfig& o, const Config::R
     WRITE("Jitter Range", jitterRange);
     WRITE("Spin base", spinBase);
     WRITE("At targets", atTargets);
+    WRITE("Roll", roll);
+    WRITE("Roll add", rollAdd);
+    WRITE("Roll offset", rollOffset);
+    WRITE("Roll pitch", rollPitch);
+    WRITE("Exploit pitch switch", exploitPitchSwitch);
+    WRITE("Exploit pitch", exploitPitch);
+    WRITE("Roll alt", rollAlt);
 }
 
 static void to_json(json& j, const Config::FakeAngle& o, const Config::FakeAngle& dummy = {})
@@ -1121,6 +1149,9 @@ static void to_json(json& j, const Config::Tickbase& o, const Config::Tickbase& 
     WRITE("Doubletap", doubletap);
     WRITE("Hideshots", hideshots);
     WRITE("Teleport", teleport);
+    WRITE("OnshotFl", onshotFl);
+    WRITE("OnshotFl Amount", onshotFlAmount);
+    WRITE("Onshot desync", onshotDesync);
 }
 
 static void to_json(json& j, const Config::Backtrack& o, const Config::Backtrack& dummy = {})
@@ -1323,6 +1354,7 @@ static void to_json(json& j, const Config::Misc& o)
     WRITE("Animated clan tag", animatedClanTag);
     WRITE("Fast duck", fastDuck);
     WRITE("Moonwalk", moonwalk);
+    WRITE("Leg break", leg_break);
     WRITE("Knifebot", knifeBot);
     WRITE("Knifebot mode", knifeBotMode);
     WRITE("Block bot", blockBot);
@@ -1572,7 +1604,7 @@ void Config::save(size_t id) const noexcept
         j["Chams"] = chams;
         to_json(j["Chams"]["Key"], chamsKey, KeyBind::NONE);
         j["ESP"] = streamProofESP;
-        j["Sound"] = ::Sound::toJson();
+        j["Sound"] = Sound::toJson();
         j["Visuals"] = visuals;
         j["Misc"] = misc;
         j["Skin changer"] = skinChanger;
@@ -1638,7 +1670,8 @@ void Config::listConfigs() noexcept
 
 void Config::createConfigDir() const noexcept
 {
-    std::error_code ec; std::filesystem::create_directory(path, ec);
+    std::error_code ec;
+    create_directory(path, ec);
 }
 
 void Config::openConfigDir() const noexcept

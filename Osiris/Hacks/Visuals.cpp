@@ -1411,7 +1411,7 @@ void Visuals::updateInput() noexcept
 void Visuals::reset(int resetType) noexcept
 {
     shotRecord.clear();
-    Visuals::transparentWorld(resetType);
+    transparentWorld(resetType);
     if (resetType == 1)
     {
         //Reset convars

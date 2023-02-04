@@ -136,7 +136,7 @@ namespace Animations
 	};
 	Players getPlayer(int index) noexcept;
 	Players* setPlayer(int index) noexcept;
-	std::array<Animations::Players, 65> getPlayers() noexcept;
-	std::array<Animations::Players, 65>* setPlayers() noexcept;
+	std::array<Players, 65> getPlayers() noexcept;
+	std::array<Players, 65>* setPlayers() noexcept;
 	const std::deque<Players::Record>* getBacktrackRecords(int index) noexcept;
 }

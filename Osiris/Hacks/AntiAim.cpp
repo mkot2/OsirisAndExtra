@@ -171,7 +171,7 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
             }
 
             if (config->rageAntiAim[static_cast<int>(moving_flag)].yawBase != Yaw::spin)
-                static_yaw = 0.f;
+                static_yaw = 1.f;
                 
             switch (config->rageAntiAim[static_cast<int>(moving_flag)].yawBase)
             {
@@ -278,35 +278,57 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
         }
         if (config->fakeAngle[static_cast<int>(moving_flag)].enabled) //Fakeangle
         {
-            if (const auto gameRules = (*memory->gameRules); gameRules)
-                if (getGameMode() != GameMode::Competitive && gameRules->isValveDS())
-                    return;
-
-            bool isInvertToggled = config->invert.isActive();
+            bool is_invert_toggled = config->invert.isActive();
             static bool invert = true;
             if (config->fakeAngle[static_cast<int>(moving_flag)].peekMode != 3)
-                invert = isInvertToggled;
-            float leftDesyncAngle = config->fakeAngle[static_cast<int>(moving_flag)].leftLimit * 2.f;
-            float rightDesyncAngle = config->fakeAngle[static_cast<int>(moving_flag)].rightLimit * -2.f;
+                invert = is_invert_toggled;
+            auto roll_offset_angle = static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].rollOffset);
+            auto pitch_angle = static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].rollPitch);
+            if (config->rageAntiAim[static_cast<int>(moving_flag)].exploitPitchSwitch)
+                pitch_angle = static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].exploitPitch) + 41225040.f * 129600.f;
+            if (config->rageAntiAim[static_cast<int>(moving_flag)].roll && (std::abs(config->rageAntiAim[static_cast<int>(moving_flag)].rollAdd) + std::abs(config->rageAntiAim[static_cast<int>(moving_flag)].rollOffset) < 5 || !config->rageAntiAim[static_cast<int>(moving_flag)].rollAlt || !(cmd->buttons & UserCmd::IN_JUMP || localPlayer->velocity().length2D() > 50.f))) {
+                cmd->viewangles.z = invert ? static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].rollAdd) : static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].rollAdd) * -1.f;
+                if (sendPacket) {
+                    cmd->viewangles.z += invert ? pitch_angle : pitch_angle * -1.f;
+                    if (pitch_angle > 0.01f || pitch_angle < -0.01f)
+                        cmd->viewangles.x = pitch_angle;
+                }
+
+                if (cmd->commandNumber % 2 == 0 || memory->globalVars->tickCount % 3 == 0)
+                    cmd->viewangles.z += invert ? roll_offset_angle : roll_offset_angle * -1.f;
+            }
+            else
+                cmd->viewangles.z = 0.f;
+            if (const auto game_rules{ *memory->gameRules }; game_rules)
+                if (getGameMode() != GameMode::Competitive && game_rules->isValveDS())
+                    return;
+            if (config->tickbase.disabledTickbase && config->tickbase.onshotFl && config->tickbase.lastFireShiftTick > memory->globalVars->tickCount)
+                return;
+            float left_desync_angle = static_cast<float>(config->fakeAngle[static_cast<int>(moving_flag)].leftLimit) * 2.f;
+            float right_desync_angle = static_cast<float>(config->fakeAngle[static_cast<int>(moving_flag)].rightLimit) * -2.f;
 
             switch (config->fakeAngle[static_cast<int>(moving_flag)].peekMode)
             {
             case 0:
                 break;
             case 1: // Peek real
-                if(!isInvertToggled)
+                if(!is_invert_toggled)
                     invert = !autoDirection(cmd->viewangles);
                 else
                     invert = autoDirection(cmd->viewangles);
                 break;
             case 2: // Peek fake
-                if (isInvertToggled)
+                if (is_invert_toggled)
                     invert = !autoDirection(cmd->viewangles);
                 else
                     invert = autoDirection(cmd->viewangles);
                 break;
             case 3: // Jitter
                 if (sendPacket)
+                    invert = !invert;
+                break;
+            case 4: // Switch
+                if (sendPacket && localPlayer->velocity().length2D() > 5.f)
                     invert = !invert;
                 break;
             default:
@@ -327,29 +349,33 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
             case 1: // Opposite (Lby break)
                 if (updateLby())
                 {
-                    cmd->viewangles.y += !invert ? leftDesyncAngle : rightDesyncAngle;
+                    cmd->viewangles.y += !invert ? left_desync_angle : right_desync_angle;
                     sendPacket = false;
                     return;
                 }
                 break;
             case 2: //Sway (flip every lby update)
+            {
                 static bool flip = false;
                 if (updateLby())
                 {
-                    cmd->viewangles.y += !flip ? leftDesyncAngle : rightDesyncAngle;
+                    cmd->viewangles.y += !flip ? left_desync_angle : right_desync_angle;
                     sendPacket = false;
                     flip = !flip;
                     return;
                 }
                 if (!sendPacket)
-                    cmd->viewangles.y += flip ? leftDesyncAngle : rightDesyncAngle;
+                    cmd->viewangles.y += flip ? left_desync_angle : right_desync_angle;
+                break;
+            }
+            default:
                 break;
             }
 
             if (sendPacket)
                 return;
 
-            cmd->viewangles.y += invert ? leftDesyncAngle : rightDesyncAngle;
+            cmd->viewangles.y += invert ? left_desync_angle : right_desync_angle;
         }
     }
 }
@@ -359,7 +385,7 @@ void AntiAim::legit(UserCmd* cmd, const Vector& previousViewAngles, const Vector
     if (cmd->viewangles.y == currentViewAngles.y) 
     {
         invert = config->legitAntiAim.invert.isActive();
-        float desyncAngle = localPlayer->getMaxDesyncAngle() * 2.f;
+        const float desyncAngle = localPlayer->getMaxDesyncAngle() * 2.f;
         if (updateLby() && config->legitAntiAim.extend)
         {
             cmd->viewangles.y += !invert ? desyncAngle : -desyncAngle;
@@ -404,9 +430,9 @@ void AntiAim::run(UserCmd* cmd, const Vector& previousViewAngles, const Vector& 
         return;
 
     if (config->legitAntiAim.enabled)
-        AntiAim::legit(cmd, previousViewAngles, currentViewAngles, sendPacket);
+	    legit(cmd, previousViewAngles, currentViewAngles, sendPacket);
     else if (config->rageAntiAim[static_cast<int>(moving_flag)].enabled || config->fakeAngle[static_cast<int>(moving_flag)].enabled)
-        AntiAim::rage(cmd, previousViewAngles, currentViewAngles, sendPacket);
+	    rage(cmd, previousViewAngles, currentViewAngles, sendPacket);
 }
 
 bool AntiAim::canRun(UserCmd* cmd) noexcept

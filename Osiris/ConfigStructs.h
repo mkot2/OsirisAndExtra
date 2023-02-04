@@ -95,7 +95,7 @@ struct HealthBar : ColorToggle {
         HealthBased
     };
 
-    int type = Type::Gradient;
+    int type = Gradient;
 };
 
 struct Player : Shared {

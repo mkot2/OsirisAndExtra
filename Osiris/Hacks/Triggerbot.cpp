@@ -73,27 +73,27 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 
     lastTime = now;
 
-    std::array<bool, Hitboxes::Max> hitbox{ false };
+    std::array<bool, Max> hitbox{ false };
     {
         // Head
-        hitbox[Hitboxes::Head] = (cfg.hitboxes & 1 << 0) == 1 << 0;
+        hitbox[Head] = (cfg.hitboxes & 1 << 0) == 1 << 0;
         // Chest
-        hitbox[Hitboxes::UpperChest] = (cfg.hitboxes & 1 << 1) == 1 << 1;
-        hitbox[Hitboxes::Thorax] = (cfg.hitboxes & 1 << 1) == 1 << 1;
-        hitbox[Hitboxes::LowerChest] = (cfg.hitboxes & 1 << 1) == 1 << 1;
+        hitbox[UpperChest] = (cfg.hitboxes & 1 << 1) == 1 << 1;
+        hitbox[Thorax] = (cfg.hitboxes & 1 << 1) == 1 << 1;
+        hitbox[LowerChest] = (cfg.hitboxes & 1 << 1) == 1 << 1;
         //Stomach
-        hitbox[Hitboxes::Belly] = (cfg.hitboxes & 1 << 2) == 1 << 2;
-        hitbox[Hitboxes::Pelvis] = (cfg.hitboxes & 1 << 2) == 1 << 2;
+        hitbox[Belly] = (cfg.hitboxes & 1 << 2) == 1 << 2;
+        hitbox[Pelvis] = (cfg.hitboxes & 1 << 2) == 1 << 2;
         //Arms
-        hitbox[Hitboxes::RightUpperArm] = (cfg.hitboxes & 1 << 3) == 1 << 3;
-        hitbox[Hitboxes::RightForearm] = (cfg.hitboxes & 1 << 3) == 1 << 3;
-        hitbox[Hitboxes::LeftUpperArm] = (cfg.hitboxes & 1 << 3) == 1 << 3;
-        hitbox[Hitboxes::LeftForearm] = (cfg.hitboxes & 1 << 3) == 1 << 3;
+        hitbox[RightUpperArm] = (cfg.hitboxes & 1 << 3) == 1 << 3;
+        hitbox[RightForearm] = (cfg.hitboxes & 1 << 3) == 1 << 3;
+        hitbox[LeftUpperArm] = (cfg.hitboxes & 1 << 3) == 1 << 3;
+        hitbox[LeftForearm] = (cfg.hitboxes & 1 << 3) == 1 << 3;
         //Legs
-        hitbox[Hitboxes::RightCalf] = (cfg.hitboxes & 1 << 4) == 1 << 4;
-        hitbox[Hitboxes::RightThigh] = (cfg.hitboxes & 1 << 4) == 1 << 4;
-        hitbox[Hitboxes::LeftCalf] = (cfg.hitboxes & 1 << 4) == 1 << 4;
-        hitbox[Hitboxes::LeftThigh] = (cfg.hitboxes & 1 << 4) == 1 << 4;
+        hitbox[RightCalf] = (cfg.hitboxes & 1 << 4) == 1 << 4;
+        hitbox[RightThigh] = (cfg.hitboxes & 1 << 4) == 1 << 4;
+        hitbox[LeftCalf] = (cfg.hitboxes & 1 << 4) == 1 << 4;
+        hitbox[LeftThigh] = (cfg.hitboxes & 1 << 4) == 1 << 4;
     }
 
     for (int i = 1; i <= interfaces->engine->getMaxClients(); i++)
@@ -139,7 +139,7 @@ void Triggerbot::run(UserCmd* cmd) noexcept
             continue;
         }
 
-        for (int j = 0; j < Hitboxes::Max; j++)
+        for (int j = 0; j < Max; j++)
         {
             if (!hitbox[j])
                 continue;
@@ -234,7 +234,7 @@ void Triggerbot::run(UserCmd* cmd) noexcept
             continue;
         }
 
-        for (int j = 0; j < Hitboxes::Max; j++)
+        for (int j = 0; j < Max; j++)
         {
             if (!hitbox[j])
                 continue;

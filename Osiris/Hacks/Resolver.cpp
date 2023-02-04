@@ -511,10 +511,10 @@ float resolver::resolve_shot(const Animations::Players& player, Entity* entity) 
 
         return fl_left_fire_yaw_delta > fl_right_fire_yaw_delta ? -58.f : 58.f;
     }
-    const float fl_left_fire_yaw_delta = fabsf(Helpers::angleNormalize(fl_pseudo_fire_yaw - (entity->eyeAngles().y + 29.f)));
-    const float fl_right_fire_yaw_delta = fabsf(Helpers::angleNormalize(fl_pseudo_fire_yaw - (entity->eyeAngles().y - 29.f)));
+    const float fl_left_fire_yaw_delta = fabsf(Helpers::angleNormalize(fl_pseudo_fire_yaw - (entity->eyeAngles().y + 28.f)));
+    const float fl_right_fire_yaw_delta = fabsf(Helpers::angleNormalize(fl_pseudo_fire_yaw - (entity->eyeAngles().y - 28.f)));
 
-    return fl_left_fire_yaw_delta > fl_right_fire_yaw_delta ? -29.f : 29.f;
+    return fl_left_fire_yaw_delta > fl_right_fire_yaw_delta ? -28.f : 28.f;
 }
 
 void resolver::setup_detect(Animations::Players& player, Entity* entity) {
@@ -581,15 +581,15 @@ Vector calc_angle(const Vector source, const Vector entity_pos) {
 
 void resolver::anti_one_tap(const int userid, Entity* entity, const Vector shot)
 {
-    std::vector<std::reference_wrapper<const PlayerData>> playersOrdered{ GameData::players().begin(), GameData::players().end() };
-    std::ranges::sort(playersOrdered, [](const PlayerData& a, const PlayerData& b) {
+    std::vector<std::reference_wrapper<const PlayerData>> players_ordered{ GameData::players().begin(), GameData::players().end() };
+    std::ranges::sort(players_ordered, [](const PlayerData& a, const PlayerData& b) {
         // enemies first
         if (a.enemy != b.enemy)
             return a.enemy && !b.enemy;
 
         return a.handle < b.handle;
         });
-    for (const std::reference_wrapper<const PlayerData>& player : playersOrdered) {
+    for (const std::reference_wrapper<const PlayerData>& player : players_ordered) {
         if (player.get().userId == userid && entity->isAlive())
         {
             const Vector pos = shot;

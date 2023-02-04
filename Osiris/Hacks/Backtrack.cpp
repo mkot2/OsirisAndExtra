@@ -73,7 +73,7 @@ void Backtrack::run(UserCmd* cmd) noexcept
 
         for (int j = static_cast<int>(player.backtrackRecords.size() - 1); j >= 0; j--)
         {
-            if (Backtrack::valid(player.backtrackRecords.at(j).simulationTime))
+            if (valid(player.backtrackRecords.at(j).simulationTime))
             {
                 for (auto& position : player.backtrackRecords.at(j).positions) {
                     auto angle = AimbotFunction::calculateRelativeAngle(localPlayerEyePosition, position, cmd->viewangles + aimPunch);

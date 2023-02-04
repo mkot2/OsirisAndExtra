@@ -47,17 +47,22 @@ public:
         bool disableMultipointIfLowFPS{ false };
         bool disableBacktrackIfLowFPS{ false };
         bool betweenShots{ false };
+        bool fullStop{ false };
+        bool duckStop{ false };
         int priority{ 0 };
         float fov{ 0.0f };
         int hitboxes{ 0 };
+        bool relativeHitchanceSwitch{ false };
         int hitChance{ 50 };
+        float relativeHitchance{ 0.85f };
+        float accuracyBoost{ 0.f };
         int multiPoint{ 0 };
         int minDamage{ 1 };
         int minDamageOverride{ 1 };
     };
     std::array<Ragebot, 40> ragebot;
     KeyBind ragebotKey{ std::string("ragebot") };
-    KeyBind minDamageOverrideKey{ std::string("min damage override"), KeyMode::Off };
+    KeyBind minDamageOverrideKey{ std::string("min damage override"), Off};
 
     struct Fakelag {
         bool enabled = false;
@@ -78,6 +83,13 @@ public:
         int spinBase = 0; //-180/180
         int jitterRange = 0;
         bool atTargets = false;
+        bool roll{ false };
+        int rollAdd{ 0 };
+        int rollOffset{ 0 };
+        int rollPitch{ 0 };
+        bool exploitPitchSwitch{ false };
+        int exploitPitch{ 0 };
+        bool rollAlt{ false };
     };
     std::array<RageAntiAimConfig, 7> rageAntiAim;
     KeyBind manualForward{ std::string("manual forward"), Off },
@@ -97,9 +109,16 @@ public:
     KeyBind invert{ std::string("fake angle invert") };
 
     struct Tickbase {
-        KeyBind doubletap{ std::string("doubletap"), KeyMode::Off };
-        KeyBind hideshots{ std::string("hideshots"), KeyMode::Off };
+        KeyBind doubletap{ std::string("doubletap"), Off};
+        KeyBind hideshots{ std::string("hideshots"), Off};
         bool teleport{ false };
+        bool onshotFl{ false };
+        int onshotFlAmount{ 1 };
+        bool onshotDesync{ false };
+
+        bool disabledTickbase{};
+        int lastFireShiftTick{};
+        bool readyFire{};
     } tickbase;
 
     struct LegitAntiAimConfig {
@@ -326,7 +345,7 @@ public:
     std::array<item_setting, 36> skinChanger;
 
     struct Misc {
-        Misc() { clanTag[0] = '\0'; name[0] = '\0'; menuKey.keyMode = KeyMode::Toggle; }
+        Misc() { clanTag[0] = '\0'; name[0] = '\0'; menuKey.keyMode = Toggle; }
 
         KeyBind menuKey = KeyBind::INSERT;
         bool antiAfkKick{ false };
@@ -342,6 +361,7 @@ public:
         bool knifeBot{ false };
         int knifeBotMode{ 0 };
         bool moonwalk{ false };
+        bool leg_break{ false };
         bool blockBot{ false };
         KeyBind blockBotKey{ std::string("block bot") };
         bool edgeJump{ false };
