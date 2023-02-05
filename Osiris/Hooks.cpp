@@ -538,7 +538,6 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
         Misc::unlockHiddenCvars();
         Misc::forceRelayCluster();
         Misc::preserveKillfeed();
-        Visuals::colorWorld();
         Misc::disablePanoramablur();
         Misc::updateEventListeners();
         Visuals::updateEventListeners();
@@ -1244,6 +1243,69 @@ static void __cdecl clMoveHook(float frameTime, bool isFinalTick) noexcept
     Tickbase::resetTickshift();
 }
 
+static void __fastcall getColorModulationHook(void* thisPointer, void* edx, float* r, float* g, float* b) noexcept
+{
+    static auto original = hooks->getColorModulation.getOriginal<void>(r, g, b);
+
+    original(thisPointer, r, g, b);
+
+    if (!config->visuals.world.enabled && !config->visuals.sky.enabled && !config->visuals.props.enabled)
+        return;
+
+    const auto mat = reinterpret_cast<Material*>(thisPointer);
+    if (!mat || mat->isErrorMaterial() || mat->getReferenceCount() < 1)
+        return;
+
+    if (config->visuals.world.enabled && std::strstr(mat->getTextureGroupName(), "World"))
+    {
+        if (config->visuals.world.rainbow)
+        {
+            const auto [colorR, colorG, colorB] { rainbowColor(config->visuals.world.rainbowSpeed) };
+            *r *= colorR;
+            *g *= colorG;
+            *b *= colorB;
+        }
+        else
+        {
+            *r *= config->visuals.world.color.at(0);
+            *g *= config->visuals.world.color.at(1);
+            *b *= config->visuals.world.color.at(2);
+        }
+    }
+    else if (config->visuals.props.enabled && std::strstr(mat->getTextureGroupName(), "StaticProp"))
+    {
+        if (config->visuals.props.rainbow)
+        {
+            const auto [colorR, colorG, colorB] { rainbowColor(config->visuals.props.rainbowSpeed) };
+            *r *= colorR;
+            *g *= colorG;
+            *b *= colorB;
+        }
+        else
+        {
+            *r *= config->visuals.props.color.at(0);
+            *g *= config->visuals.props.color.at(1);
+            *b *= config->visuals.props.color.at(2);
+        }
+    }
+    else if (config->visuals.sky.enabled && std::strstr(mat->getTextureGroupName(), "SkyBox"))
+    {
+        if (config->visuals.sky.rainbow)
+        {
+            const auto [colorR, colorG, colorB] { rainbowColor(config->visuals.sky.rainbowSpeed) };
+            *r *= colorR;
+            *g *= colorG;
+            *b *= colorB;
+        }
+        else
+        {
+            *r *= config->visuals.sky.color.at(0);
+            *g *= config->visuals.sky.color.at(1);
+            *b *= config->visuals.sky.color.at(2);
+        }
+    }
+}
+
 static void __fastcall updateFlashBangEffectHook(void* thisPointer, void* edx) noexcept
 {
     const auto entity = reinterpret_cast<Entity*>(thisPointer);
@@ -1359,7 +1421,7 @@ static bool __stdcall isDepthOfFieldEnabledHook() noexcept
 
 static bool __fastcall isUsingStaticPropDebugModesHook(void* thisPointer, void* edx) noexcept
 {
-    return config->visuals.world.enabled || config->visuals.asusProps != 100;
+    return config->visuals.props.enabled || config->visuals.asusProps != 100;
 }
 
 static char __fastcall newFunctionClientBypass(void* thisPointer, void* edx, const char* moduleName) noexcept
@@ -1517,7 +1579,8 @@ void Hooks::install() noexcept
     modifyEyePosition.detour(memory->modifyEyePosition, modifyEyePositionHook);
     calculateView.detour(memory->calculateView, calculateViewHook);
     checkForSequenceChange.detour(memory->checkForSequenceChange, checkForSequenceChangeHook);
-    
+
+    getColorModulation.detour(memory->getColorModulation, getColorModulationHook);
     isUsingStaticPropDebugModes.detour(memory->isUsingStaticPropDebugModes, isUsingStaticPropDebugModesHook);
 
     traceFilterForHeadCollision.detour(memory->traceFilterForHeadCollision, traceFilterForHeadCollisionHook);
