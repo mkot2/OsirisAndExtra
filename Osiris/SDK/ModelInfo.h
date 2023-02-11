@@ -40,6 +40,29 @@ enum class Hitbox {
     Max
 };
 
+inline const char* hitbox_text[]
+{
+    "Head",
+    "Neck",
+    "Pelvis",
+    "Belly",
+    "Thorax",
+    "Lower Chest",
+    "Upper Chest",
+    "Right Thigh",
+    "Left Thigh",
+    "Right Calf",
+    "Left Calf",
+    "Right Foot",
+    "Left Foot",
+    "Right Hand",
+    "Left Hand",
+    "Right Upper Arm",
+    "Right Forearm",
+    "Left Upper Arm",
+    "Left Forearm"
+};
+
 enum Hitboxes {
     Head,
     Neck,

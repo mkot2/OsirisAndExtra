@@ -63,6 +63,21 @@ namespace HitGroup {
         Gear = 10
     };
 
+    inline const char* invalid{ "Invalid" };
+    inline const char* hitgroup_text[]
+    {
+        "Generic",
+        "Head",
+        "Chest",
+        "Stomach",
+        "Left Arm",
+        "Right Arm",
+        "Left Leg",
+        "Right Leg",
+        "",
+        "",
+        "Gear"
+    };
     float getDamageMultiplier(int hitGroup, const WeaponInfo* weaponData, bool hasHeavyArmor, int teamNumber) noexcept;
     bool isArmored(int hitGroup, bool helmet, int armorValue, bool hasHeavyArmor) noexcept;
 }

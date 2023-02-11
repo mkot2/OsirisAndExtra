@@ -108,7 +108,7 @@ void resolver::get_event(GameEvent* event) noexcept
         if (desync_angle != 0.f && hitgroup == HitGroup::Head)
             Animations::setPlayer(index)->workingangle = desync_angle;
         const auto entity = interfaces->entityList->getEntity(playerIndex);
-        Logger::addLog(std::format("Resolver: Hit {}, using Angle: {}", entity->getPlayerName(), desync_angle));
+        Logger::addLog(std::format("Resolver: Hit {}{}, Hitgroup {}, Desync Angle: {}", entity->getPlayerName(), backtrackRecord > 0 ? std::format(", BT[{}]", backtrackRecord) : "", HitGroup::hitgroup_text[hitgroup], desync_angle));
         if (!entity->isAlive())
             desync_angle = 0.f;
         snapshots.pop_front(); //Hit somebody so don't calculate
@@ -120,16 +120,13 @@ void resolver::get_event(GameEvent* event) noexcept
             break;
 
         auto& [player, model, eyePosition, bulletImpact, gotImpact, time, playerIndex, backtrackRecord] = snapshots.front();
-        if (event->getInt("userid") == localPlayer->getUserId())
+        if (event->getInt("userid") == localPlayer->getUserId() && !gotImpact)
         {
-            if (!gotImpact)
-            {
-                time = memory->globalVars->serverTime();
-                bulletImpact = Vector{ event->getFloat("x"), event->getFloat("y"), event->getFloat("z") };
-                gotImpact = true;
-            }
+            time = memory->globalVars->serverTime();
+            bulletImpact = Vector{event->getFloat("x"), event->getFloat("y"), event->getFloat("z")};
+            gotImpact = true;
         }
-        else if (player.shot)
+        if (player.shot)
             anti_one_tap(event->getInt("userid"), interfaces->entityList->getEntity(playerIndex), Vector{ event->getFloat("x"),event->getFloat("y"),event->getFloat("z") });
         break;
     }
@@ -190,10 +187,12 @@ void resolver::process_missed_shots() noexcept
     const auto angle = AimbotFunction::calculateRelativeAngle(eyePosition, bulletImpact, Vector{ });
     const auto end = bulletImpact + Vector::fromAngle(angle) * 2000.f;
 
-    const matrix3x4* matrix;
-    try
-    {
-        matrix = backtrackRecord == -1 ? player.matrix.data() : player.backtrackRecords.at(backtrackRecord).matrix;
+    const matrix3x4* matrix{};
+    try {
+        matrix = backtrackRecord == -1 || player.backtrackRecords.size() < static_cast<unsigned int>(
+            backtrackRecord) - 1
+            ? player.matrix.data()
+            : player.backtrackRecords.at(backtrackRecord).matrix;
     }
     catch (const std::out_of_range&)
     {
@@ -203,7 +202,6 @@ void resolver::process_missed_shots() noexcept
     bool resolver_missed = false;
 
     for (int hitbox = 0; hitbox < Max; hitbox++)
-    {
         if (AimbotFunction::hitboxIntersection(matrix, hitbox, set, eyePosition, end))
         {
             resolver_missed = true;
@@ -212,11 +210,10 @@ void resolver::process_missed_shots() noexcept
             Animations::setPlayer(playerIndex)->misses++;
             if (!std::ranges::count(player.blacklisted, desync_angle))
                 player.blacklisted.push_back(desync_angle);
-            Logger::addLog(std::format("Resolver: Missed {} shots to {} due to resolver{}, Angle: {}", player.misses + 1, entity->getPlayerName(), backtrackRecord > 0 ? std::format(", BT[{}]", backtrackRecord) : "", desync_angle));
+            Logger::addLog(std::format("Resolver: Missed {} shots to {} due to resolver{}, Hitbox: {}, Desync Angle: {}", player.misses + 1, entity->getPlayerName(), backtrackRecord > 0 ? std::format(", BT[{}]", backtrackRecord) : "", hitbox_text[hitbox], desync_angle));
             desync_angle = 0;
             break;
         }
-    }
     if (!resolver_missed)
         Logger::addLog(std::format("Resolver: Missed {} due to spread", entity->getPlayerName()));
 }
@@ -434,12 +431,10 @@ void resolver::detect_side(Entity* entity, int* side) {
     interfaces->engineTrace->traceRay(Ray(src_3d - right * 35, dst_3d - right * 35), 0x200400B, { entity }, tr);
 
     /* fix side */
-    if (const float left_two = (tr.endpos - tr.startpos).length(); left_two > right_two) {
+    if (const float left_two = (tr.endpos - tr.startpos).length(); left_two > right_two)
         *side = -1;
-    }
-    else if (right_two > left_two) {
+    else if (right_two > left_two)
         *side = 1;
-    }
     else
         *side = 0;
 }
@@ -450,41 +445,34 @@ void resolver::resolve_entity(const Animations::Players& player, Entity* entity)
     int index = 0;
     const float eye_yaw = entity->getAnimstate()->eyeYaw;
     if (const bool extended = player.extended; !extended && fabs(max_rotation) > 60.f)
-    {
         max_rotation = max_rotation / 1.8f;
-    }
 
     // resolve shooting players separately.
-    if (player.shot) {
+    if (player.shot)
+    {
         entity->getAnimstate()->footYaw = eye_yaw + resolve_shot(player, entity);
         return;
     }
-    if (entity->velocity().length2D() <= 0.1f) {
+    if (entity->velocity().length2D() <= 0.1f)
+    {
         const float angle_difference = Helpers::angleDiff(eye_yaw, entity->getAnimstate()->footYaw);
         index = 2 * angle_difference <= 0.0f ? 1 : -1;
     }
-    else
-    {
-        if (!static_cast<int>(player.layers[12].weight * 1000.f) && entity->velocity().length2D() > 0.1f) {
-            const auto m_layer_delta1 = abs(player.layers[6].playbackRate - player.oldlayers[6].playbackRate);
-            const auto m_layer_delta2 = abs(player.layers[6].playbackRate - player.oldlayers[6].playbackRate);
+    else if (!static_cast<int>(player.layers[12].weight * 1000.f) && entity->velocity().length2D() > 0.1f) {
+        const auto m_layer_delta1 = abs(player.layers[6].playbackRate - player.oldlayers[6].playbackRate);
+        const auto m_layer_delta2 = abs(player.layers[6].playbackRate - player.oldlayers[6].playbackRate);
 
-            if (const auto m_layer_delta3 = abs(player.layers[6].playbackRate - player.oldlayers[6].playbackRate); m_layer_delta1 < m_layer_delta2
-                || m_layer_delta3 <= m_layer_delta2
-                || static_cast<signed int>((m_layer_delta2 * 1000.0f)))
-            {
-                if (m_layer_delta1 >= m_layer_delta3
-                    && m_layer_delta2 > m_layer_delta3
-                    && !static_cast<signed int>((m_layer_delta3 * 1000.0f)))
-                {
-                    index = 1;
-                }
-            }
-            else
-            {
-                index = -1;
-            }
+        if (const auto m_layer_delta3 = abs(player.layers[6].playbackRate - player.oldlayers[6].playbackRate); m_layer_delta1 < m_layer_delta2
+            || m_layer_delta3 <= m_layer_delta2
+            || static_cast<signed int>((m_layer_delta2 * 1000.0f)))
+        {
+            if (m_layer_delta1 >= m_layer_delta3
+                && m_layer_delta2 > m_layer_delta3
+                && !static_cast<signed int>((m_layer_delta3 * 1000.0f)))
+                index = 1;
         }
+        else
+            index = -1;
     }
 
     switch (player.misses % 3) {
@@ -582,13 +570,17 @@ Vector calc_angle(const Vector source, const Vector entity_pos) {
 void resolver::anti_one_tap(const int userid, Entity* entity, const Vector shot)
 {
     std::vector<std::reference_wrapper<const PlayerData>> players_ordered{ GameData::players().begin(), GameData::players().end() };
-    std::ranges::sort(players_ordered, [](const PlayerData& a, const PlayerData& b) {
-        // enemies first
-        if (a.enemy != b.enemy)
-            return a.enemy && !b.enemy;
+    const auto sorter{
+        [](const PlayerData& a, const PlayerData& b)
+        {
+            // enemies first
+            if (a.enemy != b.enemy)
+                return a.enemy && !b.enemy;
 
-        return a.handle < b.handle;
-        });
+            return a.handle < b.handle;
+        }
+    };
+    std::ranges::sort(players_ordered, sorter);
     for (const std::reference_wrapper<const PlayerData>& player : players_ordered) {
         if (player.get().userId == userid && entity->isAlive())
         {

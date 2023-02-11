@@ -12,19 +12,24 @@ public:
         localEntity = entity;
     }
 
-    constexpr operator bool() noexcept
+    constexpr auto not_null() const noexcept
+    {
+        return localEntity != nullptr;
+    }
+
+    explicit constexpr operator bool() const noexcept
     {
         assert(localEntity);
         return *localEntity != nullptr;
     }
 
-    constexpr auto operator->() noexcept
+    constexpr auto operator->() const noexcept
     {
         assert(localEntity && *localEntity);
         return *localEntity;
     }
 
-    constexpr auto get() noexcept
+    [[nodiscard]] constexpr auto get() const noexcept
     {
         assert(localEntity && *localEntity);
         return *localEntity;

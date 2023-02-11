@@ -1332,7 +1332,7 @@ static std::vector<Vector> gift_wrapping(std::vector<Vector> v)
 
 void Visuals::drawMolotovPolygon(ImDrawList* draw_list) noexcept
 {
-    if (!config->visuals.molotovPolygon.enabled)
+    if (!config->visuals.molotovPolygon.enabled || !localPlayer.not_null())
         return;
 
     const ImColor enemy = Helpers::calculateColor(config->visuals.molotovPolygon.enemy);

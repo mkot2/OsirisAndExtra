@@ -308,7 +308,7 @@ void drawDamage(Vector position) noexcept
 
 	GameData::Lock lock;
 	for (auto& player : GameData::players()) {
-		if (player.handle == localPlayer || player.dormant || !player.alive)
+		if (static_cast<bool>(player.handle) == static_cast<bool>(localPlayer) || player.dormant || !player.alive)
 			continue;
 
 		Vector center = player.origin + (player.obbMins + player.obbMaxs) * 0.5f;
