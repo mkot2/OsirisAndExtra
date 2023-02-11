@@ -1,5 +1,7 @@
 #include <random>
 
+#include "AntiAim.h"
+#include "EnginePrediction.h"
 #include "Fakelag.h"
 #include "EnginePrediction.h"
 #include "Tickbase.h"
@@ -53,6 +55,11 @@ void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
     const auto netChannel = interfaces->engine->getNetworkChannel();
     if (!netChannel)
         return;
+
+    if (AntiAim::getDidShoot()) {
+        sendPacket = true;
+        return;
+    }   
     if (EnginePrediction::getVelocity().length2D() < 1)
         return;
 

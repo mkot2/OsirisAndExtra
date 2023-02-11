@@ -6,6 +6,7 @@
 #include "AntiAim.h"
 #include "EnginePrediction.h"
 #include "Misc.h"
+#include "Tickbase.h"
 
 #include "../SDK/Engine.h"
 #include "../SDK/EngineTrace.h"
@@ -119,7 +120,7 @@ float random_float(const float a, const float b, const float multiplier)
 void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector& currentViewAngles, bool& sendPacket) noexcept
 {
     const auto moving_flag{ get_moving_flag(cmd) };
-    if (cmd->viewangles.x == currentViewAngles.x && config->rageAntiAim[static_cast<int>(moving_flag)].enabled)
+    if ((cmd->viewangles.x == currentViewAngles.x || Tickbase::isShifting() ) && config->rageAntiAim[static_cast<int>(moving_flag)].enabled)
     {
         switch (config->rageAntiAim[static_cast<int>(moving_flag)].pitch)
         {
@@ -138,14 +139,14 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
             break;
         }
     }
-    if (cmd->viewangles.y == currentViewAngles.y)
+    if (cmd->viewangles.y == currentViewAngles.y || Tickbase::isShifting())
     {
         if (config->rageAntiAim[static_cast<int>(moving_flag)].yawBase != Yaw::off
             && config->rageAntiAim[static_cast<int>(moving_flag)].enabled)   //AntiAim
         {
             float yaw = 0.f;
             static bool flipJitter = false;
-            if (sendPacket)
+            if (sendPacket && !AntiAim::getDidShoot())
                 flipJitter ^= 1;
             if (config->rageAntiAim[static_cast<int>(moving_flag)].atTargets)
             {
@@ -276,7 +277,7 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
                 yaw += static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].yawAdd);
             cmd->viewangles.y += yaw;
         }
-        if (config->fakeAngle[static_cast<int>(moving_flag)].enabled) //Fakeangle
+        if (config->fakeAngle[static_cast<int>(moving_flag)].enabled && !Tickbase::isShifting()) //Fakeangle
         {
             bool is_invert_toggled = config->invert.isActive();
             static bool invert = true;
@@ -382,7 +383,7 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
 
 void AntiAim::legit(UserCmd* cmd, const Vector& previousViewAngles, const Vector& currentViewAngles, bool& sendPacket) noexcept
 {
-    if (cmd->viewangles.y == currentViewAngles.y) 
+    if (cmd->viewangles.y == currentViewAngles.y && !Tickbase::isShifting()) 
     {
         invert = config->legitAntiAim.invert.isActive();
         const float desyncAngle = localPlayer->getMaxDesyncAngle() * 2.f;
@@ -509,4 +510,34 @@ AntiAim::moving_flag AntiAim::get_moving_flag(const UserCmd* cmd) noexcept
     if (config->misc.fakeduckKey.isActive())
         return latest_moving_flag = fake_ducking;
     return latest_moving_flag = freestanding;
+}
+
+float AntiAim::getLastShotTime()
+{
+    return lastShotTime;
+}
+
+bool AntiAim::getIsShooting()
+{
+    return isShooting;
+}
+
+bool AntiAim::getDidShoot()
+{
+    return didShoot;
+}
+
+void AntiAim::setLastShotTime(float shotTime)
+{
+    lastShotTime = shotTime;
+}
+
+void AntiAim::setIsShooting(bool shooting)
+{
+    isShooting = shooting;
+}
+
+void AntiAim::setDidShoot(bool shot)
+{
+    didShoot = shot;
 }
