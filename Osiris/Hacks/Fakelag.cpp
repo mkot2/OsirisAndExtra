@@ -44,10 +44,16 @@ namespace Fakelag
         }
     };
     uniform_int_random_generator<int> random{ static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count()) };
+    bool sranded{ false };
 }
 
 void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
 {
+    if (!sranded)
+    {
+        srand(time(nullptr));
+        sranded = true;
+    }
     const auto moving_flag{AntiAim::get_moving_flag(cmd) };
     if (!localPlayer || !localPlayer->isAlive())
         return;
@@ -110,40 +116,11 @@ void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
             random.set_range(config->fakelag[static_cast<int>(moving_flag)].randomMinLimit, config->fakelag[static_cast<int>(moving_flag)].limit);
             choked_packets = random.get();
             break;
-        case 3: // m1tZw tank
+        case 3: // rand() Random
         {
-            static auto frame_rate = 1.0f;
-            frame_rate = 0.9f * frame_rate + 0.1f * memory->globalVars->absoluteFrameTime;
-            srand(static_cast<unsigned int>(frame_rate != 0.0f ? static_cast<int>(1 / frame_rate) : 0));
-            for (int i{}; i <= 30; ++i)
-            {
-                if (i == 29 && memory->globalVars->tickCount % 2 == 0)
-                    choked_packets = maxUserCmdProcessTicks;
-                else
-                {
-                    if (rand() % 360 - 180 < 160)
-                        choked_packets = 2;
-                    else
-                        choked_packets = 1;
-                }
-            }
+            choked_packets = rand() % config->fakelag[static_cast<int>(moving_flag)].limit + config->fakelag[static_cast<int>(moving_flag)].randomMinLimit; // NOLINT(concurrency-mt-unsafe)
             break;
         }
-        case 4: // Another tank
-            for (int i{}; i <= 30; ++i)
-            {
-                if (i == 29 && memory->globalVars->tickCount % 2 == 0)
-                    choked_packets = maxUserCmdProcessTicks;
-                else
-                {
-                    random.set_range(180, 360);
-                    if (random.get() < 160)
-                        choked_packets = 2;
-                    else
-                        choked_packets = 1;
-                }
-            }
-            break;
         default:
             break;
         }

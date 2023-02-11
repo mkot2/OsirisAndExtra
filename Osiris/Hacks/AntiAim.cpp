@@ -15,6 +15,10 @@
 #include "../SDK/NetworkChannel.h"
 #include "../SDK/UserCmd.h"
 
+static bool isShooting{ false };
+static bool didShoot{ false };
+static float lastShotTime{ 0.f };
+
 #undef min
 #undef max
 template <typename T>

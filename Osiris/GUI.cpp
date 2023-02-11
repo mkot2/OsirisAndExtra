@@ -683,7 +683,7 @@ void GUI::renderFakelagWindow() noexcept
     static int current_category{};
     ImGui::Combo("", &current_category, "Freestanding\0Moving\0Jumping\0Ducking\0Duck-jumping\0Slow-walking\0Fake-ducking\0");
     ImGui::Checkbox("Enabled", &config->fakelag[current_category].enabled);
-    ImGui::Combo("Mode", &config->fakelag[current_category].mode, "Static\0Adaptive\0Random\0m1tZw tank\0Another tank");
+    ImGui::Combo("Mode", &config->fakelag[current_category].mode, "Static\0Adaptive\0Random\0rand() Random\0");
     ImGui::PushItemWidth(220.0f);
     ImGui::SliderInt("Limit", &config->fakelag[current_category].limit, 1, 21, "%d");
     ImGui::SliderInt("Random min limit", &config->fakelag[current_category].randomMinLimit, 1, 21, "%d");
