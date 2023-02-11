@@ -51,7 +51,7 @@ void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
 {
     if (!sranded)
     {
-        srand(time(nullptr));
+        srand(static_cast<unsigned>(time(nullptr)));
         sranded = true;
     }
     const auto moving_flag{AntiAim::get_moving_flag(cmd) };
