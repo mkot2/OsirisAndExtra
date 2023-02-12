@@ -44,16 +44,10 @@ namespace Fakelag
         }
     };
     uniform_int_random_generator<int> random{ static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count()) };
-    bool sranded{ false };
 }
 
 void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
 {
-    if (!sranded)
-    {
-        srand(static_cast<unsigned>(time(nullptr)));
-        sranded = true;
-    }
     const auto moving_flag{AntiAim::get_moving_flag(cmd) };
     if (!localPlayer || !localPlayer->isAlive())
         return;
@@ -62,7 +56,8 @@ void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
     if (!netChannel)
         return;
 
-    if (AntiAim::getDidShoot()) {
+    if (AntiAim::getDidShoot())
+    {
         sendPacket = true;
         return;
     }   
@@ -117,10 +112,9 @@ void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
             choked_packets = random.get();
             break;
         case 3: // rand() Random
-        {
+            srand(static_cast<unsigned>(time(nullptr)));
             choked_packets = rand() % config->fakelag[static_cast<int>(moving_flag)].limit + config->fakelag[static_cast<int>(moving_flag)].randomMinLimit; // NOLINT(concurrency-mt-unsafe)
             break;
-        }
         default:
             break;
         }
