@@ -6,6 +6,10 @@
 
 namespace resolver
 {
+    inline int hits{};
+    inline int misses{};
+    inline double hit_rate{};
+
     void reset() noexcept;
 
     void process_missed_shots() noexcept;

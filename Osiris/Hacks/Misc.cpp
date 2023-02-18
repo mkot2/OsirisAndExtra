@@ -19,6 +19,7 @@
 #include "Misc.h"
 #include "Fakelag.h"
 #include "Ragebot.h"
+#include "resolver.h"
 
 #include "../SDK/Client.h"
 #include "../SDK/ClientMode.h"
@@ -1662,11 +1663,14 @@ void Misc::watermark() noexcept
                          : config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].minDamage;
         resolver = config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].resolver;
     }
-    ImGui::Text("DMG %d | HC %d%% | MIN DMG %d | RSLVR %s",
+    ImGui::Text("DMG %d | HC %d%% | MIN DMG %d | RSLVR %s | HIT/MISS %d/%d (%.2lf%%)",
         damage,
         hit_chance,
         min_damage,
-        resolver ? "On" : "Off");
+        resolver ? "On" : "Off",
+        resolver::hits,
+        resolver::misses,
+        resolver::hit_rate);
     ImGui::Text("%s %s | FL %d%s%s%s | TGT %s",
         AntiAim::peek_mode_text[
             config->fakeAngle[AntiAim::latest_moving_flag].enabled

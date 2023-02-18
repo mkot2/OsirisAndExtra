@@ -109,6 +109,7 @@ void resolver::get_event(GameEvent* event) noexcept
             Animations::setPlayer(index)->workingangle = desync_angle;
         const auto entity = interfaces->entityList->getEntity(playerIndex);
         Logger::addLog(std::format("Resolver: Hit {}{}, Hitgroup {}, Desync Angle: {}", entity->getPlayerName(), backtrackRecord > 0 ? std::format(", BT[{}]", backtrackRecord) : "", HitGroup::hitgroup_text[hitgroup], desync_angle));
+        hit_rate = hits / (static_cast<float>(++hits) + misses);
         if (!entity->isAlive())
             desync_angle = 0.f;
         snapshots.pop_front(); //Hit somebody so don't calculate
@@ -187,7 +188,7 @@ void resolver::process_missed_shots() noexcept
     const auto angle = AimbotFunction::calculateRelativeAngle(eyePosition, bulletImpact, Vector{ });
     const auto end = bulletImpact + Vector::fromAngle(angle) * 2000.f;
 
-    const matrix3x4* matrix{};
+    const matrix3x4* matrix;
     try {
         matrix = backtrackRecord == -1 || player.backtrackRecords.size() < static_cast<unsigned int>(
             backtrackRecord) - 1
@@ -211,11 +212,15 @@ void resolver::process_missed_shots() noexcept
             if (!std::ranges::count(player.blacklisted, desync_angle))
                 player.blacklisted.push_back(desync_angle);
             Logger::addLog(std::format("Resolver: Missed {} shots to {} due to resolver{}, Hitbox: {}, Desync Angle: {}", player.misses + 1, entity->getPlayerName(), backtrackRecord > 0 ? std::format(", BT[{}]", backtrackRecord) : "", hitbox_text[hitbox], desync_angle));
+            hit_rate = hits / (static_cast<double>(hits) + ++misses);
             desync_angle = 0;
             break;
         }
     if (!resolver_missed)
+    {
         Logger::addLog(std::format("Resolver: Missed {} due to spread", entity->getPlayerName()));
+        hit_rate = hits / (static_cast<double>(hits) + ++misses);
+    }
 }
 
 float get_backward_side(Entity* entity) {
