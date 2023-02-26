@@ -1642,7 +1642,12 @@ void Misc::watermark() noexcept
     frame_rate = 0.9f * frame_rate + 0.1f * memory->globalVars->absoluteFrameTime;
     GameData::Lock lock;
     const auto& [exists, alive, inReload, shooting, noScope, nextWeaponAttack, fov, handle, flashDuration, aimPunch, origin, inaccuracy, team, velocityModifier] { GameData::local() };
-    ImGui::Text("Osiris | %d FPS | %d MS | %s | %s%s%s",
+    ImGui::Text("Osiris [%s] | %d FPS | %d MS | %s | %s%s%s",
+#ifdef DEBUG
+        "DEBUG",
+#else
+        "RELEASE",
+#endif
         frame_rate != 0.0f ? static_cast<int>(1 / frame_rate) : 0,
         GameData::getNetOutgoingLatency(),
         team == Team::Spectators ? "SPEC" : team == Team::TT ? "T" : team == Team::CT ? "CT" : "NONE",

@@ -1153,7 +1153,7 @@ static void to_json(json& j, const Config::Tickbase& o, const Config::Tickbase& 
     WRITE("Hideshots", hideshots);
     WRITE("Teleport", teleport);
     WRITE("OnshotFl", onshotFl);
-    WRITE("OnshotFl Amount", onshotFlAmount);
+    WRITE("OnshotFl amount", onshotFlAmount);
     WRITE("Onshot desync", onshotDesync);
 }
 
