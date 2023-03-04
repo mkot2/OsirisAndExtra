@@ -26,7 +26,7 @@ void Ragebot::updateInput() noexcept
     config->minDamageOverrideKey.handleToggle();
 }
 
-void runRagebot(UserCmd* cmd, Entity* entity, const Animations::Players::Record record, const Ragebot::Enemies target, const std::array<bool,
+void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const Animations::Players::Record record, const Ragebot::Enemies target, const std::array<bool,
                                                                                                                                         Max> hitbox, Entity* activeWeapon, const int weaponIndex, const Vector localPlayerEyePosition, const Vector aimPunch, const int multiPoint, const int minDamage, float& damageDiff, Vector& bestAngle, Vector& bestTarget, int& bestIndex, float& bestSimulationTime) noexcept
 {
     Ragebot::latest_player = entity->getPlayerName();
@@ -116,8 +116,6 @@ void runRagebot(UserCmd* cmd, Entity* entity, const Animations::Players::Record 
                 bestAngle = angle;
                 damageDiff = std::fabsf(static_cast<float>(target.health) - damage);
                 bestTarget = bonePosition;
-                bestSimulationTime = record.simulationTime;
-                bestIndex = target.id;
             }
         }
     }
@@ -136,8 +134,6 @@ void runRagebot(UserCmd* cmd, Entity* entity, const Animations::Players::Record 
         {
             bestTarget = Vector{ };
             bestAngle = Vector{ };
-            bestIndex = -1;
-            bestSimulationTime = 0;
             damageDiff = FLT_MAX;
         }
     }
@@ -262,18 +258,20 @@ void Ragebot::run(UserCmd* cmd) noexcept
         const auto player = Animations::getPlayer(target.id);
         const int minDamage = std::clamp(std::clamp(config->minDamageOverrideKey.isActive() ? cfg[weaponIndex].minDamageOverride : cfg[weaponIndex].minDamage, 0, target.health), 0, activeWeapon->getWeaponData()->damage);
 
-        const auto backupBoneCache = entity->getBoneCache().memory;
-        const auto backupMins = entity->getCollideable()->obbMins();
-        const auto backupMaxs = entity->getCollideable()->obbMaxs();
-        const auto backupOrigin = entity->getAbsOrigin();
-        const auto backupAbsAngle = entity->getAbsAngle();
+        const auto& backupBoneCache = entity->getBoneCache().memory;
+        const auto& backupMins = entity->getCollideable()->obbMins();
+        const auto& backupMaxs = entity->getCollideable()->obbMaxs();
+        const auto& backupOrigin = entity->getAbsOrigin();
+        const auto& backupAbsAngle = entity->getAbsAngle();
 
         for (int cycle = 0; cycle < 2; cycle++)
         {
-            Animations::Players::Record record;
-            if (cycle == 0)
+            float currentSimulationTime = -1.0f;
+
+            if (config->backtrack.enabled)
             {
-                if (!Backtrack::valid(player.simulationTime))
+                const auto records = Animations::getBacktrackRecords(entity->index());
+                if (!records || records->empty())
                     continue;
                 record.absAngle = player.absAngle;
                 std::ranges::copy(player.matrix, record.matrix);
@@ -294,32 +292,62 @@ void Ragebot::run(UserCmd* cmd) noexcept
                 if (!records || records->empty())
                     continue;
 
-                int lastTick = -1;
-
-                for (int i = static_cast<int>(records->size() - 1); i >= 0; i--)
+                int bestTick = -1;
+                if (cycle == 0)
                 {
-                    if (Backtrack::valid(records->at(i).simulationTime))
+                    for (size_t i = 0; i < records->size(); i++)
                     {
-                        lastTick = i;
-                        break;
+                        if (Backtrack::valid(records->at(i).simulationTime))
+                        {
+                            bestTick = static_cast<int>(i);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = static_cast<int>(records->size() - 1U); i >= 0; i--)
+                    {
+                        if (Backtrack::valid(records->at(i).simulationTime))
+                        {
+                            bestTick = i;
+                            break;
+                        }
                     }
                 }
 
-                if (lastTick <= -1)
+                if (bestTick <= -1)
                     continue;
 
-                record = records->at(lastTick);
+                memcpy(entity->getBoneCache().memory, records->at(bestTick).matrix, std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
+                memory->setAbsOrigin(entity, records->at(bestTick).origin);
+                memory->setAbsAngle(entity, Vector{ 0.f, records->at(bestTick).absAngle.y, 0.f });
+                memory->setCollisionBounds(entity->getCollideable(), records->at(bestTick).mins, records->at(bestTick).maxs);
+
+                currentSimulationTime = records->at(bestTick).simulationTime;
+            }
+            else
+            {
+                //We skip backtrack
+                if (cycle == 1)
+                    continue;
+
+                memcpy(entity->getBoneCache().memory, player.matrix.data(), std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
+                memory->setAbsOrigin(entity, player.origin);
+                memory->setAbsAngle(entity, Vector{ 0.f, player.absAngle.y, 0.f });
+                memory->setCollisionBounds(entity->getCollideable(), player.mins, player.maxs);
+
+                currentSimulationTime = player.simulationTime;
             }
 
-            memcpy(entity->getBoneCache().memory, record.matrix, std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
-            memory->setAbsOrigin(entity, record.origin);
-            memory->setAbsAngle(entity, Vector{ 0.f, record.absAngle.y, 0.f });
-            entity->getCollideable()->setCollisionBounds(record.mins, record.maxs);
-
-            runRagebot(cmd, entity, record, target, hitbox, activeWeapon, weaponIndex, localPlayerEyePosition, aimPunch, multiPoint, minDamage, damageDiff, bestAngle, bestTarget, bestIndex, bestSimulationTime);
+            runRagebot(cmd, entity, entity->getBoneCache().memory, target, hitbox, activeWeapon, weaponIndex, localPlayerEyePosition, aimPunch, multiPoint, minDamage, damageDiff, bestAngle, bestTarget);
             resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
             if (bestTarget.notNull())
+            {
+                bestSimulationTime = currentSimulationTime;
+                bestIndex = target.id;
                 break;
+            }
         }
         if (bestTarget.notNull())
             break;
