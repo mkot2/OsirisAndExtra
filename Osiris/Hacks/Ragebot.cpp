@@ -26,7 +26,7 @@ void Ragebot::updateInput() noexcept
     config->minDamageOverrideKey.handleToggle();
 }
 
-void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const Animations::Players::Record record, const Ragebot::Enemies target, const std::array<bool,
+void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const Ragebot::Enemies target, const std::array<bool,
                                                                                                                                         Max> hitbox, Entity* activeWeapon, const int weaponIndex, const Vector localPlayerEyePosition, const Vector aimPunch, const int multiPoint, const int minDamage, float& damageDiff, Vector& bestAngle, Vector& bestTarget, int& bestIndex, float& bestSimulationTime) noexcept
 {
     Ragebot::latest_player = entity->getPlayerName();
@@ -55,7 +55,7 @@ void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const Animation
         if (!hitbox)
             continue;
 
-        for (const auto& bonePosition : AimbotFunction::multiPoint(entity, record.matrix, hitbox, localPlayerEyePosition, i, multiPoint))
+        for (const auto& bonePosition : AimbotFunction::multiPoint(entity, matrix, hitbox, localPlayerEyePosition, i, multiPoint))
         {
             const auto angle{ AimbotFunction::calculateRelativeAngle(localPlayerEyePosition, bonePosition, cmd->viewangles + aimPunch) };
             const auto fov{ angle.length2D() };
@@ -122,7 +122,7 @@ void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const Animation
 
     if (bestTarget.notNull())
     {
-        if (cfg[weaponIndex].relativeHitchanceSwitch && !AimbotFunction::relativeHitchance(localPlayer.get(), entity, set, record.matrix, activeWeapon, bestAngle, cmd, cfg[weaponIndex].relativeHitchance))
+        if (cfg[weaponIndex].relativeHitchanceSwitch && !AimbotFunction::relativeHitchance(localPlayer.get(), entity, set, matrix, activeWeapon, bestAngle, cmd, cfg[weaponIndex].relativeHitchance))
         {
             bestTarget = Vector{ };
             bestAngle = Vector{ };
@@ -130,7 +130,7 @@ void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const Animation
             bestSimulationTime = 0;
             damageDiff = FLT_MAX;
         }
-        else if (!AimbotFunction::hitChance(localPlayer.get(), entity, set, record.matrix, activeWeapon, bestAngle, cmd, cfg[weaponIndex].hitChance))
+        else if (!AimbotFunction::hitChance(localPlayer.get(), entity, set, matrix, activeWeapon, bestAngle, cmd, cfg[weaponIndex].hitChance))
         {
             bestTarget = Vector{ };
             bestAngle = Vector{ };
@@ -273,24 +273,6 @@ void Ragebot::run(UserCmd* cmd) noexcept
                 const auto records = Animations::getBacktrackRecords(entity->index());
                 if (!records || records->empty())
                     continue;
-                record.absAngle = player.absAngle;
-                std::ranges::copy(player.matrix, record.matrix);
-                record.maxs = player.maxs;
-                record.mins = player.mins;
-                record.origin = player.origin;
-                record.simulationTime = player.simulationTime;
-            }
-            else
-            {
-                if (cfg[weaponIndex].disableBacktrackIfLowFPS && static_cast<int>(1 / frameRate) <= 1 / memory->globalVars->intervalPerTick)
-                    continue;
-
-                if (!config->backtrack.enabled)
-                    continue;
-
-                const auto records = Animations::getBacktrackRecords(entity->index());
-                if (!records || records->empty())
-                    continue;
 
                 int bestTick = -1;
                 if (cycle == 0)
@@ -340,7 +322,7 @@ void Ragebot::run(UserCmd* cmd) noexcept
                 currentSimulationTime = player.simulationTime;
             }
 
-            runRagebot(cmd, entity, entity->getBoneCache().memory, target, hitbox, activeWeapon, weaponIndex, localPlayerEyePosition, aimPunch, multiPoint, minDamage, damageDiff, bestAngle, bestTarget);
+            runRagebot(cmd, entity, entity->getBoneCache().memory, target, hitbox, activeWeapon, weaponIndex, localPlayerEyePosition, aimPunch, multiPoint, minDamage, damageDiff, bestAngle, bestTarget, bestIndex, bestSimulationTime);
             resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
             if (bestTarget.notNull())
             {
