@@ -195,7 +195,8 @@ void GUI::renderLegitbotWindow() noexcept
                 static std::string name;
                 name = pistols[idx];
                 *out_text = name.append(" *").c_str();
-            } else {
+            }
+            else {
                 *out_text = pistols[idx];
             }
             return true;
@@ -213,7 +214,8 @@ void GUI::renderLegitbotWindow() noexcept
                 static std::string name;
                 name = heavies[idx];
                 *out_text = name.append(" *").c_str();
-            } else {
+            }
+            else {
                 *out_text = heavies[idx];
             }
             return true;
@@ -231,7 +233,8 @@ void GUI::renderLegitbotWindow() noexcept
                 static std::string name;
                 name = smgs[idx];
                 *out_text = name.append(" *").c_str();
-            } else {
+            }
+            else {
                 *out_text = smgs[idx];
             }
             return true;
@@ -249,7 +252,8 @@ void GUI::renderLegitbotWindow() noexcept
                 static std::string name;
                 name = rifles[idx];
                 *out_text = name.append(" *").c_str();
-            } else {
+            }
+            else {
                 *out_text = rifles[idx];
             }
             return true;
@@ -283,7 +287,7 @@ void GUI::renderLegitbotWindow() noexcept
         previewvalue = "";
         for (size_t i = 0; i < ARRAYSIZE(hitboxes); i++)
         {
-            ImGui::Selectable(hitboxes[i], &hitbox[i], ImGuiSelectableFlags_DontClosePopups);
+            ImGui::Selectable(hitboxes[i], &hitbox[i], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups);
         }
         ImGui::EndCombo();
     }
@@ -312,27 +316,15 @@ void GUI::renderLegitbotWindow() noexcept
     ImGui::SliderInt("Reaction time", &config->legitbot[currentWeapon].reactionTime, 0, 300, "%d");
     ImGui::SliderInt("Min damage", &config->legitbot[currentWeapon].minDamage, 0, 101, "%d");
     config->legitbot[currentWeapon].minDamage = std::clamp(config->legitbot[currentWeapon].minDamage, 0, 250);
-    // rcs turns off with silent on, and comboboxes don't fit here
-    // (you can't control recoil you can't see)
-    if (!config->legitbot[currentWeapon].silent) {
-        ImGui::Checkbox("Standalone RCS", &config->legitbot[currentWeapon].standaloneRCS);
-        if (config->legitbot[currentWeapon].standaloneRCS) {
-            ImGui::SameLine();
-            ImGui::Checkbox("Random RCS factor", &config->legitbot[currentWeapon].randomRCS);
-            ImGui::InputInt("Ignore Shots", &config->legitbot[currentWeapon].shotsFired);
-            if (config->legitbot[currentWeapon].randomRCS) {
-                ImGui::SliderFloat("Recoil control X odds", &config->legitbot[currentWeapon].recoilControlX, 0.0f, 1.0f, "%.5f");
-                ImGui::SliderFloat("Recoil control Y odds", &config->legitbot[currentWeapon].recoilControlY, 0.0f, 1.0f, "%.5f");
-            }
-            else {
-                ImGui::SliderFloat("Recoil control X", &config->legitbot[currentWeapon].recoilControlX, 0.0f, 1.0f, "%.5f");
-                ImGui::SliderFloat("Recoil control Y", &config->legitbot[currentWeapon].recoilControlY, 0.0f, 1.0f, "%.5f");
-            }
-        }
-    }
     ImGui::Checkbox("Killshot", &config->legitbot[currentWeapon].killshot);
-    config->legitbot[currentWeapon].shotsFired = std::clamp(config->legitbot[currentWeapon].shotsFired, 0, 150);
     ImGui::Checkbox("Between shots", &config->legitbot[currentWeapon].betweenShots);
+    ImGui::Checkbox("Recoil control system", &config->recoilControlSystem.enabled);
+    ImGui::SameLine();
+    ImGui::Checkbox("Silent RCS", &config->recoilControlSystem.silent);
+    ImGui::SliderInt("RCS Ignore Shots", &config->recoilControlSystem.shotsFired, 0, 150, "%d");
+    ImGui::SliderFloat("RCS Horizontal", &config->recoilControlSystem.horizontal, 0.0f, 1.0f, "%.5f");
+    ImGui::SliderFloat("RCS Vertical", &config->recoilControlSystem.vertical, 0.0f, 1.0f, "%.5f");
+    ImGui::Columns(1);
 }
 
 void GUI::renderRagebotWindow() noexcept
