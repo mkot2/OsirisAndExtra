@@ -4,8 +4,7 @@
 #include "Vector.h"
 
 //Virtual method doesnt work here for some reason
-class DebugOverlay
-{
+class DebugOverlay {
 public:
 	virtual void entityTextOverlay(int entityIndex, int lineOffset, float duration, int r, int g, int b, int a, const char* format, ...) = 0;
 	virtual void boxOverlay(const Vector& origin, const Vector& mins, const Vector& max, Vector const& angles, int r, int g, int b, int a, float duration) = 0;

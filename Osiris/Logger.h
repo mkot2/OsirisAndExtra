@@ -21,14 +21,13 @@ namespace Logger
 	Spread misses (todo)
 	Misc (lagcomp, occlusion) misses (todo)
 	Resolver misses (todo)
-	
+
 	Hostage taken (done)
 	Bomb plants (done)
 	*/
 
 
-	struct Log
-	{
+	struct Log {
 		float time{ 0.0f };
 		float alpha{ 255.0f };
 		std::string text{ "" };
@@ -42,14 +41,12 @@ namespace Logger
 	void console() noexcept;
 	void render(ImDrawList* drawList) noexcept;
 
-	enum
-	{
+	enum {
 		Console,
 		EventLog
 	};
 
-	enum
-	{
+	enum {
 		DamageDealt,
 		DamageReceived,
 		HostageTaken,

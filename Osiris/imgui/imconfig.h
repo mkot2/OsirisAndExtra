@@ -70,20 +70,20 @@
 // This will be inlined as part of ImVec2 and ImVec4 class declarations.
 /*
 #define IM_VEC2_CLASS_EXTRA                                                 \
-        ImVec2(const MyVec2& f) { x = f.x; y = f.y; }                       \
-        operator MyVec2() const { return MyVec2(x,y); }
+		ImVec2(const MyVec2& f) { x = f.x; y = f.y; }                       \
+		operator MyVec2() const { return MyVec2(x,y); }
 
 #define IM_VEC4_CLASS_EXTRA                                                 \
-        ImVec4(const MyVec4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }     \
-        operator MyVec4() const { return MyVec4(x,y,z,w); }
+		ImVec4(const MyVec4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }     \
+		operator MyVec4() const { return MyVec4(x,y,z,w); }
 */
 #define IM_VEC4_CLASS_EXTRA \
-        ImVec4(float f[3]) noexcept { x = f[0]; y = f[1]; z = f[2]; w = 1.0f; } \
-        ImVec4(const std::array<float, 4>& color) noexcept { x = color[0]; y = color[1]; z = color[2]; w = color[3]; }     
+		ImVec4(float f[3]) noexcept { x = f[0]; y = f[1]; z = f[2]; w = 1.0f; } \
+		ImVec4(const std::array<float, 4>& color) noexcept { x = color[0]; y = color[1]; z = color[2]; w = color[3]; }     
 
 #define IM_VEC2_CLASS_EXTRA \
-        auto operator==(const ImVec2& other) const { return x == other.x && y == other.y; } \
-        auto operator!=(const ImVec2& other) const { return !(*this == other); }
+		auto operator==(const ImVec2& other) const { return x == other.x && y == other.y; } \
+		auto operator!=(const ImVec2& other) const { return !(*this == other); }
 
 //---- Use 32-bit vertex indices (default is 16-bit) is one way to allow large meshes with more than 64K vertices.
 // Your renderer back-end will need to support it (most example renderer back-ends support both 16/32-bit indices).
@@ -114,6 +114,6 @@
 /*
 namespace ImGui
 {
-    void MyFunction(const char* name, const MyMatrix44& v);
+	void MyFunction(const char* name, const MyMatrix44& v);
 }
 */

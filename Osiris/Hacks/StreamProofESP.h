@@ -2,6 +2,6 @@
 
 namespace StreamProofESP
 {
-    void render() noexcept;
-    void updateInput() noexcept;
+	void render() noexcept;
+	void updateInput() noexcept;
 }

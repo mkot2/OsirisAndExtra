@@ -33,6 +33,9 @@
     <Filter Include="freetype">
       <UniqueIdentifier>{15481d2e-5516-4ece-9b00-79e32710804c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PCG">
+      <UniqueIdentifier>{ae3ec954-1f35-4990-9186-47206f393084}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUI.cpp">
@@ -672,6 +675,15 @@
     </ClInclude>
     <ClInclude Include="SDK\BitBuffer.h">
       <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="PCG\pcg_uint128.h">
+      <Filter>PCG</Filter>
+    </ClInclude>
+    <ClInclude Include="PCG\pcg_extras.h">
+      <Filter>PCG</Filter>
+    </ClInclude>
+    <ClInclude Include="PCG\pcg_random.h">
+      <Filter>PCG</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

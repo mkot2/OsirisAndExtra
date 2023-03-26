@@ -2,8 +2,7 @@
 
 #include "VirtualMethod.h"
 
-class NetworkMessage
-{
+class NetworkMessage {
 public:
-    VIRTUAL_METHOD(int, getType, 7, (), (this))
+	VIRTUAL_METHOD(int, getType, 7, (), (this))
 };

@@ -5,8 +5,7 @@
 
 //Note: this isnt the same as StudioHdr, there are 2 StudioHdr classes, CStudioHdr and studiohdr_t
 
-struct StudioSeqdesc
-{
+struct StudioSeqdesc {
 	PAD(104); //0
 	float fadeInTime; //104
 	float fadeOutTime; //108
@@ -14,8 +13,7 @@ struct StudioSeqdesc
 	int numAnimTags; // 196
 };
 
-struct CStudioHdr
-{
+struct CStudioHdr {
 	StudioHdr* hdr;
 	void* virtualModel;
 	void* softBody;

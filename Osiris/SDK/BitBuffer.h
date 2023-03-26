@@ -38,14 +38,12 @@ inline void Q_memcpy(void* dest, void* src, int count) // Quake Memcpy
 {
 	int             i;
 
-	if ((((long)dest | (long)src | count) & 3) == 0)
-	{
+	if ((((long)dest | (long)src | count) & 3) == 0) {
 		count >>= 2;
 		for (i = 0; i < count; i++) {
 			((int*)dest)[i] = ((int*)src)[i];
 		}
-	}
-	else {
+	} else {
 		for (i = 0; i < count; i++) {
 			(reinterpret_cast<BYTE*>(dest))[i] = (reinterpret_cast<BYTE*>(src))[i]; // C style cast crashes compiler... but reinterpret_cast doesn't? What MSCV?????
 		}
@@ -163,8 +161,7 @@ inline int bitForBitnum(int bitnum) noexcept
 	//return getBitForBitnum(bitnum);
 }
 
-class bufferWrite
-{
+class bufferWrite {
 public:
 	bufferWrite() noexcept;
 	bufferWrite(void* data, int bytes, int maxBits = -1) noexcept;
@@ -275,8 +272,7 @@ __forceinline void bufferWrite::writeOneBitNoCheck(int value) noexcept
 
 inline void	bufferWrite::writeOneBitAt(int bit, int value) noexcept
 {
-	if (bit >= dataBits)
-	{
+	if (bit >= dataBits) {
 		setOverflowFlag();
 		return;
 	}
@@ -289,8 +285,7 @@ inline void	bufferWrite::writeOneBitAt(int bit, int value) noexcept
 
 __forceinline void bufferWrite::writeUBitLong(unsigned int curData, int numbits, bool checkRange) __restrict noexcept
 {
-	if (getNumBitsLeft() < numbits)
-	{
+	if (getNumBitsLeft() < numbits) {
 		curBit = dataBits;
 		return;
 	}
@@ -384,8 +379,7 @@ __forceinline bool bufferWrite::checkForOverflow(int bits) noexcept
 	return overflow;
 }
 
-class bufferRead
-{
+class bufferRead {
 public:
 	bufferRead() noexcept;
 	bufferRead(const void* data, int bytes, int bits = -1) noexcept;
@@ -513,14 +507,11 @@ inline int bufferRead::getNumBitsRead() const noexcept
 
 inline bool bufferRead::seek(int bit) noexcept
 {
-	if (bit < 0 || bit > static_cast<int>(dataBits))
-	{
+	if (bit < 0 || bit > static_cast<int>(dataBits)) {
 		setOverflowFlag();
 		curBit = dataBits;
 		return false;
-	}
-	else
-	{
+	} else {
 		curBit = bit;
 		return true;
 	}
@@ -549,8 +540,7 @@ inline int bufferRead::readOneBitNoCheck() noexcept
 
 inline int bufferRead::readOneBit() noexcept
 {
-	if (getNumBitsLeft() <= 0)
-	{
+	if (getNumBitsLeft() <= 0) {
 		setOverflowFlag();
 		return 0;
 	}
@@ -568,8 +558,7 @@ __forceinline unsigned int bufferRead::readUBitVar() noexcept
 	// six bits: low 2 bits for encoding + first 4 bits of value
 	unsigned int sixbits = readUBitLong(6);
 	unsigned int encoding = sixbits & 3;
-	if (encoding)
-	{
+	if (encoding) {
 		// this function will seek back four bits and read the full value
 		return readUBitVarInternal(encoding);
 	}
@@ -578,8 +567,7 @@ __forceinline unsigned int bufferRead::readUBitVar() noexcept
 
 __forceinline unsigned int bufferRead::readUBitLong(int numbits) __restrict noexcept
 {
-	if (getNumBitsLeft() < numbits)
-	{
+	if (getNumBitsLeft() < numbits) {
 		curBit = dataBits;
 		setOverflowFlag();
 		return 0;
@@ -594,8 +582,8 @@ __forceinline unsigned int bufferRead::readUBitLong(int numbits) __restrict noex
 	extern uint32 extraMasks[33];
 	unsigned int bitmask = extraMasks[numbits];
 
-	unsigned int dw1 = loadLittleDWord((uint32* __restrict)data, iWordOffset1) >> iStartBit;
-	unsigned int dw2 = loadLittleDWord((uint32* __restrict)data, iWordOffset2) << (32 - iStartBit);
+	unsigned int dw1 = loadLittleDWord((uint32 * __restrict)data, iWordOffset1) >> iStartBit;
+	unsigned int dw2 = loadLittleDWord((uint32 * __restrict)data, iWordOffset2) << (32 - iStartBit);
 
 	return (dw1 | dw2) & bitmask;
 }

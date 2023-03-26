@@ -53,8 +53,7 @@ namespace Animations
 	std::array<float, 24> getPoseParameters() noexcept;
 	std::array<AnimationLayer, 13> getAnimLayers() noexcept;
 
-	struct Players
-	{
+	struct Players {
 		Players()
 		{
 			this->clear();

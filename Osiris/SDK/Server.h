@@ -2,8 +2,7 @@
 
 #include "VirtualMethod.h"
 
-struct ServerClass
-{
+struct ServerClass {
 public:
 	const char* networkName;
 	void** table;
@@ -12,8 +11,7 @@ public:
 	int instanceBaselineIndex;
 };
 
-class Server
-{
+class Server {
 public:
 	VIRTUAL_METHOD(ServerClass*, getAllServerClasses, 10, (), (this))
 };

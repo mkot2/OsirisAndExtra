@@ -14,17 +14,16 @@ Example of usage:
 	funtionTest.releaseThread();
 */
 
-class Thread
-{
+class Thread {
 public:
-	Thread() noexcept { }
+	Thread() noexcept {}
 
 	template<typename ...Args>
 	void createThread(void* function, Args... args) noexcept
 	{
 		currentThread = memory->createSimpleThread(function, args..., 0U);
 	}
-	
+
 	void releaseThread() noexcept
 	{
 		if (currentThread)

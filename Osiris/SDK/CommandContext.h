@@ -1,8 +1,7 @@
 #pragma once
 #include "UserCmd.h"
 
-class CommandContext
-{
+class CommandContext {
 public:
 	bool needsProcessing;
 	UserCmd cmd;

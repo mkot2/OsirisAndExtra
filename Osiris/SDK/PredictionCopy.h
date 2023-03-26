@@ -8,23 +8,19 @@ typedef unsigned char byte;
 typedef void (*FN_FIELD_COMPARE)(const char* classname, const char* fieldname, const char* fieldtype,
 	bool networked, bool noterrorchecked, bool differs, bool withintolerance, const char* value);
 
-enum
-{
+enum {
 	SLOT_ORIGINALDATA = -1,
 };
 
-class PredictionCopy
-{
+class PredictionCopy {
 public:
-	typedef enum
-	{
+	typedef enum {
 		DIFFERS = 0,
 		IDENTICAL,
 		WITHINTOLERANCE,
 	} difftype_t;
 
-	typedef enum
-	{
+	typedef enum {
 		TRANSFERDATA_COPYONLY = 0,  // Data copying only (uses runs)
 		TRANSFERDATA_ERRORCHECK_NOSPEW, // Checks for errors, returns after first error found
 		TRANSFERDATA_ERRORCHECK_SPEW,   // checks for errors, reports all errors to console

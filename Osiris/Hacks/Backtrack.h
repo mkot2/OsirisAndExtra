@@ -15,20 +15,20 @@ struct UserCmd;
 
 namespace Backtrack
 {
-    void run(UserCmd*) noexcept;
+	void run(UserCmd*) noexcept;
 
-    void addLatencyToNetwork(NetworkChannel*, float) noexcept;
-    void updateIncomingSequences() noexcept;
+	void addLatencyToNetwork(NetworkChannel*, float) noexcept;
+	void updateIncomingSequences() noexcept;
 
-    float getLerp() noexcept;
+	float getLerp() noexcept;
 
-    struct incomingSequence {
-        int inreliablestate;
-        int sequencenr;
-        float servertime;
-    };
+	struct incomingSequence {
+		int inreliablestate;
+		int sequencenr;
+		float servertime;
+	};
 
-    bool valid(float simtime) noexcept;
-    void init() noexcept;
-    float getMaxUnlag() noexcept;
+	bool valid(float simtime) noexcept;
+	void init() noexcept;
+	float getMaxUnlag() noexcept;
 }

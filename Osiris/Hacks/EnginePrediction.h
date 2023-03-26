@@ -18,14 +18,13 @@ namespace EnginePrediction
 	void run(UserCmd* cmd) noexcept;
 
 	void store() noexcept;
-    void apply(FrameStage) noexcept;
-    
+	void apply(FrameStage) noexcept;
+
 	int getFlags() noexcept;
 	Vector getVelocity() noexcept;
 	bool isInPrediction() noexcept;
 
-	struct NetvarData
-	{
+	struct NetvarData {
 		int tickbase = -1;
 
 		Vector aimPunchAngle{ };
@@ -55,8 +54,7 @@ namespace EnginePrediction
 
 			if (fabsf(delta.x) <= epsilon
 				&& fabsf(delta.y) <= epsilon
-				&& fabsf(delta.z) <= epsilon)
-			{
+				&& fabsf(delta.z) <= epsilon) {
 				return original;
 			}
 			return predicted;

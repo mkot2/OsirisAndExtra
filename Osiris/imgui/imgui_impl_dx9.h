@@ -25,5 +25,5 @@ void     ImGui_ImplDX9_DestroyFontsTexture();
 bool     ImGui_ImplDX9_CreateDeviceObjects();
 void     ImGui_ImplDX9_InvalidateDeviceObjects();
 
-void*    ImGui_CreateTextureRGBA(int width, int height, const unsigned char* data);
+void* ImGui_CreateTextureRGBA(int width, int height, const unsigned char* data);
 void     ImGui_DestroyTexture(void* texture);

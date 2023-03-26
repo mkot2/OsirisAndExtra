@@ -107,16 +107,14 @@ bool bufferWrite::writeBits(const void* inData, int bits) noexcept
 		return false;
 
 	// Align output to dword boundary
-	while (((unsigned long)out & 3) != 0 && bitsLeft >= 8)
-	{
+	while (((unsigned long)out & 3) != 0 && bitsLeft >= 8) {
 
 		writeUBitLong(*out, 8, false);
 		++out;
 		bitsLeft -= 8;
 	}
 
-	if ((bitsLeft >= 32) && (curBit & 7) == 0)
-	{
+	if ((bitsLeft >= 32) && (curBit & 7) == 0) {
 		// current bit is byte aligned, do block copy
 		int numbytes = bitsLeft >> 3;
 		int numbits = numbytes << 3;
@@ -127,8 +125,7 @@ bool bufferWrite::writeBits(const void* inData, int bits) noexcept
 		curBit += numbits;
 	}
 
-	if (bitsLeft >= 32)
-	{
+	if (bitsLeft >= 32) {
 		unsigned long bitsRight = (curBit & 31);
 		unsigned long bitsLeft = 32 - bitsRight;
 		extern uint32 bitWriteMasks[32][33];
@@ -138,8 +135,7 @@ bool bufferWrite::writeBits(const void* inData, int bits) noexcept
 		unsigned long* data = &this->data[curBit >> 5];
 
 		// Read dwords.
-		while (bitsLeft >= 32)
-		{
+		while (bitsLeft >= 32) {
 			unsigned long curData = *(unsigned long*)out;
 			out += sizeof(unsigned long);
 
@@ -148,8 +144,7 @@ bool bufferWrite::writeBits(const void* inData, int bits) noexcept
 
 			data++;
 
-			if (bitsLeft < 32)
-			{
+			if (bitsLeft < 32) {
 				curData >>= bitsLeft;
 				*data &= bitMaskRight;
 				*data |= curData;
@@ -162,8 +157,7 @@ bool bufferWrite::writeBits(const void* inData, int bits) noexcept
 
 
 	// write remaining bytes
-	while (bitsLeft >= 8)
-	{
+	while (bitsLeft >= 8) {
 		writeUBitLong(*out, 8, false);
 		++out;
 		bitsLeft -= 8;
@@ -179,58 +173,43 @@ bool bufferWrite::writeBits(const void* inData, int bits) noexcept
 void bufferWrite::writeVarInt32(uint32 data) noexcept
 {
 	// Check if align and we have room, slow path if not
-	if ((curBit & 7) == 0 && (curBit + maxVarint32Bytes * 8) <= dataBits)
-	{
+	if ((curBit & 7) == 0 && (curBit + maxVarint32Bytes * 8) <= dataBits) {
 		uint8* target = ((uint8*)data) + (curBit >> 3);
 
 		target[0] = static_cast<uint8>(data | 0x80);
-		if (data >= (1 << 7))
-		{
+		if (data >= (1 << 7)) {
 			target[1] = static_cast<uint8>((data >> 7) | 0x80);
-			if (data >= (1 << 14))
-			{
+			if (data >= (1 << 14)) {
 				target[2] = static_cast<uint8>((data >> 14) | 0x80);
-				if (data >= (1 << 21))
-				{
+				if (data >= (1 << 21)) {
 					target[3] = static_cast<uint8>((data >> 21) | 0x80);
-					if (data >= (1 << 28))
-					{
+					if (data >= (1 << 28)) {
 						target[4] = static_cast<uint8>(data >> 28);
 						curBit += 5 * 8;
 						return;
-					}
-					else
-					{
+					} else {
 						target[3] &= 0x7F;
 						curBit += 4 * 8;
 						return;
 					}
-				}
-				else
-				{
+				} else {
 					target[2] &= 0x7F;
 					curBit += 3 * 8;
 					return;
 				}
-			}
-			else
-			{
+			} else {
 				target[1] &= 0x7F;
 				curBit += 2 * 8;
 				return;
 			}
-		}
-		else
-		{
+		} else {
 			target[0] &= 0x7F;
 			curBit += 1 * 8;
 			return;
 		}
-	}
-	else // Slow path
+	} else // Slow path
 	{
-		while (data > 0x7F)
-		{
+		while (data > 0x7F) {
 			writeUBitLong((data & 0x7F) | 0x80, 8);
 			data >>= 7;
 		}
@@ -240,8 +219,7 @@ void bufferWrite::writeVarInt32(uint32 data) noexcept
 
 void bufferWrite::writeVarInt64(uint64 data) noexcept
 {
-	if ((curBit & 7) == 0 && (curBit + maxVarintBytes * 8) <= dataBits)
-	{
+	if ((curBit & 7) == 0 && (curBit + maxVarintBytes * 8) <= dataBits) {
 		uint8* target = ((uint8*)data) + (curBit >> 3);
 
 		// Splitting into 32-bit pieces gives better performance on 32-bit
@@ -259,67 +237,40 @@ void bufferWrite::writeVarInt64(uint64 data) noexcept
 		// it is likely that they expect the numbers to often be very large, so
 		// we probably don't want to optimize for small numbers anyway.  Thus,
 		// we end up with a hardcoded binary search tree...
-		if (part2 == 0)
-		{
-			if (part1 == 0)
-			{
-				if (part0 < (1 << 14))
-				{
-					if (part0 < (1 << 7))
-					{
+		if (part2 == 0) {
+			if (part1 == 0) {
+				if (part0 < (1 << 14)) {
+					if (part0 < (1 << 7)) {
 						size = 1; goto size1;
-					}
-					else
-					{
+					} else {
 						size = 2; goto size2;
 					}
-				}
-				else
-				{
-					if (part0 < (1 << 21))
-					{
+				} else {
+					if (part0 < (1 << 21)) {
 						size = 3; goto size3;
-					}
-					else
-					{
+					} else {
 						size = 4; goto size4;
 					}
 				}
-			}
-			else
-			{
-				if (part1 < (1 << 14))
-				{
-					if (part1 < (1 << 7))
-					{
+			} else {
+				if (part1 < (1 << 14)) {
+					if (part1 < (1 << 7)) {
 						size = 5; goto size5;
-					}
-					else
-					{
+					} else {
 						size = 6; goto size6;
 					}
-				}
-				else
-				{
-					if (part1 < (1 << 21))
-					{
+				} else {
+					if (part1 < (1 << 21)) {
 						size = 7; goto size7;
-					}
-					else
-					{
+					} else {
 						size = 8; goto size8;
 					}
 				}
 			}
-		}
-		else
-		{
-			if (part2 < (1 << 7))
-			{
+		} else {
+			if (part2 < (1 << 7)) {
 				size = 9; goto size9;
-			}
-			else
-			{
+			} else {
 				size = 10; goto size10;
 			}
 		}
@@ -339,11 +290,9 @@ void bufferWrite::writeVarInt64(uint64 data) noexcept
 
 		target[size - 1] &= 0x7F;
 		curBit += size * 8;
-	}
-	else // slow path
+	} else // slow path
 	{
-		while (data > 0x7F)
-		{
+		while (data > 0x7F) {
 			writeUBitLong((data & 0x7F) | 0x80, 8);
 			data >>= 7;
 		}
@@ -393,8 +342,7 @@ int bufferWrite::byteSizeSignedVarInt64(int64 data) noexcept
 
 bool bufferWrite::writeBitsFromBuffer(bufferRead* in, int bits) noexcept
 {
-	while (bits > 32)
-	{
+	while (bits > 32) {
 		writeUBitLong(in->readUBitLong(32), 32);
 		bits -= 32;
 	}
@@ -429,22 +377,19 @@ void bufferWrite::writeBitCoord(const float f) noexcept
 	writeOneBit(intval);
 	writeOneBit(fractval);
 
-	if (intval || fractval)
-	{
+	if (intval || fractval) {
 		// Send the sign bit
 		writeOneBit(signbit);
 
 		// Send the integer if we have one.
-		if (intval)
-		{
+		if (intval) {
 			// Adjust the integers from [1..MAX_COORD_VALUE] to [0..MAX_COORD_VALUE-1]
 			intval--;
 			writeUBitLong(static_cast<uint>(intval), COORD_INTEGER_BITS);
 		}
 
 		// Send the fraction if we have one
-		if (fractval)
-		{
+		if (fractval) {
 			writeUBitLong(static_cast<uint>(fractval), COORD_FRACTIONAL_BITS);
 		}
 	}
@@ -462,36 +407,27 @@ void bufferWrite::writeBitCoordMP(const float f, bool integral, bool lowPrecisio
 
 	uint bits, numbits;
 
-	if (integral)
-	{
+	if (integral) {
 		// Integer encoding: in-bounds bit, nonzero bit, optional sign bit + integer value bits
-		if (intval)
-		{
+		if (intval) {
 			// Adjust the integers from [1..MAX_COORD_VALUE] to [0..MAX_COORD_VALUE-1]
 			--intval;
 			bits = intval * 8 + signbit * 4 + 2 + bInBounds;
 			numbits = 3 + (bInBounds ? COORD_INTEGER_BITS_MP : COORD_INTEGER_BITS);
-		}
-		else
-		{
+		} else {
 			bits = bInBounds;
 			numbits = 2;
 		}
-	}
-	else
-	{
+	} else {
 		// Float encoding: in-bounds bit, integer bit, sign bit, fraction value bits, optional integer value bits
-		if (intval)
-		{
+		if (intval) {
 			// Adjust the integers from [1..MAX_COORD_VALUE] to [0..MAX_COORD_VALUE-1]
 			--intval;
 			bits = intval * 8 + signbit * 4 + 2 + bInBounds;
 			bits += bInBounds ? (fractval << (3 + COORD_INTEGER_BITS_MP)) : (fractval << (3 + COORD_INTEGER_BITS));
 			numbits = 3 + (bInBounds ? COORD_INTEGER_BITS_MP : COORD_INTEGER_BITS)
 				+ (lowPrecision ? COORD_FRACTIONAL_BITS_MP_LOWPRECISION : COORD_FRACTIONAL_BITS);
-		}
-		else
-		{
+		} else {
 			bits = fractval * 8 + signbit * 4 + 0 + bInBounds;
 			numbits = 3 + (lowPrecision ? COORD_FRACTIONAL_BITS_MP_LOWPRECISION : COORD_FRACTIONAL_BITS);
 		}
@@ -615,16 +551,12 @@ bool bufferWrite::writeBytes(const void* buffer, int bytes) noexcept
 
 bool bufferWrite::writeString(const char* string) noexcept
 {
-	if (string)
-	{
-		do
-		{
+	if (string) {
+		do {
 			writeChar(*string);
 			++string;
 		} while (*(string - 1) != 0);
-	}
-	else
-	{
+	} else {
 		writeChar(0);
 	}
 
@@ -696,8 +628,7 @@ uint bufferRead::checkReadUBitLong(int numbits) noexcept
 	int i, bitValue;
 	uint r = 0;
 
-	for (i = 0; i < numbits; i++)
-	{
+	for (i = 0; i < numbits; i++) {
 		bitValue = readOneBitNoCheck();
 		r |= bitValue << i;
 	}
@@ -712,24 +643,21 @@ void bufferRead::readBits(void* outData, int bits) noexcept
 	int bitsLeft = bits;
 
 	// align output to dword boundary
-	while (((size_t)out & 3) != 0 && bitsLeft >= 8)
-	{
+	while (((size_t)out & 3) != 0 && bitsLeft >= 8) {
 		*out = (unsigned char)readUBitLong(8);
 		++out;
 		bitsLeft -= 8;
 	}
 
 	// read dwords
-	while (bitsLeft >= 32)
-	{
+	while (bitsLeft >= 32) {
 		*((unsigned long*)out) = readUBitLong(32);
 		out += sizeof(unsigned long);
 		bitsLeft -= 32;
 	}
 
 	// read remaining bytes
-	while (bitsLeft >= 8)
-	{
+	while (bitsLeft >= 8) {
 		*out = readUBitLong(8);
 		++out;
 		bitsLeft -= 8;
@@ -745,8 +673,7 @@ int bufferRead::readBitsClamped_ptr(void* outData, size_t outSizeBytes, size_t b
 	size_t outSizeBits = outSizeBytes * 8;
 	size_t readSizeBits = bits;
 	int skippedBits = 0;
-	if (readSizeBits > outSizeBits)
-	{
+	if (readSizeBits > outSizeBits) {
 		readSizeBits = outSizeBits;
 		skippedBits = static_cast<int>(bits - outSizeBits);
 	}
@@ -782,13 +709,11 @@ uint bufferRead::peekUBitLong(int numbits) noexcept
 	savebf = *this;  // Save current state info
 
 	r = 0;
-	for (i = 0; i < numbits; i++)
-	{
+	for (i = 0; i < numbits; i++) {
 		bitValue = readOneBit();
 
 		// Append to current stream
-		if (bitValue)
-		{
+		if (bitValue) {
 			r |= bitForBitnum(i);
 		}
 	}
@@ -815,8 +740,7 @@ int bufferRead::readSBitLong(int numbits) noexcept
 {
 	uint r = readUBitLong(numbits);
 	uint s = 1 << (numbits - 1);
-	if (r >= s)
-	{
+	if (r >= s) {
 		// sign-extend by removing sign bit and then subtracting sign bit again
 		r = r - s - s;
 	}
@@ -829,10 +753,8 @@ uint32 bufferRead::readVarInt32() noexcept
 	int count = 0;
 	uint32 b;
 
-	do
-	{
-		if (count == maxVarint32Bytes)
-		{
+	do {
+		if (count == maxVarint32Bytes) {
 			return result;
 		}
 		b = readUBitLong(8);
@@ -849,10 +771,8 @@ uint64 bufferRead::readVarInt64() noexcept
 	int count = 0;
 	uint64 b;
 
-	do
-	{
-		if (count == maxVarintBytes)
-		{
+	do {
+		if (count == maxVarintBytes) {
 			return result;
 		}
 		b = readUBitLong(8);
@@ -895,21 +815,18 @@ float bufferRead::readBitCoord(void) noexcept
 	fractval = readOneBit();
 
 	// If we got either parse them, otherwise it's a zero.
-	if (intval || fractval)
-	{
+	if (intval || fractval) {
 		// Read the sign bit
 		signbit = readOneBit();
 
 		// If there's an integer, read it in
-		if (intval)
-		{
+		if (intval) {
 			// Adjust the integers from [0..MAX_COORD_VALUE-1] to [1..MAX_COORD_VALUE]
 			intval = readUBitLong(COORD_INTEGER_BITS) + 1;
 		}
 
 		// If there's a fraction, read it in
-		if (fractval)
-		{
+		if (fractval) {
 			fractval = readUBitLong(COORD_FRACTIONAL_BITS);
 		}
 
@@ -934,10 +851,8 @@ float bufferRead::readBitCoordMP(bool integral, bool lowPrecision) noexcept
 	int flags = readUBitLong(3 - integral);
 	enum { INBOUNDS = 1, INTVAL = 2, SIGN = 4 };
 
-	if (integral)
-	{
-		if (flags & INTVAL)
-		{
+	if (integral) {
+		if (flags & INTVAL) {
 			// Read the third bit and the integer portion together at once
 			uint bits = readUBitLong((flags & INBOUNDS) ? COORD_INTEGER_BITS_MP + 1 : COORD_INTEGER_BITS + 1);
 			// Remap from [0,N] to [1,N+1]
@@ -970,8 +885,7 @@ float bufferRead::readBitCoordMP(bool integral, bool lowPrecision) noexcept
 	};
 	uint bits = readUBitLong(numbits_table[(flags & (INBOUNDS | INTVAL)) + lowPrecision * 4]);
 
-	if (flags & INTVAL)
-	{
+	if (flags & INTVAL) {
 		// Shuffle the bits to remap the integer portion from [0,N] to [1,N+1]
 		// and then paste in front of the fractional parts so we only need one
 		// int-to-float conversion.
@@ -1028,19 +942,13 @@ uint bufferRead::readBitCoordMPBits(bool integral, bool lowPrecision) noexcept
 	enum { INBOUNDS = 1, INTVAL = 2 };
 	int numbits = 0;
 
-	if (integral)
-	{
-		if (flags & INTVAL)
-		{
+	if (integral) {
+		if (flags & INTVAL) {
 			numbits = (flags & INBOUNDS) ? (1 + COORD_INTEGER_BITS_MP) : (1 + COORD_INTEGER_BITS);
-		}
-		else
-		{
+		} else {
 			return flags; // no extra bits
 		}
-	}
-	else
-	{
+	} else {
 		static const unsigned char numbits_table[8] =
 		{
 			1 + COORD_FRACTIONAL_BITS,
@@ -1163,21 +1071,17 @@ bool bufferRead::readString(char* string, int bufferLength, bool line, int* outN
 {
 	bool tooSmall = false;
 	int _char = 0;
-	while (1)
-	{
+	while (1) {
 		char val = readChar();
 		if (val == 0)
 			break;
 		else if (line && val == '\n')
 			break;
 
-		if (_char < (bufferLength - 1))
-		{
+		if (_char < (bufferLength - 1)) {
 			string[_char] = val;
 			++_char;
-		}
-		else
-		{
+		} else {
 			tooSmall = true;
 		}
 	}
@@ -1220,8 +1124,7 @@ void bufferRead::exciseBits(int startbit, int bitstoremove) noexcept
 
 	seek(endbit);
 
-	for (int i = 0; i < remaining_to_end; i++)
-	{
+	for (int i = 0; i < remaining_to_end; i++) {
 		temp.writeOneBit(readOneBit());
 	}
 

@@ -4,10 +4,10 @@
 
 namespace Glow
 {
-    void render() noexcept;
-    void clearCustomObjects() noexcept;
-    void updateInput() noexcept;
+	void render() noexcept;
+	void clearCustomObjects() noexcept;
+	void updateInput() noexcept;
 
-    // Config
-    void resetConfig() noexcept;
+	// Config
+	void resetConfig() noexcept;
 }

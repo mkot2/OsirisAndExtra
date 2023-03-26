@@ -5,16 +5,16 @@
 using ImTextureID = void*;
 
 class Texture {
-    ImTextureID texture = nullptr;
+	ImTextureID texture = nullptr;
 public:
-    Texture() = default;
-    ~Texture() { clear(); }
-    Texture(const Texture&) = delete;
-    Texture& operator=(const Texture&) = delete;
-    Texture(Texture&& other) noexcept : texture{ other.texture } { other.texture = nullptr; }
-    Texture& operator=(Texture&& other) noexcept { clear(); texture = other.texture; other.texture = nullptr; return *this; }
+	Texture() = default;
+	~Texture() { clear(); }
+	Texture(const Texture&) = delete;
+	Texture& operator=(const Texture&) = delete;
+	Texture(Texture&& other) noexcept : texture{ other.texture } { other.texture = nullptr; }
+	Texture& operator=(Texture&& other) noexcept { clear(); texture = other.texture; other.texture = nullptr; return *this; }
 
-    void init(int width, int height, const std::uint8_t* data) noexcept;
-    void clear() noexcept;
-    ImTextureID get() noexcept { return texture; }
+	void init(int width, int height, const std::uint8_t* data) noexcept;
+	void clear() noexcept;
+	ImTextureID get() noexcept { return texture; }
 };

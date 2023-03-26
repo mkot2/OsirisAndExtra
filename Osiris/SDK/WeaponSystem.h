@@ -7,5 +7,5 @@ struct WeaponInfo;
 
 class WeaponSystem {
 public:
-    VIRTUAL_METHOD(WeaponInfo*, getWeaponInfo, 2, (WeaponId weaponId), (this, weaponId))
+	VIRTUAL_METHOD(WeaponInfo*, getWeaponInfo, 2, (WeaponId weaponId), (this, weaponId))
 };

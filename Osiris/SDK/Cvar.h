@@ -6,11 +6,10 @@ struct ConVar;
 
 class Cvar {
 public:
-    VIRTUAL_METHOD(ConVar*, findVar, 15, (const char* name), (this, name))
+	VIRTUAL_METHOD(ConVar*, findVar, 15, (const char* name), (this, name))
 };
 
-class conCommandBase
-{
+class conCommandBase {
 public:
 	void* vmt;
 	conCommandBase* next;

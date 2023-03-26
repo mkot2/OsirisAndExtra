@@ -7,7 +7,7 @@
 #include "../SDK/UserCmd.h"
 #include "../SDK/Vector.h"
 
-namespace GrenadePrediction 
+namespace GrenadePrediction
 {
 	void run(UserCmd* cmd) noexcept;
 	void draw() noexcept;

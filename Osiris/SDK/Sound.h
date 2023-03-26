@@ -4,15 +4,15 @@
 #include "Vector.h"
 
 struct ActiveChannels {
-    int count;
-    short list[128];
+	int count;
+	short list[128];
 };
 
 struct Channel {
-    PAD(244)
-    int soundSource;
-    PAD(56)
-    Vector origin;
-    Vector direction;
-    PAD(80)
+	PAD(244)
+		int soundSource;
+	PAD(56)
+		Vector origin;
+	Vector direction;
+	PAD(80)
 };

@@ -7,8 +7,7 @@
 #include "Pad.h"
 #include "VirtualMethod.h"
 
-enum CvarFlags
-{
+enum CvarFlags {
 	NONE = 0,
 	UNREGISTERED = (1 << 0),
 	DEVELOPMENTONLY = (1 << 1),
@@ -35,17 +34,17 @@ enum CvarFlags
 };
 
 struct ConVar {
-    VIRTUAL_METHOD(float, getFloat, 12, (), (this))
-    VIRTUAL_METHOD(int, getInt, 13, (), (this))
-    VIRTUAL_METHOD(void, setValue, 14, (const char* value), (this, value))
-    VIRTUAL_METHOD(void, setValue, 15, (float value), (this, value))
-    VIRTUAL_METHOD(void, setValue, 16, (int value), (this, value))
+	VIRTUAL_METHOD(float, getFloat, 12, (), (this))
+		VIRTUAL_METHOD(int, getInt, 13, (), (this))
+		VIRTUAL_METHOD(void, setValue, 14, (const char* value), (this, value))
+		VIRTUAL_METHOD(void, setValue, 15, (float value), (this, value))
+		VIRTUAL_METHOD(void, setValue, 16, (int value), (this, value))
 
-    PAD(24)
-    std::add_pointer_t<void __cdecl()> changeCallback;
-    ConVar* parent;
-    const char* defaultValue;
-    char* string;
-    PAD(44)
-    UtlVector<void(__cdecl*)()> onChangeCallbacks;
+		PAD(24)
+		std::add_pointer_t<void __cdecl()> changeCallback;
+	ConVar* parent;
+	const char* defaultValue;
+	char* string;
+	PAD(44)
+		UtlVector<void(__cdecl*)()> onChangeCallbacks;
 };

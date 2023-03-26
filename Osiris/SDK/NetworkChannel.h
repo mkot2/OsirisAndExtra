@@ -7,8 +7,7 @@
 #include "BitBuffer.h"
 #include "MemAlloc.h"
 
-enum ECstrike15UserMessages
-{
+enum ECstrike15UserMessages {
 	CS_UM_VGUIMenu = 1,
 	CS_UM_Geiger = 2,
 	CS_UM_Train = 3,
@@ -78,21 +77,21 @@ enum ECstrike15UserMessages
 
 class NetworkChannel {
 public:
-    VIRTUAL_METHOD(float, getLatency, 9, (int flow), (this, flow))
-	VIRTUAL_METHOD(bool, sendNetMsg, 40, (void* msg, bool forceReliable = false, bool voice = false), (this, msg, forceReliable, voice))
+	VIRTUAL_METHOD(float, getLatency, 9, (int flow), (this, flow))
+		VIRTUAL_METHOD(bool, sendNetMsg, 40, (void* msg, bool forceReliable = false, bool voice = false), (this, msg, forceReliable, voice))
 
-    std::byte pad[24];
-    int outSequenceNr;
-    int inSequenceNr;
-    int outSequenceNrAck;
-    int outReliableState;
-    int inReliableState;
-    int chokedPackets;
+		std::byte pad[24];
+	int outSequenceNr;
+	int inSequenceNr;
+	int outSequenceNrAck;
+	int outReliableState;
+	int inReliableState;
+	int chokedPackets;
 };
 
-struct clMsgMove
-{
-	clMsgMove() {
+struct clMsgMove {
+	clMsgMove()
+	{
 		netMessageVtable = *reinterpret_cast<std::uint32_t*>(memory->clSendMove + 126);
 		clMsgMoveVtable = *reinterpret_cast<std::uint32_t*>(memory->clSendMove + 138);
 		allocatedMemory = *reinterpret_cast<void**>(memory->clSendMove + 131);
@@ -108,25 +107,29 @@ struct clMsgMove
 
 	}
 
-	~clMsgMove() {
+	~clMsgMove()
+	{
 		memory->clMsgMoveDescontructor(this);
 	}
 
-	inline auto setNumBackupCommands(int backupCommands) {
+	inline auto setNumBackupCommands(int backupCommands)
+	{
 		this->backupCommands = backupCommands;
 	}
 
-	inline auto setNumNewCommands(int newCommands) {
+	inline auto setNumNewCommands(int newCommands)
+	{
 		this->newCommands = newCommands;
 	}
 
-	inline auto setData(unsigned char* data, int numBytesWritten) {
+	inline auto setData(unsigned char* data, int numBytesWritten)
+	{
 
 		flags |= 4;
 
 		//Why does this work??
 		if (allocatedMemory == reinterpret_cast<void*>(memory->clSendMove + 131)) {
-			
+
 			void* newMemory = memory->memalloc->Alloc(24);
 			if (newMemory) {
 				*((unsigned long*)newMemory + 0x14) = 15;

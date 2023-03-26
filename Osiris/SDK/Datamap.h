@@ -30,17 +30,17 @@ typedef enum _fieldtypes {
 
 	FIELD_VMATRIX,			// a vmatrix (output coords are NOT worldspace)
 
-							// NOTE: Use float arrays for local transformations that don't need to be fixed up.
-							FIELD_VMATRIX_WORLDSPACE,// A VMatrix that maps some local space to world space (translation is fixed up on level transitions)
-							FIELD_MATRIX3X4_WORLDSPACE,	// matrix3x4_t that maps some local space to world space (translation is fixed up on level transitions)
+	// NOTE: Use float arrays for local transformations that don't need to be fixed up.
+	FIELD_VMATRIX_WORLDSPACE,// A VMatrix that maps some local space to world space (translation is fixed up on level transitions)
+	FIELD_MATRIX3X4_WORLDSPACE,	// matrix3x4_t that maps some local space to world space (translation is fixed up on level transitions)
 
-							FIELD_INTERVAL,			// a start and range floating point interval ( e.g., 3.2->3.6 == 3.2 and 0.4 )
-							FIELD_MODELINDEX,		// a model index
-							FIELD_MATERIALINDEX,	// a material index (using the material precache string table)
+	FIELD_INTERVAL,			// a start and range floating point interval ( e.g., 3.2->3.6 == 3.2 and 0.4 )
+	FIELD_MODELINDEX,		// a model index
+	FIELD_MATERIALINDEX,	// a material index (using the material precache string table)
 
-							FIELD_VECTOR2D,			// 2 floats
+	FIELD_VECTOR2D,			// 2 floats
 
-							FIELD_TYPECOUNT,		// MUST BE LAST
+	FIELD_TYPECOUNT,		// MUST BE LAST
 } fieldtype_t;
 
 class ISaveRestoreOps;
@@ -54,8 +54,7 @@ struct datamap;
 struct typedescription_fixed;
 struct typedescription_t;
 
-enum
-{
+enum {
 	PC_NON_NETWORKED_ONLY = 0,
 	PC_NETWORKED_ONLY,
 
@@ -71,8 +70,7 @@ enum {
 	TD_OFFSET_COUNT,
 };
 
-struct typedescription_t
-{
+struct typedescription_t {
 	int fieldType; //0x0000
 	char* fieldName; //0x0004
 	int fieldOffset[TD_OFFSET_COUNT]; //0x0008
@@ -90,8 +88,7 @@ struct optimized_datamap_t;
 // Purpose: stores the list of objects in the hierarchy
 //			used to iterate through an object's data descriptions
 //-----------------------------------------------------------------------------
-struct datamap
-{
+struct datamap {
 	typedescription_t* dataDesc;
 	int dataNumFields;
 	char const* dataClassName;
@@ -105,20 +102,16 @@ namespace DataMap
 {
 	static std::uintptr_t findInDataMap(datamap* pMap, const char* name) noexcept
 	{
-		while (pMap)
-		{
-			for (int i = 0; i < pMap->dataNumFields; i++)
-			{
+		while (pMap) {
+			for (int i = 0; i < pMap->dataNumFields; i++) {
 				if (pMap->dataDesc[i].fieldName == NULL)
 					continue;
 
 				if (strcmp(name, pMap->dataDesc[i].fieldName) == 0)
 					return pMap->dataDesc[i].fieldOffset[TD_OFFSET_NORMAL];
 
-				if (pMap->dataDesc[i].fieldType == FIELD_EMBEDDED)
-				{
-					if (pMap->dataDesc[i].td)
-					{
+				if (pMap->dataDesc[i].fieldType == FIELD_EMBEDDED) {
+					if (pMap->dataDesc[i].td) {
 						unsigned int offset;
 
 						if ((offset = findInDataMap(pMap->dataDesc[i].td, name)) != 0)

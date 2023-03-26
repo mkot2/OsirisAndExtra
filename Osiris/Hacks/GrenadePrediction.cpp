@@ -36,8 +36,7 @@ void traceHull(Vector& src, Vector& end, Trace& tr) noexcept
 
 void setup(Vector& vecSrc, Vector& vecThrow, Vector viewangles) noexcept
 {
-	auto AngleVectors = [](const Vector & angles, Vector * forward, Vector * right, Vector * up)
-	{
+	auto AngleVectors = [](const Vector& angles, Vector* forward, Vector* right, Vector* up) {
 		float sr, sp, sy, cr, cp, cy;
 
 		sp = static_cast<float>(sin(double(angles.x) * 0.01745329251f));
@@ -47,22 +46,19 @@ void setup(Vector& vecSrc, Vector& vecThrow, Vector viewangles) noexcept
 		sr = static_cast<float>(sin(double(angles.z) * 0.01745329251f));
 		cr = static_cast<float>(cos(double(angles.z) * 0.01745329251f));
 
-		if (forward)
-		{
+		if (forward) {
 			forward->x = cp * cy;
 			forward->y = cp * sy;
 			forward->z = -sp;
 		}
 
-		if (right)
-		{
+		if (right) {
 			right->x = (-1 * sr * sp * cy + -1 * cr * -sy);
 			right->y = (-1 * sr * sp * sy + -1 * cr * cy);
 			right->z = -1 * sr * cp;
 		}
 
-		if (up)
-		{
+		if (up) {
 			up->x = (cr * sp * cy + -sr * -sy);
 			up->y = (cr * sp * sy + -sr * cy);
 			up->z = cr * cp;
@@ -71,15 +67,11 @@ void setup(Vector& vecSrc, Vector& vecThrow, Vector viewangles) noexcept
 	Vector angThrow = viewangles;
 	float pitch = angThrow.x;
 
-	if (pitch <= 90.0f)
-	{
-		if (pitch < -90.0f)
-		{
+	if (pitch <= 90.0f) {
+		if (pitch < -90.0f) {
 			pitch += 360.0f;
 		}
-	}
-	else
-	{
+	} else {
 		pitch -= 360.0f;
 	}
 
@@ -128,23 +120,19 @@ int physicsClipVelocity(const Vector& in, const Vector& normal, Vector& out, flo
 
 	angle = normal[2];
 
-	if (angle > 0)
-	{
+	if (angle > 0) {
 		blocked |= 1;        // floor
 	}
-	if (!angle)
-	{
+	if (!angle) {
 		blocked |= 2;        // step
 	}
 
 	backoff = in.dotProduct(normal) * overbounce;
 
-	for (i = 0; i < 3; i++)
-	{
+	for (i = 0; i < 3; i++) {
 		change = normal[i] * backoff;
 		out[i] = in[i] - change;
-		if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
-		{
+		if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON) {
 			out[i] = 0;
 		}
 	}
@@ -176,21 +164,17 @@ void resolveFlyCollisionCustom(Trace& tr, Vector& vecVelocity, float interval) n
 	float speedSqr = vecAbsVelocity.squareLength();
 	static const float minSpeedSqr = 20.0f * 20.0f;
 
-	if (speedSqr < minSpeedSqr)
-	{
+	if (speedSqr < minSpeedSqr) {
 		vecAbsVelocity.x = 0.0f;
 		vecAbsVelocity.y = 0.0f;
 		vecAbsVelocity.z = 0.0f;
 	}
 
-	if (tr.plane.normal.z > 0.7f)
-	{
+	if (tr.plane.normal.z > 0.7f) {
 		vecVelocity = vecAbsVelocity;
 		vecAbsVelocity *= ((1.0f - tr.fraction) * interval);
 		pushEntity(tr.endpos, vecAbsVelocity, tr);
-	}
-	else
-	{
+	} else {
 		vecVelocity = vecAbsVelocity;
 	}
 }
@@ -205,12 +189,9 @@ void addGravityMove(Vector& move, Vector& vel, float frametime, bool onground) n
 	move.x = (vel.x + basevel.x) * frametime;
 	move.y = (vel.y + basevel.y) * frametime;
 
-	if (onground)
-	{
+	if (onground) {
 		move.z = (vel.z + basevel.z) * frametime;
-	}
-	else
-	{
+	} else {
 		float gravity = 800.0f * 0.4f;
 		float newZ = vel.z - (gravity * frametime);
 		move.z = ((vel.z + newZ) / 2.0f + basevel.z) * frametime;
@@ -218,8 +199,7 @@ void addGravityMove(Vector& move, Vector& vel, float frametime, bool onground) n
 	}
 }
 
-enum ACT
-{
+enum ACT {
 	ACT_NONE,
 	ACT_THROW,
 	ACT_LOB,
@@ -239,12 +219,10 @@ void tick(int buttons) noexcept
 
 bool checkDetonate(const Vector& vecThrow, const Trace& tr, int tick, float interval, Entity* activeWeapon) noexcept
 {
-	switch (activeWeapon->itemDefinitionIndex2())
-	{
+	switch (activeWeapon->itemDefinitionIndex2()) {
 	case WeaponId::SmokeGrenade:
 	case WeaponId::Decoy:
-		if (vecThrow.length2D() < 0.1f)
-		{
+		if (vecThrow.length2D() < 0.1f) {
 			int det_tick_mod = (int)(0.2f / interval);
 			return !(tick % det_tick_mod);
 		}
@@ -274,9 +252,8 @@ void drawCircle(Vector position, float points, float radius) noexcept
 		if (!tr.endpos.notNull())
 			continue;
 
-		if (Helpers::worldToScreen(tr.endpos, start2d) && Helpers::worldToScreen(lastPos, end2d) && lastPos != Vector{ })
-		{
-			if (start2d != ImVec2{ } && end2d != ImVec2{ })
+		if (Helpers::worldToScreen(tr.endpos, start2d) && Helpers::worldToScreen(lastPos, end2d) && lastPos != Vector{ }) {
+			if (start2d != ImVec2{ }&& end2d != ImVec2{ })
 				endPoints.emplace_back(std::pair<ImVec2, ImVec2>{ end2d, start2d });
 		}
 		lastPos = tr.endpos;
@@ -327,8 +304,8 @@ void drawDamage(Vector position) noexcept
 
 		const float d = ((dist - b) / c);
 		const float damage = a * exp(-d * d);
-		float dmg = max(ceilf(calculateArmor(damage, player.armor)), 0.0f);
-		dmg = min(dmg, (player.armor > 0) ? 57.0f : 98.0f);
+		float dmg = std::max(ceilf(calculateArmor(damage, player.armor)), 0.0f);
+		dmg = std::min(dmg, (player.armor > 0) ? 57.0f : 98.0f);
 
 		if (mp_friendlyfire->getInt() > 0 && !player.enemy)
 			dmg *= ff_damage_reduction_grenade->getFloat();
@@ -350,26 +327,22 @@ void GrenadePrediction::run(UserCmd* cmd) noexcept
 	endPoints.clear();
 	dmgPoints.clear();
 
-	if (!config->misc.nadePredict)
-	{
+	if (!config->misc.nadePredict) {
 		renderMutex.unlock();
 		return;
 	}
 
-	if (!localPlayer || !localPlayer->isAlive())
-	{
+	if (!localPlayer || !localPlayer->isAlive()) {
 		renderMutex.unlock();
 		return;
 	}
 
-	if (localPlayer->moveType() == MoveType::NOCLIP)
-	{
+	if (localPlayer->moveType() == MoveType::NOCLIP) {
 		renderMutex.unlock();
 		return;
 	}
-	
-	if (interfaces->engine->isHLTV())
-	{
+
+	if (interfaces->engine->isHLTV()) {
 		renderMutex.unlock();
 		return;
 	}
@@ -377,8 +350,7 @@ void GrenadePrediction::run(UserCmd* cmd) noexcept
 	tick(cmd->buttons);
 
 	auto activeWeapon = localPlayer->getActiveWeapon();
-	if (!activeWeapon || !activeWeapon->isGrenade())
-	{
+	if (!activeWeapon || !activeWeapon->isGrenade()) {
 		renderMutex.unlock();
 		return;
 	}
@@ -388,8 +360,7 @@ void GrenadePrediction::run(UserCmd* cmd) noexcept
 		&& itemDefinition != WeaponId::Molotov
 		&& itemDefinition != WeaponId::IncGrenade
 		&& itemDefinition != WeaponId::Flashbang
-		&& itemDefinition != WeaponId::HeGrenade)
-	{
+		&& itemDefinition != WeaponId::HeGrenade) {
 		renderMutex.unlock();
 		return;
 	}
@@ -403,8 +374,7 @@ void GrenadePrediction::run(UserCmd* cmd) noexcept
 
 	std::vector<Vector> path;
 
-	for (unsigned int i = 0; i < path.max_size() - 1; ++i)
-	{
+	for (unsigned int i = 0; i < path.max_size() - 1; ++i) {
 		if (!logtimer)
 			path.emplace_back(vecSrc);
 
@@ -419,8 +389,7 @@ void GrenadePrediction::run(UserCmd* cmd) noexcept
 		if (checkDetonate(vecThrow, tr, i, interval, activeWeapon))
 			result |= 1;
 
-		if (tr.fraction != 1.0f)
-		{
+		if (tr.fraction != 1.0f) {
 			result |= 2; // Collision!
 			resolveFlyCollisionCustom(tr, vecThrow, interval);
 		}
@@ -441,10 +410,8 @@ void GrenadePrediction::run(UserCmd* cmd) noexcept
 	Vector prev = path[0];
 	ImVec2 nadeStart, nadeEnd;
 	Vector lastPos{ };
-	for (auto& nade : path)
-	{
-		if (Helpers::worldToScreen(prev, nadeStart) && Helpers::worldToScreen(nade, nadeEnd))
-		{
+	for (auto& nade : path) {
+		if (Helpers::worldToScreen(prev, nadeStart) && Helpers::worldToScreen(nade, nadeEnd)) {
 			screenPoints.emplace_back(std::pair<ImVec2, ImVec2>{ nadeStart, nadeEnd });
 			prev = nade;
 			lastPos = nade;
@@ -456,7 +423,7 @@ void GrenadePrediction::run(UserCmd* cmd) noexcept
 		if (config->misc.nadeDamagePredict.enabled && itemDefinition == WeaponId::HeGrenade)
 			drawDamage(lastPos);
 	}
-		
+
 
 	renderMutex.unlock();
 }
@@ -472,8 +439,7 @@ void GrenadePrediction::draw() noexcept
 	if (interfaces->engine->isHLTV())
 		return;
 
-	if (renderMutex.try_lock())
-	{
+	if (renderMutex.try_lock()) {
 		savedPoints = screenPoints;
 
 		renderMutex.unlock();
@@ -495,10 +461,8 @@ void GrenadePrediction::draw() noexcept
 		drawList->AddLine(ImVec2(point.first.x, point.first.y), ImVec2(point.second.x, point.second.y), trailColor, 1.5f);
 
 	// draw nade damage
-	if (config->misc.nadeDamagePredict.enabled)
-	{
-		for (auto& point : dmgPoints)
-		{
+	if (config->misc.nadeDamagePredict.enabled) {
+		for (auto& point : dmgPoints) {
 			const auto textSize = ImGui::CalcTextSize(point.second.c_str());
 			const auto horizontalOffset = textSize.x / 2;
 			const auto verticalOffset = textSize.y;

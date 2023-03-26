@@ -4,5 +4,5 @@ struct UserCmd;
 
 namespace Knifebot
 {
-    void run(UserCmd*) noexcept;
+	void run(UserCmd*) noexcept;
 }
