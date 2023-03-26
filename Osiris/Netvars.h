@@ -14,7 +14,6 @@ namespace Netvars
 
 #define PNETVAR_OFFSET(funcname, class_name, var_name, offset, type) \
 [[nodiscard]] auto funcname() noexcept \
-[[nodiscard]] auto funcname() noexcept \
 { \
 	constexpr auto hash = fnv::hash(class_name "->" var_name); \
 	return reinterpret_cast<std::add_pointer_t<type>>(std::uintptr_t(this) + Netvars::get(hash) + offset); \
