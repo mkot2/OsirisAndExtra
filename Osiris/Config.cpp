@@ -275,18 +275,22 @@ static void from_json(const json& j, Config::Ragebot& r)
 	read(j, "Between shots", r.betweenShots);
 	read(j, "Full stop", r.fullStop);
 	read(j, "Duck stop", r.duckStop);
-	read(j, "Disable multipoint if low fps", r.disableMultipointIfLowFPS);
-	read(j, "Disable backtrack if low fps", r.disableBacktrackIfLowFPS);
 	read(j, "Priority", r.priority);
 	read(j, "Fov", r.fov);
 	read(j, "Hitboxes", r.hitboxes);
 	read(j, "Relative hitchance switch", r.relativeHitchanceSwitch);
-	read(j, "Hitchance", r.hitChance);
+	read(j, "Head Multipoint", r.headMultiPoint);
+	read(j, "Body Multipoint", r.bodyMultiPoint);
 	read(j, "Relative hitchance", r.relativeHitchance);
 	read(j, "Accuracy boost", r.accuracyBoost);
-	read(j, "Multipoint", r.multiPoint);
 	read(j, "Min damage", r.minDamage);
 	read(j, "Min damage override", r.minDamageOverride);
+}
+
+static void from_json(const json& j, Config::Optimizations& o)
+{
+	read(j, "Low Performance Mode", o.lowPerformanceMode);
+	read(j, "Low Performance Mode Backtrack", o.lowPerformanceModeBacktrack);
 }
 
 static void from_json(const json& j, Config::Triggerbot& t)
@@ -807,6 +811,7 @@ void Config::load(const char8_t* name, bool incremental) noexcept
 	read<value_t::object>(j, "Draw legitbot fov", legitbotFov);
 
 	read<value_t::object>(j, "RCS", recoilControlSystem);
+	read<value_t::object>(j, "Optimizations", optimizations);
 
 	read(j, "Ragebot", ragebot);
 	read(j, "Ragebot Key", ragebotKey);
@@ -1029,8 +1034,6 @@ static void to_json(json& j, const Config::Ragebot& o, const Config::Ragebot& du
 	WRITE("Between shots", betweenShots);
 	WRITE("Full stop", fullStop);
 	WRITE("Duck stop", duckStop);
-	WRITE("Disable multipoint if low fps", disableMultipointIfLowFPS);
-	WRITE("Disable backtrack if low fps", disableMultipointIfLowFPS);
 	WRITE("Priority", priority);
 	WRITE("Fov", fov);
 	WRITE("Hitboxes", hitboxes);
@@ -1038,9 +1041,16 @@ static void to_json(json& j, const Config::Ragebot& o, const Config::Ragebot& du
 	WRITE("Hitchance", hitChance);
 	WRITE("Relative hitchance", relativeHitchance);
 	WRITE("Accuracy boost", accuracyBoost);
-	WRITE("Multipoint", multiPoint);
+	WRITE("Head Multipoint", headMultiPoint);
+	WRITE("Body Multipoint", bodyMultiPoint);
 	WRITE("Min damage", minDamage);
 	WRITE("Min damage override", minDamageOverride);
+}
+
+static void to_json(json& j, const Config::Optimizations& o, const Config::Optimizations& dummy = {})
+{
+	WRITE("Low Performance Mode", lowPerformanceMode);
+	WRITE("Low Performance Mode Backtrack", lowPerformanceModeBacktrack);
 }
 
 static void to_json(json& j, const Config::Triggerbot& o, const Config::Triggerbot& dummy = {})
@@ -1599,6 +1609,7 @@ void Config::save(size_t id) const noexcept
 		j["Draw legitbot fov"] = legitbotFov;
 
 		j["RCS"] = recoilControlSystem;
+		j["Optimizations"] = optimizations;
 
 		j["Ragebot"] = ragebot;
 		to_json(j["Ragebot Key"], ragebotKey, KeyBind::NONE);

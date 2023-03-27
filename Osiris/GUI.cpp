@@ -324,8 +324,8 @@ void GUI::renderLegitbotWindow() noexcept
 
 void GUI::renderRagebotWindow() noexcept
 {
-	static const char* hitboxes[]{ "Head","Chest","Stomach","Arms","Legs" };
-	static bool hitbox[ARRAYSIZE(hitboxes)] = { false, false, false, false, false };
+	static const char* hitboxes[]{ "Head","Chest","Stomach","Arms","Legs","Feet" };
+	static bool hitbox[ARRAYSIZE(hitboxes)] = { false, false, false, false, false, false };
 	static std::string previewvalue = "";
 	bool once = false;
 
@@ -440,9 +440,8 @@ void GUI::renderRagebotWindow() noexcept
 	ImGui::Checkbox("Between shots", &config->ragebot[currentWeapon].betweenShots);
 	ImGui::Checkbox("Full stop", &config->ragebot[currentWeapon].fullStop);
 	ImGui::Checkbox("Duck stop", &config->ragebot[currentWeapon].duckStop);
-	ImGui::Checkbox("Disable multipoint if low fps", &config->ragebot[currentWeapon].disableMultipointIfLowFPS);
-	ImGui::Checkbox("Disable backtrack if low fps", &config->ragebot[currentWeapon].disableBacktrackIfLowFPS);
 	ImGui::Checkbox("Resolver", &config->ragebot[currentWeapon].resolver);
+	ImGui::Checkbox("Low Performance Mode", &config->optimizations.lowPerformanceMode);
 	ImGui::Combo("Priority", &config->ragebot[currentWeapon].priority, "Health\0Distance\0Fov\0");
 
 	for (size_t i = 0; i < ARRAYSIZE(hitbox); i++) {
@@ -477,7 +476,8 @@ void GUI::renderRagebotWindow() noexcept
 	else
 		ImGui::SliderInt("Absolute hitchance", &config->ragebot[currentWeapon].hitChance, 0, 100, "%d");
 	ImGui::SliderFloat("Accuracy boost", &config->ragebot[currentWeapon].accuracyBoost, 0, 1.0f, "%.2f");
-	ImGui::SliderInt("Multipoint", &config->ragebot[currentWeapon].multiPoint, 0, 100, "%d");
+	ImGui::SliderInt("Head multipoint", &config->ragebot[currentWeapon].headMultiPoint, 0, 100, "%d");
+	ImGui::SliderInt("Body multipoint", &config->ragebot[currentWeapon].bodyMultiPoint, 0, 100, "%d");
 	ImGui::SliderInt("Min damage", &config->ragebot[currentWeapon].minDamage, 0, 105, "%d");
 	config->ragebot[currentWeapon].minDamage = std::clamp(config->ragebot[currentWeapon].minDamage, 0, 250);
 	ImGui::PushID("Min damage override Key");
@@ -759,8 +759,9 @@ void GUI::renderBacktrackWindow() noexcept
 	ImGui::PushItemWidth(220.0f);
 	ImGui::SliderInt("Time limit", &config->backtrack.timeLimit, 1, 200, "%d ms");
 	ImGui::PopItemWidth();
+	ImGui::Checkbox("Low performance mode", &config->optimizations.lowPerformanceModeBacktrack);
 	ImGui::NextColumn();
-	ImGui::Checkbox("Enabled Fake Latency", &config->backtrack.fakeLatency);
+	ImGui::Checkbox("Enabled fake latency", &config->backtrack.fakeLatency);
 	ImGui::PushItemWidth(220.0f);
 	ImGui::SliderInt("Ping", &config->backtrack.fakeLatencyAmount, 1, 200, "%d ms");
 	ImGui::PopItemWidth();

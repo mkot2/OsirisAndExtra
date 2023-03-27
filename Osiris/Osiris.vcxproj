@@ -76,6 +76,7 @@
     <ClCompile Include="imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="Memory.cpp" />
+    <ClCompile Include="PCG\pcg.cpp" />
     <ClCompile Include="SDK\AnimState.cpp" />
     <ClCompile Include="SDK\BitBuffer.cpp" />
     <ClCompile Include="SDK\checksum_crc.cpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="MinHook\trampoline.h" />
     <ClInclude Include="Netvars.h" />
     <ClInclude Include="nlohmann\json.hpp" />
+    <ClInclude Include="PCG\pcg.h" />
     <ClInclude Include="PCG\pcg_extras.h" />
     <ClInclude Include="PCG\pcg_random.h" />
     <ClInclude Include="PCG\pcg_uint128.h" />

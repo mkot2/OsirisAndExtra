@@ -27,7 +27,7 @@ void Ragebot::updateInput() noexcept
 }
 
 void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const Ragebot::Enemies target, const std::array<bool,
-	Max> hitbox, Entity* activeWeapon, const int weaponIndex, const Vector localPlayerEyePosition, const Vector aimPunch, const int multiPoint, const int minDamage, float& damageDiff, Vector& bestAngle, Vector& bestTarget, int& bestIndex, float& bestSimulationTime) noexcept
+	Max> hitbox, Entity* activeWeapon, const int weaponIndex, const Vector localPlayerEyePosition, const Vector aimPunch, const int headMultiPoint, const int bodyMultiPoint, const int minDamage, float& damageDiff, Vector& bestAngle, Vector& bestTarget, int& bestIndex, float& bestSimulationTime) noexcept
 {
 	Ragebot::latest_player = entity->getPlayerName();
 	const auto& cfg = config->ragebot;
@@ -54,7 +54,7 @@ void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const Ragebot::
 		if (!hitbox)
 			continue;
 
-		for (const auto& bonePosition : AimbotFunction::multiPoint(entity, matrix, hitbox, localPlayerEyePosition, i, multiPoint)) {
+		for (const auto& bonePosition : AimbotFunction::multiPoint(entity, matrix, hitbox, localPlayerEyePosition, i, headMultiPoint, bodyMultiPoint)) {
 			const auto angle{ AimbotFunction::calculateRelativeAngle(localPlayerEyePosition, bonePosition, cmd->viewangles + aimPunch) };
 			const auto fov{ angle.length2D() };
 			if (fov > cfg[weaponIndex].fov)
@@ -172,6 +172,8 @@ void Ragebot::run(UserCmd* cmd) noexcept
 	float bestSimulationTime = 0;
 	const auto localPlayerEyePosition = localPlayer->getEyePosition();
 	const auto aimPunch = localPlayer->getAimPunch();
+	static auto frameRate = 1.0f;
+	frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
 
 	std::array<bool, Max> hitbox{ false };
 
@@ -181,19 +183,27 @@ void Ragebot::run(UserCmd* cmd) noexcept
 	hitbox[UpperChest] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
 	hitbox[Thorax] = (cfg[weaponIndex].hitboxes & 1 << 2) == 1 << 2;
 	hitbox[LowerChest] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
-	//Stomach
+	// Stomach
 	hitbox[Belly] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
 	hitbox[Pelvis] = (cfg[weaponIndex].hitboxes & 1 << 5) == 1 << 5;
-	//Arms
-	hitbox[RightUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 6) == 1 << 6;
-	hitbox[RightForearm] = (cfg[weaponIndex].hitboxes & 1 << 7) == 1 << 7;
-	hitbox[LeftUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 8) == 1 << 8;
-	hitbox[LeftForearm] = (cfg[weaponIndex].hitboxes & 1 << 9) == 1 << 9;
-	//Legs
-	hitbox[RightCalf] = (cfg[weaponIndex].hitboxes & 1 << 10) == 1 << 10;
-	hitbox[RightThigh] = (cfg[weaponIndex].hitboxes & 1 << 11) == 1 << 11;
-	hitbox[LeftCalf] = (cfg[weaponIndex].hitboxes & 1 << 12) == 1 << 12;
-	hitbox[LeftThigh] = (cfg[weaponIndex].hitboxes & 1 << 13) == 1 << 13;
+	// Limbs will only be scanned when we can afford it, unless they are the only selected hitboxes
+	if (static_cast<int>(1 / frameRate) > 1 / memory->globalVars->intervalPerTick && !((cfg[weaponIndex].hitboxes & 1 << 2) == (cfg[weaponIndex].hitboxes & 1 << 0) == (cfg[weaponIndex].hitboxes & 1 << 1) == 0) || !config->optimizations.lowPerformanceMode) {
+		// Arms
+		hitbox[Hitboxes::RightUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+		hitbox[Hitboxes::RightForearm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+		hitbox[Hitboxes::RightHand] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+		hitbox[Hitboxes::LeftUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+		hitbox[Hitboxes::LeftForearm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+		hitbox[Hitboxes::LeftHand] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+		// Legs
+		hitbox[Hitboxes::RightCalf] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
+		hitbox[Hitboxes::RightThigh] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
+		hitbox[Hitboxes::LeftCalf] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
+		hitbox[Hitboxes::LeftThigh] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
+		// Feet
+		hitbox[Hitboxes::LeftFoot] = (cfg[weaponIndex].hitboxes & 1 << 5) == 1 << 5;
+		hitbox[Hitboxes::RightFoot] = (cfg[weaponIndex].hitboxes & 1 << 5) == 1 << 5;
+	}
 
 
 	std::vector<Enemies> enemies;
@@ -233,12 +243,8 @@ void Ragebot::run(UserCmd* cmd) noexcept
 		break;
 	}
 
-	static auto frameRate = 1.0f;
-	frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
-
-	auto multiPoint = cfg[weaponIndex].multiPoint;
-	if (cfg[weaponIndex].disableMultipointIfLowFPS && static_cast<int>(1 / frameRate) <= 1 / memory->globalVars->intervalPerTick)
-		multiPoint = 0;
+	auto headMultiPoint = cfg[weaponIndex].headMultiPoint;
+	auto bodyMultiPoint = cfg[weaponIndex].bodyMultiPoint;
 
 	for (const auto& target : enemies) {
 		auto entity{ interfaces->entityList->getEntity(target.id) };
@@ -254,7 +260,7 @@ void Ragebot::run(UserCmd* cmd) noexcept
 		for (int cycle = 0; cycle < 2; cycle++) {
 			float currentSimulationTime = -1.0f;
 
-			if (config->backtrack.enabled) {
+			if (config->backtrack.enabled && !(static_cast<int>(1 / frameRate) <= 1 / memory->globalVars->intervalPerTick && config->optimizations.lowPerformanceModeBacktrack)) {
 				const auto records = Animations::getBacktrackRecords(entity->index());
 				if (!records || records->empty())
 					continue;
@@ -298,7 +304,7 @@ void Ragebot::run(UserCmd* cmd) noexcept
 				currentSimulationTime = player.simulationTime;
 			}
 
-			runRagebot(cmd, entity, entity->getBoneCache().memory, target, hitbox, activeWeapon, weaponIndex, localPlayerEyePosition, aimPunch, multiPoint, minDamage, damageDiff, bestAngle, bestTarget, bestIndex, bestSimulationTime);
+			runRagebot(cmd, entity, entity->getBoneCache().memory, target, hitbox, activeWeapon, weaponIndex, localPlayerEyePosition, aimPunch, headMultiPoint, bodyMultiPoint, minDamage, damageDiff, bestAngle, bestTarget, bestIndex, bestSimulationTime);
 			resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 			if (bestTarget.notNull()) {
 				bestSimulationTime = currentSimulationTime;

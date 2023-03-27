@@ -263,6 +263,9 @@
     <ClCompile Include="SDK\BitBuffer.cpp">
       <Filter>SDK</Filter>
     </ClCompile>
+    <ClCompile Include="PCG\pcg.cpp">
+      <Filter>PCG</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUI.h">
@@ -683,6 +686,9 @@
       <Filter>PCG</Filter>
     </ClInclude>
     <ClInclude Include="PCG\pcg_random.h">
+      <Filter>PCG</Filter>
+    </ClInclude>
+    <ClInclude Include="PCG\pcg.h">
       <Filter>PCG</Filter>
     </ClInclude>
   </ItemGroup>

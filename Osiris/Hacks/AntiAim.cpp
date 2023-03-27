@@ -19,36 +19,6 @@ static bool isShooting{ false };
 static bool didShoot{ false };
 static float lastShotTime{ 0.f };
 
-#undef min
-#undef max
-template <typename T>
-class uniform_real_random_generator {
-	std::uniform_real_distribution<T> distribution;
-	std::default_random_engine random_engine;
-public:
-	explicit uniform_real_random_generator(const unsigned seed) : distribution{ 0, RAND_MAX }, random_engine{ seed }
-	{
-	}
-
-	uniform_real_random_generator(const T min, const T max, const unsigned seed) : distribution{ min, max }, random_engine{ seed }
-	{
-	}
-
-	[[nodiscard]] T get()
-	{
-		return distribution(random_engine);
-	}
-
-	void set_range(const T min, const T max)
-	{
-		if (distribution.min() == min && distribution.max() == max)
-			return;
-		distribution = std::uniform_real_distribution{ min, max };
-	}
-};
-uniform_real_random_generator<float> random{ static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count()) };
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
-
 bool updateLby(bool update = false) noexcept
 {
 	static float timer = 0.f;
@@ -106,7 +76,7 @@ bool autoDirection(Vector eyeAngle) noexcept
 	float distanceLeft45 = sqrtf(powf(startPosition.x - traceRight45.endpos.x, 2) + powf(startPosition.y - traceRight45.endpos.y, 2) + powf(startPosition.z - traceRight45.endpos.z, 2));
 	float distanceRight45 = sqrtf(powf(startPosition.x - traceLeft45.endpos.x, 2) + powf(startPosition.y - traceLeft45.endpos.y, 2) + powf(startPosition.z - traceLeft45.endpos.z, 2));
 
-	float mindistance = min(distanceLeft45, distanceRight45);
+	float mindistance = std::min(distanceLeft45, distanceRight45);
 
 	if (distanceLeft45 == mindistance)
 		return false;
@@ -115,7 +85,7 @@ bool autoDirection(Vector eyeAngle) noexcept
 
 float random_float(const float a, const float b, const float multiplier)
 {
-	return a + random.get() / static_cast<float>(RAND_MAX) * (b - a) * multiplier;
+	return a + std::uniform_real_distribution<float>(RAND_MAX)(PCG::generator) / static_cast<float>(RAND_MAX) * (b - a) * multiplier;
 }
 
 void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector& currentViewAngles, bool& sendPacket) noexcept
@@ -172,8 +142,7 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
 
 			switch (config->rageAntiAim[static_cast<int>(moving_flag)].yawBase) {
 			case Yaw::paranoia:
-				random.set_range(static_cast<float>(-config->rageAntiAim[static_cast<int>(moving_flag)].paranoiaMin), static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].paranoiaMax));
-				yaw += random.get() + 180;
+				yaw += std::uniform_real_distribution<float>(static_cast<float>(-config->rageAntiAim[static_cast<int>(moving_flag)].paranoiaMin), static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].paranoiaMax))(PCG::generator) + 180;
 				break;
 			case Yaw::backward:
 				yaw += 180.f;

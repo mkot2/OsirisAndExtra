@@ -44,8 +44,6 @@ public:
 		bool autoShot{ false };
 		bool autoScope{ false };
 		bool autoStop{ false };
-		bool disableMultipointIfLowFPS{ false };
-		bool disableBacktrackIfLowFPS{ false };
 		bool betweenShots{ false };
 		bool fullStop{ false };
 		bool duckStop{ false };
@@ -56,13 +54,19 @@ public:
 		int hitChance{ 50 };
 		float relativeHitchance{ 0.85f };
 		float accuracyBoost{ 0.f };
-		int multiPoint{ 0 };
+		int headMultiPoint{ 0 };
+		int bodyMultiPoint{ 0 };
 		int minDamage{ 1 };
 		int minDamageOverride{ 1 };
 	};
 	std::array<Ragebot, 40> ragebot;
 	KeyBind ragebotKey{ std::string("ragebot") };
 	KeyBind minDamageOverrideKey{ std::string("min damage override"), Off };
+
+	struct Optimizations {
+		bool lowPerformanceMode{ false };
+		bool lowPerformanceModeBacktrack{ false };
+	} optimizations;
 
 	struct Fakelag {
 		bool enabled = false;

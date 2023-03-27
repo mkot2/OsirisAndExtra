@@ -2,8 +2,7 @@
 #include "Entity.h"
 #include "UserCmd.h"
 
-pcg_extras::seed_seq_from<std::random_device> seedSource2;
-pcg32_c1024_fast rng2(seedSource2);
+#include "../PCG/pcg.h"
 
 void AnimState::setupVelocity() noexcept
 {
@@ -553,11 +552,11 @@ void AnimState::setupAliveLoop() noexcept
 	if (getLayerActivity(ANIMATION_LAYER_ALIVELOOP) != ACT_CSGO_ALIVE_LOOP) {
 		interfaces->mdlCache->beginLock();
 		setLayerSequence(ANIMATION_LAYER_ALIVELOOP, ACT_CSGO_ALIVE_LOOP);
-		setLayerCycle(ANIMATION_LAYER_ALIVELOOP, std::uniform_real_distribution<float>(0.f, 1.f)(rng2));
+		setLayerCycle(ANIMATION_LAYER_ALIVELOOP, std::uniform_real_distribution<float>(0.f, 1.f)(PCG::generator));
 		auto layer = entity->getAnimationLayer(ANIMATION_LAYER_ALIVELOOP);
 		if (layer) {
 			float newRate = entity->getSequenceCycleRate(layer->sequence);
-			newRate *= std::uniform_real_distribution<float>(0.8f, 1.1f)(rng2);
+			newRate *= std::uniform_real_distribution<float>(0.8f, 1.1f)(PCG::generator);
 			setLayerRate(ANIMATION_LAYER_ALIVELOOP, newRate);
 		}
 		interfaces->mdlCache->endLock();
@@ -575,7 +574,7 @@ void AnimState::setupAliveLoop() noexcept
 			auto layer = entity->getAnimationLayer(ANIMATION_LAYER_ALIVELOOP);
 			if (layer) {
 				float newRate = entity->getSequenceCycleRate(layer->sequence);
-				newRate *= std::uniform_real_distribution<float>(0.8f, 1.1f)(rng2);
+				newRate *= std::uniform_real_distribution<float>(0.8f, 1.1f)(PCG::generator);
 				setLayerRate(ANIMATION_LAYER_ALIVELOOP, newRate);
 			}
 			interfaces->mdlCache->endLock();

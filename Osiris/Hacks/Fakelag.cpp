@@ -13,8 +13,7 @@
 #include "../SDK/UserCmd.h"
 #include "../SDK/Vector.h"
 
-pcg_extras::seed_seq_from<std::random_device> seedSource3;
-pcg32_c1024_fast rng3(seedSource3);
+#include "../PCG/pcg.h"
 
 void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
 {
@@ -33,7 +32,7 @@ void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
 	if (EnginePrediction::getVelocity().length2D() < 1)
 		return;
 
-	auto choked_packets = config->legitAntiAim.enabled || config->fakeAngle[static_cast<int>(moving_flag)].enabled ? std::uniform_int_distribution<int>(0, 2)(rng3) : 0;
+	auto choked_packets = config->legitAntiAim.enabled || config->fakeAngle[static_cast<int>(moving_flag)].enabled ? std::uniform_int_distribution<int>(0, 2)(PCG::generator) : 0;
 
 	if (config->tickbase.disabledTickbase && config->tickbase.onshotFl && config->tickbase.readyFire) {
 		choked_packets = -1;
@@ -73,7 +72,7 @@ void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
 			choked_packets = std::clamp(static_cast<int>(std::ceilf(64 / (speed * memory->globalVars->intervalPerTick))), 1, config->fakelag[static_cast<int>(moving_flag)].limit);
 			break;
 		case 2: // Random
-			choked_packets = std::uniform_int_distribution<int>(config->fakelag[static_cast<int>(moving_flag)].randomMinLimit, config->fakelag[static_cast<int>(moving_flag)].limit)(rng3);
+			choked_packets = std::uniform_int_distribution<int>(config->fakelag[static_cast<int>(moving_flag)].randomMinLimit, config->fakelag[static_cast<int>(moving_flag)].limit)(PCG::generator);
 			break;
 		case 3: // rand() Random
 			srand(static_cast<unsigned>(time(nullptr)));

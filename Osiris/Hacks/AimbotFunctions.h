@@ -4,6 +4,8 @@
 #include "../SDK/Vector.h"
 #include "../SDK/EngineTrace.h"
 
+#include "../PCG/pcg.h"
+
 struct UserCmd;
 struct Vector;
 struct SurfaceData;
@@ -21,7 +23,7 @@ namespace AimbotFunction
 
 	bool hitboxIntersection(const matrix3x4 matrix[MAXSTUDIOBONES], int iHitbox, StudioHitboxSet* set, const Vector& start, const Vector& end) noexcept;
 
-	std::vector<Vector> multiPoint(Entity* entity, const matrix3x4 matrix[MAXSTUDIOBONES], StudioBbox* hitbox, Vector localEyePos, int _hitbox, int _multiPoint);
+	std::vector<Vector> multiPoint(Entity* entity, const matrix3x4 matrix[MAXSTUDIOBONES], StudioBbox* hitbox, Vector localEyePos, int _hitbox, int _headMultiPoint, int _bodyMultiPoint);
 
 	bool hitChance(Entity* localPlayer, Entity* entity, StudioHitboxSet*, const matrix3x4 matrix[MAXSTUDIOBONES], Entity* activeWeapon, const Vector& destination, const UserCmd* cmd, int hitChance) noexcept;
 	bool relativeHitchance(Entity* localPlayer, Entity* entity, StudioHitboxSet*, const matrix3x4 matrix[MAXSTUDIOBONES], Entity* activeWeapon, const Vector& destination, const UserCmd* cmd, float relativeHitchance) noexcept;

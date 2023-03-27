@@ -16,9 +16,6 @@
 #include "../SDK/WeaponData.h"
 #include "../SDK/ModelInfo.h"
 
-pcg_extras::seed_seq_from<std::random_device> seedSource;
-pcg32_c1024_fast rng(seedSource);
-
 Vector AimbotFunction::calculateRelativeAngle(const Vector& source, const Vector& destination, const Vector& viewAngles) noexcept
 {
 	return ((destination - source).toAngle() - viewAngles).normalize();
@@ -436,7 +433,7 @@ bool AimbotFunction::hitboxIntersection(const matrix3x4 matrix[MAXSTUDIOBONES], 
 	return false;
 }
 
-std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 matrix[MAXSTUDIOBONES], StudioBbox* hitbox, Vector localEyePos, int _hitbox, int _multiPoint)
+std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 matrix[MAXSTUDIOBONES], StudioBbox* hitbox, Vector localEyePos, int _hitbox, int _headMultiPoint, int _bodyMultiPoint)
 {
 	auto VectorTransformWrapper = [](const Vector& in1, const matrix3x4 in2, Vector& out) {
 		auto VectorTransform = [](const float* in1, const matrix3x4 in2, float* out) {
@@ -457,7 +454,7 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 
 	std::vector<Vector> vecArray;
 
-	if (_multiPoint <= 0) {
+	if (_headMultiPoint <= 0 && _hitbox == 0 || _bodyMultiPoint <= 0 && _hitbox != 0) {
 		vecArray.emplace_back(center);
 		return vecArray;
 	}
@@ -474,23 +471,31 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 	Vector top = Vector{ 0, 0, 1 };
 	Vector bottom = Vector{ 0, 0, -1 };
 
-	float multiPoint = (std::min(_multiPoint, 95)) * 0.01f;
+	float headMultiPoint = (std::min(_headMultiPoint, 95)) * 0.01f;
+	float bodyMultiPoint = (std::min(_bodyMultiPoint, 95)) * 0.01f;
+	static auto frameRate = 1.0f;
+	frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
+	// linear scaling 0 - 15 based on how low our fps is compared to the server's tickrate
+	int toOptimize = std::clamp((int)(15 * ((static_cast<int>(1 / frameRate)) <= (1 / memory->globalVars->intervalPerTick)) + 15 * (1 - ((static_cast<int>(1 / frameRate)) - (1 / memory->globalVars->intervalPerTick)) / (1 / memory->globalVars->intervalPerTick)) * ((static_cast<int>(1 / frameRate)) < 2 * (1 / memory->globalVars->intervalPerTick))), 0, 15);
 
 	switch (_hitbox) {
 	case Head:
 		for (auto i = 0; i < 4; ++i)
 			vecArray.emplace_back(center);
 
-		vecArray[1] += top * (hitbox->capsuleRadius * multiPoint);
-		vecArray[2] += right * (hitbox->capsuleRadius * multiPoint);
-		vecArray[3] += left * (hitbox->capsuleRadius * multiPoint);
+		vecArray[1] += top * (hitbox->capsuleRadius * headMultiPoint);
+		vecArray[2] += right * (hitbox->capsuleRadius * headMultiPoint);
+		vecArray[3] += left * (hitbox->capsuleRadius * headMultiPoint);
 		break;
 	default://rest
-		for (auto i = 0; i < 3; ++i)
-			vecArray.emplace_back(center);
+		if (!config->optimizations.lowPerformanceMode || toOptimize < _hitbox + 1) {
+			for (auto i = 0; i < 3; ++i)
+				vecArray.emplace_back(center);
 
-		vecArray[1] += right * (hitbox->capsuleRadius * multiPoint);
-		vecArray[2] += left * (hitbox->capsuleRadius * multiPoint);
+			vecArray[1] += right * (hitbox->capsuleRadius * bodyMultiPoint);
+			vecArray[2] += left * (hitbox->capsuleRadius * bodyMultiPoint);
+		} else
+			vecArray.emplace_back(center);
 		break;
 	}
 	return vecArray;
@@ -516,10 +521,10 @@ bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitbox
 	bool plz_hit_my_ass = false;
 
 	for (int i = 0; i < maxSeed; i++) {
-		const float spreadX = std::uniform_real_distribution<float>(0.f, 2.f * static_cast<float>(M_PI))(rng);
-		const float spreadY = std::uniform_real_distribution<float>(0.f, 2.f * static_cast<float>(M_PI))(rng);
-		auto inaccuracy = weapInaccuracy * std::uniform_real_distribution<float>(0.f, 1.f)(rng);
-		auto spread = weapSpread * std::uniform_real_distribution<float>(0.f, 1.f)(rng);
+		const float spreadX = std::uniform_real_distribution<float>(0.f, 2.f * static_cast<float>(M_PI))(PCG::generator);
+		const float spreadY = std::uniform_real_distribution<float>(0.f, 2.f * static_cast<float>(M_PI))(PCG::generator);
+		auto inaccuracy = weapInaccuracy * std::uniform_real_distribution<float>(0.f, 1.f)(PCG::generator);
+		auto spread = weapSpread * std::uniform_real_distribution<float>(0.f, 1.f)(PCG::generator);
 
 		Vector spreadView{ (cosf(spreadX) * inaccuracy) + (cosf(spreadY) * spread),
 						   (sinf(spreadX) * inaccuracy) + (sinf(spreadY) * spread) };
@@ -560,11 +565,11 @@ bool AimbotFunction::relativeHitchance(Entity* localPlayer, Entity* entity, Stud
 	bool plz_hit_my_ass = false;
 
 	for (int i = 0; i < maxSeed; ++i) {
-		const float spreadX = std::uniform_real_distribution<float>(0.f, 2.f * static_cast<float>(M_PI))(rng);
-		const float spreadY = std::uniform_real_distribution<float>(0.f, 2.f * static_cast<float>(M_PI))(rng);
-		auto inaccuracy = weapInaccuracy * std::uniform_real_distribution<float>(0.f, 1.f)(rng);
+		const float spreadX = std::uniform_real_distribution<float>(0.f, 2.f * static_cast<float>(M_PI))(PCG::generator);
+		const float spreadY = std::uniform_real_distribution<float>(0.f, 2.f * static_cast<float>(M_PI))(PCG::generator);
+		auto inaccuracy = weapInaccuracy * std::uniform_real_distribution<float>(0.f, 1.f)(PCG::generator);
 		if (inaccuracy == 0.f) inaccuracy = 0.000001f;  // NOLINT(clang-diagnostic-float-equal)
-		auto spread = weapSpread * std::uniform_real_distribution<float>(0.f, 1.f)(rng);
+		auto spread = weapSpread * std::uniform_real_distribution<float>(0.f, 1.f)(PCG::generator);
 
 		Vector spreadView{ (cosf(spreadX) * inaccuracy) + (cosf(spreadY) * spread),
 						   (sinf(spreadX) * inaccuracy) + (sinf(spreadY) * spread) };
