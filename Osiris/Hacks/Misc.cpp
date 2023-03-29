@@ -43,6 +43,8 @@
 
 #include "../imguiCustom.h"
 
+#include "../PCG/pcg.h"
+
 bool Misc::isInChat() noexcept
 {
 	if (!localPlayer)
@@ -1612,7 +1614,7 @@ void Misc::watermark() noexcept
 	frame_rate = 0.9f * frame_rate + 0.1f * memory->globalVars->absoluteFrameTime;
 	GameData::Lock lock;
 	const auto& [exists, alive, inReload, shooting, noScope, nextWeaponAttack, fov, handle, flashDuration, aimPunch, origin, inaccuracy, team, velocityModifier] { GameData::local() };
-	ImGui::Text("Osiris [%s] | %d FPS | %d MS | %s | %s%s%s",
+	ImGui::Text("Osiris [%s] | %d FPS | %d MS | %s | %s%s",
 #ifdef DEBUG
 		"DEBUG",
 #else
@@ -1621,49 +1623,49 @@ void Misc::watermark() noexcept
 		frame_rate != 0.0f ? static_cast<int>(1 / frame_rate) : 0,
 		GameData::getNetOutgoingLatency(),
 		team == Team::Spectators ? "SPEC" : team == Team::TT ? "T" : team == Team::CT ? "CT" : "NONE",
-		AntiAim::moving_flag_text[AntiAim::latest_moving_flag], inReload ? " | RELOADING" : "",
+		inReload ? " | RELOADING" : "",
 		noScope ? " | NO SCOPE" : "");
-	static int damage{};
-	static int hit_chance{};
-	static int min_damage{};
-	static bool resolver{};
-	if (localPlayer && localPlayer->isAlive() && localPlayer->getActiveWeapon() && localPlayer->getActiveWeapon()->clip() && getWeaponIndex(localPlayer->getActiveWeapon()->itemDefinitionIndex2()) != 0 && localPlayer->getActiveWeapon()->getWeaponData()) {
-		const auto active_weapon{ localPlayer->getActiveWeapon() };
-		const auto weapon_data{ active_weapon->getWeaponData() };
-		damage = weapon_data->damage;
-		hit_chance = config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].hitChance;
-		min_damage = config->minDamageOverrideKey.isActive()
-			? config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].minDamageOverride
-			: config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].minDamage;
-		resolver = config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].resolver;
-	}
-	ImGui::Text("DMG %d | HC %d%% | MIN DMG %d | RSLVR %s | HIT/MISS %d/%d (%.2lf%%)",
-		damage,
-		hit_chance,
-		min_damage,
-		resolver ? "On" : "Off",
-		resolver::hits,
-		resolver::misses,
-		resolver::hit_rate);
-	ImGui::Text("%s %s | FL %d%s%s%s | TGT %s",
-		AntiAim::peek_mode_text[
-			config->fakeAngle[AntiAim::latest_moving_flag].enabled
-				? config->fakeAngle[AntiAim::latest_moving_flag].peekMode
-				: 0],
-		AntiAim::lby_mode_text[config->fakeAngle[AntiAim::latest_moving_flag].enabled
-		? config->fakeAngle[AntiAim::latest_moving_flag].lbyMode
-		: 0],
-		Fakelag::latest_choked_packets,
-		config->tickbase.doubletap.isActive() ? " | DT" : "",
-		config->tickbase.hideshots.isActive() ? " | HS" : "",
-		config->tickbase.teleport && (config->tickbase.doubletap.isActive() || config->tickbase.hideshots.isActive()) ? " | TP" : "",
-		Ragebot::latest_player.c_str());
+	//static int damage{};
+	//static int hit_chance{};
+	//static int min_damage{};
+	//static bool resolver{};
+	//if (localPlayer && localPlayer->isAlive() && localPlayer->getActiveWeapon() && localPlayer->getActiveWeapon()->clip() && getWeaponIndex(localPlayer->getActiveWeapon()->itemDefinitionIndex2()) != 0 && localPlayer->getActiveWeapon()->getWeaponData()) {
+	//	const auto active_weapon{ localPlayer->getActiveWeapon() };
+	//	const auto weapon_data{ active_weapon->getWeaponData() };
+	//	damage = weapon_data->damage;
+	//	hit_chance = config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].hitChance;
+	//	min_damage = config->minDamageOverrideKey.isActive()
+	//		? config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].minDamageOverride
+	//		: config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].minDamage;
+	//	resolver = config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].resolver;
+	//}
+	//ImGui::Text("DMG %d | HC %d%% | MIN DMG %d | RSLVR %s | HIT/MISS %d/%d (%.2lf%%)",
+	//	damage,
+	//	hit_chance,
+	//	min_damage,
+	//	resolver ? "On" : "Off",
+	//	resolver::hits,
+	//	resolver::misses,
+	//	resolver::hit_rate);
+	//ImGui::Text("%s %s | FL %d%s%s%s | TGT %s",
+	//	AntiAim::peek_mode_text[
+	//		config->fakeAngle[AntiAim::latest_moving_flag].enabled
+	//			? config->fakeAngle[AntiAim::latest_moving_flag].peekMode
+	//			: 0],
+	//	AntiAim::lby_mode_text[config->fakeAngle[AntiAim::latest_moving_flag].enabled
+	//	? config->fakeAngle[AntiAim::latest_moving_flag].lbyMode
+	//	: 0],
+	//	Fakelag::latest_choked_packets,
+	//	config->tickbase.doubletap.isActive() ? " | DT" : "",
+	//	config->tickbase.hideshots.isActive() ? " | HS" : "",
+	//	config->tickbase.teleport && (config->tickbase.doubletap.isActive() || config->tickbase.hideshots.isActive()) ? " | TP" : "",
+	//	Ragebot::latest_player.c_str());
 	ImGui::End();
 }
 
 void Misc::prepareRevolver(UserCmd* cmd) noexcept
 {
-	constexpr float revolverPrepareTime{ .242f };
+	constexpr float revolverPrepareTime{ .234375f };
 
 	static float readyTime;
 	if (!config->misc.prepareRevolver || !config->misc.prepareRevolverKey.isActive())
@@ -1989,18 +1991,36 @@ bool Misc::changeName(bool reconnect, const char* newName, float delay) noexcept
 
 void Misc::bunnyHop(UserCmd* cmd) noexcept
 {
-	if (!localPlayer)
-		return;
-
 	if (config->misc.jumpBug && config->misc.jumpBugKey.isActive())
 		return;
 
-	static auto wasLastTimeOnGround{ localPlayer->flags() & 1 };
+	static auto lastJumped = false;
+	static auto shouldFake = false;
+	static int noHops = 0;
 
-	if (config->misc.bunnyHop && !(localPlayer->flags() & 1) && localPlayer->moveType() != MoveType::LADDER && !wasLastTimeOnGround)
-		cmd->buttons &= ~UserCmd::IN_JUMP;
+	if (!localPlayer || !localPlayer->isAlive() || !config->misc.bunnyHop)
+		return;
 
-	wasLastTimeOnGround = localPlayer->flags() & 1;
+	if (localPlayer->moveType() == MoveType::LADDER || localPlayer->moveType() == MoveType::NOCLIP)
+		return;
+
+	if (!lastJumped && shouldFake) {
+		shouldFake = false;
+		cmd->buttons |= UserCmd::IN_JUMP;
+	} else if (cmd->buttons & UserCmd::IN_JUMP) {
+		if (localPlayer->flags() & 1) {
+			noHops++;
+			lastJumped = true;
+			shouldFake = true;
+		} else {
+			cmd->buttons &= ~UserCmd::IN_JUMP;
+			lastJumped = false;
+		}
+	} else {
+		noHops = 0;
+		lastJumped = false;
+		shouldFake = false;
+	}
 }
 
 void Misc::fixTabletSignal() noexcept
@@ -2056,7 +2076,7 @@ void Misc::killMessage(GameEvent& event) noexcept
 		return;
 
 	std::string cmd = "say \"";
-	cmd += config->misc.killMessageString;
+	cmd += config->misc.killMessages[std::uniform_int_distribution<int>(0, config->misc.killMessages.size() - 1)(PCG::generator)];
 	cmd += '"';
 	interfaces->engine->clientCmdUnrestricted(cmd.c_str());
 }

@@ -476,7 +476,7 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 	static auto frameRate = 1.0f;
 	frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
 	// linear scaling 0 - 15 based on how low our fps is compared to the server's tickrate
-	int toOptimize = std::clamp((int)(15 * ((static_cast<int>(1 / frameRate)) <= (1 / memory->globalVars->intervalPerTick)) + 15 * (1 - ((static_cast<int>(1 / frameRate)) - (1 / memory->globalVars->intervalPerTick)) / (1 / memory->globalVars->intervalPerTick)) * ((static_cast<int>(1 / frameRate)) < 2 * (1 / memory->globalVars->intervalPerTick))), 0, 15);
+	int toOptimize = std::clamp(static_cast<int>(15 * ((static_cast<int>(1 / frameRate)) <= (1 / memory->globalVars->intervalPerTick)) + 15 * (1 - ((static_cast<int>(1 / frameRate)) - (1 / memory->globalVars->intervalPerTick)) / (1 / memory->globalVars->intervalPerTick)) * ((static_cast<int>(1 / frameRate)) < 2 * (1 / memory->globalVars->intervalPerTick))), 0, 15);
 
 	switch (_hitbox) {
 	case Head:

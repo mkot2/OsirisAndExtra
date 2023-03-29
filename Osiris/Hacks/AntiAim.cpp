@@ -15,10 +15,6 @@
 #include "../SDK/NetworkChannel.h"
 #include "../SDK/UserCmd.h"
 
-static bool isShooting{ false };
-static bool didShoot{ false };
-static float lastShotTime{ 0.f };
-
 bool updateLby(bool update = false) noexcept
 {
 	static float timer = 0.f;
@@ -114,7 +110,7 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
 		{
 			float yaw = 0.f;
 			static bool flipJitter = false;
-			if (sendPacket && !AntiAim::getDidShoot())
+			if (sendPacket)
 				flipJitter ^= 1;
 			if (config->rageAntiAim[static_cast<int>(moving_flag)].atTargets) {
 				Vector localPlayerEyePosition = localPlayer->getEyePosition();
@@ -453,34 +449,4 @@ AntiAim::moving_flag AntiAim::get_moving_flag(const UserCmd* cmd) noexcept
 	if (config->misc.fakeduckKey.isActive())
 		return latest_moving_flag = fake_ducking;
 	return latest_moving_flag = freestanding;
-}
-
-float AntiAim::getLastShotTime()
-{
-	return lastShotTime;
-}
-
-bool AntiAim::getIsShooting()
-{
-	return isShooting;
-}
-
-bool AntiAim::getDidShoot()
-{
-	return didShoot;
-}
-
-void AntiAim::setLastShotTime(float shotTime)
-{
-	lastShotTime = shotTime;
-}
-
-void AntiAim::setIsShooting(bool shooting)
-{
-	isShooting = shooting;
-}
-
-void AntiAim::setDidShoot(bool shot)
-{
-	didShoot = shot;
 }

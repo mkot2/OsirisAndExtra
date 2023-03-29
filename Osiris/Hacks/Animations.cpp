@@ -35,6 +35,7 @@ static bool gotMatrixFakelag{ false };
 static bool gotMatrixReal{ false };
 static Vector viewangles{};
 static Vector correctAngle{};
+
 static int buildTransformsIndex = -1;
 static std::array<AnimationLayer, 13> staticLayers{};
 static std::array<AnimationLayer, 13> layers{};
@@ -43,9 +44,6 @@ static float moveWeight{ 0.0f };
 static float footYaw{};
 static std::array<float, 24> poseParameters{};
 static std::array<AnimationLayer, 13> sendPacketLayers{};
-static bool lockAngles = false;
-static Vector holdAimAngles;
-static Vector anglesToAnimate;
 
 void Animations::init() noexcept
 {
@@ -126,22 +124,10 @@ void Animations::update(UserCmd* cmd, bool& _sendPacket) noexcept
 	localPlayer->getEFlags() &= ~0x1000;
 	localPlayer->getAbsVelocity() = EnginePrediction::getVelocity();
 
-	if (!sendPacket && AntiAim::getIsShooting()) {
-		holdAimAngles = cmd->viewangles;
-		lockAngles = true;
-	}
-
-	if (lockAngles && sendPacket) {
-		anglesToAnimate = holdAimAngles;
-		lockAngles = false;
-	} else
-		anglesToAnimate = cmd->viewangles;
-
-	localPlayer->updateState(localPlayer->getAnimstate(), anglesToAnimate);
+	localPlayer->updateState(localPlayer->getAnimstate(), viewangles);
 	localPlayer->updateClientSideAnimation();
 
 	std::memcpy(&layers, localPlayer->animOverlays(), sizeof(AnimationLayer) * localPlayer->getAnimationLayersCount());
-
 	if (sendPacket) {
 		std::memcpy(&sendPacketLayers, localPlayer->animOverlays(), sizeof(AnimationLayer) * localPlayer->getAnimationLayersCount());
 		footYaw = localPlayer->getAnimstate()->footYaw;

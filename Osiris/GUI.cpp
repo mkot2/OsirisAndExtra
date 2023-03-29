@@ -57,12 +57,6 @@ GUI::GUI() noexcept
 	style.AntiAliasedFill = true;
 	style.AntiAliasedLines = true;
 	style.AntiAliasedLinesUseTex = true;
-	style.FrameRounding = 5.0f;
-	style.GrabRounding = 5.0f;
-	style.ScrollbarRounding = 5.0f;
-	style.ScrollbarSize = 10.0f;
-	style.WindowRounding = 5.0f;
-	style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
 
 	ImGuiIO& io = ImGui::GetIO();
 	io.IniFilename = nullptr;
@@ -2427,7 +2421,7 @@ void GUI::renderGuiStyle() noexcept
 				ImGui::BeginChild("##UP", ImVec2{ 700, 45 }, false);
 				{
 					ImGui::SetCursorPos(ImVec2{ 10, 6 });
-					ImGui::PushFont(fonts.tahoma34); ImGui::Text("Better Osiris"); ImGui::PopFont();
+					ImGui::PushFont(fonts.tahoma34); ImGui::Text("Osiris"); ImGui::PopFont();
 
 					float pos = 305;
 					ImGui::SetCursorPos(ImVec2{ pos, 0 });
@@ -2482,20 +2476,20 @@ void GUI::renderGuiStyle() noexcept
 							if (ImGui::Button("Main                    ", ImVec2{ 80, 20 })) activeSubTabLegitbot = 1;
 							if (ImGui::Button("Backtrack               ", ImVec2{ 80, 20 })) activeSubTabLegitbot = 2;
 							if (ImGui::Button("Triggerbot              ", ImVec2{ 80, 20 })) activeSubTabLegitbot = 3;
-							if (ImGui::Button("AntiAim                 ", ImVec2{ 80, 20 })) activeSubTabLegitbot = 4;
+							if (ImGui::Button("Anti aim                ", ImVec2{ 80, 20 })) activeSubTabLegitbot = 4;
 							break;
 						case 2: //Ragebot
 							ImGui::SetCursorPosY(10);
 							if (ImGui::Button("Main                    ", ImVec2{ 80, 20 })) activeSubTabRagebot = 1;
 							if (ImGui::Button("Backtrack               ", ImVec2{ 80, 20 })) activeSubTabRagebot = 2;
-							if (ImGui::Button("AntiAim                 ", ImVec2{ 80, 20 })) activeSubTabRagebot = 3;
-							if (ImGui::Button("Fake Angle              ", ImVec2{ 80, 20 })) activeSubTabRagebot = 4;
-							if (ImGui::Button("FakeLag                 ", ImVec2{ 80, 20 })) activeSubTabRagebot = 5;
+							if (ImGui::Button("Anti aim                ", ImVec2{ 80, 20 })) activeSubTabRagebot = 3;
+							if (ImGui::Button("Desync                  ", ImVec2{ 80, 20 })) activeSubTabRagebot = 4;
+							if (ImGui::Button("Fakelag                 ", ImVec2{ 80, 20 })) activeSubTabRagebot = 5;
 							break;
 						case 3: //Visuals
 							ImGui::SetCursorPosY(10);
 							if (ImGui::Button("Main                    ", ImVec2{ 80, 20 })) activeSubTabVisuals = 1;
-							if (ImGui::Button("Esp                     ", ImVec2{ 80, 20 })) activeSubTabVisuals = 2;
+							if (ImGui::Button("ESP                     ", ImVec2{ 80, 20 })) activeSubTabVisuals = 2;
 							if (ImGui::Button("Chams                   ", ImVec2{ 80, 20 })) activeSubTabVisuals = 3;
 							if (ImGui::Button("Glow                    ", ImVec2{ 80, 20 })) activeSubTabVisuals = 4;
 							if (ImGui::Button("Skins                   ", ImVec2{ 80, 20 })) activeSubTabVisuals = 5;
@@ -2555,11 +2549,11 @@ void GUI::renderGuiStyle() noexcept
 									renderRageAntiAimWindow();
 									break;
 								case 4:
-									//Fake Angle
+									//Desync
 									renderFakeAngleWindow();
 									break;
 								case 5:
-									//FakeLag
+									//Fakelag
 									renderFakelagWindow();
 									break;
 								default:
@@ -2573,7 +2567,7 @@ void GUI::renderGuiStyle() noexcept
 									renderVisualsWindow();
 									break;
 								case 2:
-									//Esp
+									//ESP
 									renderStreamProofESPWindow();
 									break;
 								case 3:
@@ -2624,7 +2618,7 @@ void GUI::renderGuiStyle() noexcept
 					ImGui::BeginChild("##Text", ImVec2{ 700, 20 }, false);
 					{
 						ImGui::SetCursorPos(ImVec2{ 2, 2 });
-						ImGui::Text("Better Osiris Made In https://github.com/MesuDevastator/OsirisAndExtra | Build Date: " __DATE__ " " __TIME__);
+						ImGui::Text("local mom's spaghetti found on https://github.com/mkot2/OsirisAndExtra | Build Date: " __DATE__ " " __TIME__);
 					}
 					ImGui::EndChild();
 				}

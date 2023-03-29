@@ -452,7 +452,6 @@ public:
 		};
 		Watermark watermark;
 		float aspectratio{ 0 };
-		std::string killMessageString{ "1" };
 		ColorToggle3 bombTimer{ 0.3f, 0.1f, 0.3f };
 		ColorToggle3 hurtIndicator{ 0.0f, 0.8f, 0.7f };
 		ColorToggle yawIndicator{ 0.47f, 0.32f, 0.66f, 0.8f };

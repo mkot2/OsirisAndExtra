@@ -184,9 +184,8 @@ static int __fastcall canLoadThirdPartyFiles(void* thisPointer, void* edx) noexc
 {
 	if (config->misc.svPureBypass)
 		return 1;
-	static auto original = hooks->fileSystem.getOriginal<int, 128>();
 
-	return original(thisPointer);
+	return hooks->fileSystem.callOriginal<int, 128>(thisPointer);
 }
 #pragma runtime_checks("", restore)
 #pragma optimize("", on)
@@ -314,14 +313,6 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 		Misc::autoStrafe(cmd, currentViewAngles);
 		Misc::jumpBug(cmd);
 
-		if (AntiAim::canRun(cmd)) {
-			AntiAim::setIsShooting(false);
-			AntiAim::run(cmd, previousViewAngles, currentViewAngles, sendPacket);
-		} else {
-			AntiAim::setLastShotTime(memory->globalVars->realtime);
-			AntiAim::setIsShooting(true);
-		}
-
 		//Clamp angles and fix movement
 		auto viewAnglesDelta{ cmd->viewangles - previousViewAngles };
 		viewAnglesDelta.normalize();
@@ -338,6 +329,15 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 			Misc::fixMovement(cmd, currentViewAngles.y);
 		}
 
+		// Delta fix
+		// https://github.com/LWSS/Fuzion/blob/8f045699707487d3aa79d16b2439788dafd15551/src/Hacks/aimbot.cpp#L730
+		static auto mouseSensitivity = interfaces->cvar->findVar("sensitivity");
+		static auto mouseYaw = interfaces->cvar->findVar("m_yaw");
+		static auto mousePitch = interfaces->cvar->findVar("m_pitch");
+		static auto zoomModifier = interfaces->cvar->findVar("zoom_sensitivity_ratio_mouse");
+		cmd->mousedx = static_cast<short>(previousViewAngles.y - viewAnglesDelta.y / (mouseYaw->getFloat() * mouseSensitivity->getFloat() * zoomModifier->getFloat()));
+		cmd->mousedy = static_cast<short>(-(previousViewAngles.x - viewAnglesDelta.x) / (mousePitch->getFloat() * mouseSensitivity->getFloat() * zoomModifier->getFloat()));
+
 		cmd->viewangles.x = std::clamp(cmd->viewangles.x, -89.0f, 89.0f);
 		cmd->viewangles.y = std::clamp(cmd->viewangles.y, -180.0f, 180.0f);
 		cmd->viewangles.z = 0.0f;
@@ -351,7 +351,6 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 		Misc::jumpStats(cmd);
 		Animations::update(cmd, sendPacket);
 		Animations::fake();
-		AntiAim::setDidShoot(AntiAim::getIsShooting());
 		return false;
 	}
 
@@ -398,12 +397,8 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 	Misc::fastPlant(cmd);
 
 	if (AntiAim::canRun(cmd)) {
-		AntiAim::setIsShooting(false);
 		Fakelag::run(cmd, sendPacket);
 		AntiAim::run(cmd, previousViewAngles, currentViewAngles, sendPacket);
-	} else {
-		AntiAim::setLastShotTime(memory->globalVars->realtime);
-		AntiAim::setIsShooting(true);
 	}
 
 	Misc::fakeDuck(cmd, sendPacket);
@@ -444,7 +439,6 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 	Misc::jumpStats(cmd);
 	Animations::update(cmd, sendPacket);
 	Animations::fake();
-	AntiAim::setDidShoot(AntiAim::getIsShooting());
 	return false;
 }
 
@@ -1495,6 +1489,8 @@ static void __fastcall levelShutDown(void* thisPointer) noexcept
 
 Hooks::Hooks(HMODULE moduleHandle) noexcept
 {
+	while (!GetModuleHandleA("serverbrowser.dll")) std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
 	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
 	_MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
 

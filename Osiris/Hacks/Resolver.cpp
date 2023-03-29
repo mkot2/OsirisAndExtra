@@ -181,16 +181,10 @@ void resolver::process_missed_shots() noexcept
 	const auto angle = AimbotFunction::calculateRelativeAngle(eyePosition, bulletImpact, Vector{ });
 	const auto end = bulletImpact + Vector::fromAngle(angle) * 2000.f;
 
-	const matrix3x4* matrix;
-	try {
-		matrix = backtrackRecord == -1 || player.backtrackRecords.size() < static_cast<unsigned int>(
+	const matrix3x4* matrix = backtrackRecord == -1 || player.backtrackRecords.size() < static_cast<unsigned int>(
 			backtrackRecord) - 1
 			? player.matrix.data()
 			: player.backtrackRecords.at(backtrackRecord).matrix;
-	}
-	catch (const std::out_of_range&) {
-		matrix = player.matrix.data();
-	}
 
 	bool resolver_missed = false;
 
