@@ -423,6 +423,15 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 		Misc::fixMovement(cmd, currentViewAngles.y);
 	}
 
+	// Delta fix
+	// https://github.com/LWSS/Fuzion/blob/8f045699707487d3aa79d16b2439788dafd15551/src/Hacks/aimbot.cpp#L730
+	static auto mouseSensitivity = interfaces->cvar->findVar("sensitivity");
+	static auto mouseYaw = interfaces->cvar->findVar("m_yaw");
+	static auto mousePitch = interfaces->cvar->findVar("m_pitch");
+	static auto zoomModifier = interfaces->cvar->findVar("zoom_sensitivity_ratio_mouse");
+	cmd->mousedx = static_cast<short>(previousViewAngles.y - viewAnglesDelta.y / (mouseYaw->getFloat() * mouseSensitivity->getFloat() * zoomModifier->getFloat()));
+	cmd->mousedy = static_cast<short>(-(previousViewAngles.x - viewAnglesDelta.x) / (mousePitch->getFloat() * mouseSensitivity->getFloat() * zoomModifier->getFloat()));
+
 	cmd->viewangles.x = std::clamp(cmd->viewangles.x, -89.0f, 89.0f);
 	cmd->viewangles.y = std::clamp(cmd->viewangles.y, -180.0f, 180.0f);
 	cmd->viewangles.z = 0.f;

@@ -100,7 +100,7 @@ GUI::GUI() noexcept
 	addFontFromVFONT("csgo/panorama/fonts/notosanskr-regular.vfont", 15.0f, io.Fonts->GetGlyphRangesKorean(), true);
 	addFontFromVFONT("csgo/panorama/fonts/notosanssc-regular.vfont", 15.0f, io.Fonts->GetGlyphRangesChineseFull(), true);
 	constexpr auto unicodeFontSize = 16.0f;
-	// fonts.unicodeFont = addFontFromVFONT("csgo/panorama/fonts/notosans-bold.vfont", unicodeFontSize, Helpers::getFontGlyphRanges(), false);
+	fonts.unicodeFont = addFontFromVFONT("csgo/panorama/fonts/notosans-bold.vfont", unicodeFontSize, Helpers::getFontGlyphRanges(), false);
 	fonts.unicodeFont = addFontFromVFONT("csgo/panorama/fonts/notosans-bold.vfont", unicodeFontSize, io.Fonts->GetGlyphRangesChineseFull(), false);
 }
 
@@ -164,8 +164,8 @@ static void menuBarItem(const char* name, bool& enabled) noexcept
 
 void GUI::renderLegitbotWindow() noexcept
 {
-	static const char* hitboxes[]{ "Head","Chest","Stomach","Arms","Legs" };
-	static bool hitbox[ARRAYSIZE(hitboxes)] = { false, false, false, false, false };
+	static constexpr const char* hitboxes[]{ "Head","Chest","Stomach","Arms","Legs","Feet"};
+	static bool hitbox[ARRAYSIZE(hitboxes)] = { false, false, false, false, false, false };
 	static std::string previewvalue = "";
 	bool once = false;
 
@@ -267,7 +267,7 @@ void GUI::renderLegitbotWindow() noexcept
 	ImGui::SetColumnOffset(1, 220.0f);
 	ImGui::Checkbox("Aimlock", &config->legitbot[currentWeapon].aimlock);
 	ImGui::Checkbox("Silent", &config->legitbot[currentWeapon].silent);
-	ImGuiCustom::colorPicker("Draw fov", config->legitbotFov);
+	ImGuiCustom::colorPicker("Draw FOV", config->legitbotFov);
 	ImGui::Checkbox("Friendly fire", &config->legitbot[currentWeapon].friendlyFire);
 	ImGui::Checkbox("Visible only", &config->legitbot[currentWeapon].visibleOnly);
 	ImGui::Checkbox("Scoped only", &config->legitbot[currentWeapon].scopedOnly);
@@ -303,22 +303,22 @@ void GUI::renderLegitbotWindow() noexcept
 	ImGui::SliderFloat("Fov", &config->legitbot[currentWeapon].fov, 0.0f, 255.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
 	ImGui::SliderFloat("Smooth", &config->legitbot[currentWeapon].smooth, 1.0f, 100.0f, "%.2f");
 	ImGui::SliderInt("Reaction time", &config->legitbot[currentWeapon].reactionTime, 0, 300, "%d");
-	ImGui::SliderInt("Min damage", &config->legitbot[currentWeapon].minDamage, 0, 101, "%d");
+	ImGui::SliderInt("Min damage", &config->legitbot[currentWeapon].minDamage, 0, 100, "%d");
 	config->legitbot[currentWeapon].minDamage = std::clamp(config->legitbot[currentWeapon].minDamage, 0, 250);
 	ImGui::Checkbox("Killshot", &config->legitbot[currentWeapon].killshot);
 	ImGui::Checkbox("Between shots", &config->legitbot[currentWeapon].betweenShots);
 	ImGui::Checkbox("Recoil control system", &config->recoilControlSystem.enabled);
 	ImGui::SameLine();
 	ImGui::Checkbox("Silent RCS", &config->recoilControlSystem.silent);
-	ImGui::SliderInt("RCS Ignore Shots", &config->recoilControlSystem.shotsFired, 0, 150, "%d");
-	ImGui::SliderFloat("RCS Horizontal", &config->recoilControlSystem.horizontal, 0.0f, 1.0f, "%.5f");
-	ImGui::SliderFloat("RCS Vertical", &config->recoilControlSystem.vertical, 0.0f, 1.0f, "%.5f");
+	ImGui::SliderInt("RCS ignored shots", &config->recoilControlSystem.shotsFired, 0, 150, "%d");
+	ImGui::SliderFloat("RCS X", &config->recoilControlSystem.horizontal, 0.0f, 1.0f, "%.5f");
+	ImGui::SliderFloat("RCS Y", &config->recoilControlSystem.vertical, 0.0f, 1.0f, "%.5f");
 	ImGui::Columns(1);
 }
 
 void GUI::renderRagebotWindow() noexcept
 {
-	static const char* hitboxes[]{ "Head","Chest","Stomach","Arms","Legs","Feet" };
+	static constexpr const char* hitboxes[]{ "Head","Chest","Stomach","Arms","Legs","Feet" };
 	static bool hitbox[ARRAYSIZE(hitboxes)] = { false, false, false, false, false, false };
 	static std::string previewvalue = "";
 	bool once = false;
@@ -326,7 +326,6 @@ void GUI::renderRagebotWindow() noexcept
 	ImGui::PushID("Ragebot Key");
 	ImGui::hotkey2("Key", config->ragebotKey);
 	ImGui::PopID();
-	ImGui::SameLine();
 	ImGui::Separator();
 	static int currentCategory{ 0 };
 	ImGui::PushItemWidth(110.0f);
@@ -435,7 +434,7 @@ void GUI::renderRagebotWindow() noexcept
 	ImGui::Checkbox("Full stop", &config->ragebot[currentWeapon].fullStop);
 	ImGui::Checkbox("Duck stop", &config->ragebot[currentWeapon].duckStop);
 	ImGui::Checkbox("Resolver", &config->ragebot[currentWeapon].resolver);
-	ImGui::Checkbox("Low Performance Mode", &config->optimizations.lowPerformanceMode);
+	ImGui::Checkbox("Low performance mode", &config->optimizations.lowPerformanceMode);
 	ImGui::Combo("Priority", &config->ragebot[currentWeapon].priority, "Health\0Distance\0Fov\0");
 
 	for (size_t i = 0; i < ARRAYSIZE(hitbox); i++) {
@@ -472,7 +471,7 @@ void GUI::renderRagebotWindow() noexcept
 	ImGui::SliderFloat("Accuracy boost", &config->ragebot[currentWeapon].accuracyBoost, 0, 1.0f, "%.2f");
 	ImGui::SliderInt("Head multipoint", &config->ragebot[currentWeapon].headMultiPoint, 0, 100, "%d");
 	ImGui::SliderInt("Body multipoint", &config->ragebot[currentWeapon].bodyMultiPoint, 0, 100, "%d");
-	ImGui::SliderInt("Min damage", &config->ragebot[currentWeapon].minDamage, 0, 105, "%d");
+	ImGui::SliderInt("Min damage", &config->ragebot[currentWeapon].minDamage, 0, 100, "%d");
 	config->ragebot[currentWeapon].minDamage = std::clamp(config->ragebot[currentWeapon].minDamage, 0, 250);
 	ImGui::PushID("Min damage override Key");
 	ImGui::hotkey2("Min damage override Key", config->minDamageOverrideKey);
@@ -483,24 +482,24 @@ void GUI::renderRagebotWindow() noexcept
 	ImGui::PushID("Doubletap");
 	ImGui::hotkey2("Doubletap", config->tickbase.doubletap);
 	ImGui::PopID();
-	ImGui::PushID("Hideshots");
-	ImGui::hotkey2("Hideshots", config->tickbase.hideshots);
+	ImGui::PushID("Hide shots");
+	ImGui::hotkey2("Hide shots", config->tickbase.hideshots);
 	ImGui::PopID();
 	ImGui::Checkbox("Teleport on shift", &config->tickbase.teleport);
-	ImGui::Checkbox("OnshotFl", &config->tickbase.onshotFl);
+	ImGui::Checkbox("Onshot fakelag", &config->tickbase.onshotFl);
 	if (config->tickbase.onshotFl)
-		ImGui::SliderInt("OnshotFl amount", &config->tickbase.onshotFlAmount, 1, 52, "%d");
+		ImGui::SliderInt("Onshot fakelag amount", &config->tickbase.onshotFlAmount, 1, 52, "%d");
 	ImGui::Columns(1);
 }
 
 void GUI::renderTriggerbotWindow() noexcept
 {
-	static const char* hitboxes[]{ "Head","Chest","Stomach","Arms","Legs" };
-	static bool hitbox[ARRAYSIZE(hitboxes)] = { false, false, false, false, false };
+	static const char* hitboxes[]{ "Head","Chest","Stomach","Arms","Legs","Feet"};
+	static bool hitbox[ARRAYSIZE(hitboxes)] = { false, false, false, false, false, false };
 	static std::string previewvalue = "";
 
 	ImGui::Columns(2, nullptr, false);
-	ImGui::SetColumnOffset(1, 300.0f);
+	ImGui::SetColumnOffset(1, 350.0f);
 
 	ImGui::hotkey2("Key", config->triggerbotKey, 80.0f);
 	ImGui::Separator();
@@ -750,13 +749,13 @@ void GUI::renderBacktrackWindow() noexcept
 	ImGui::Checkbox("Enabled", &config->backtrack.enabled);
 	ImGui::Checkbox("Ignore smoke", &config->backtrack.ignoreSmoke);
 	ImGui::Checkbox("Ignore flash", &config->backtrack.ignoreFlash);
-	ImGui::PushItemWidth(220.0f);
+	ImGui::PushItemWidth(200.0f);
 	ImGui::SliderInt("Time limit", &config->backtrack.timeLimit, 1, 200, "%d ms");
 	ImGui::PopItemWidth();
 	ImGui::Checkbox("Low performance mode", &config->optimizations.lowPerformanceModeBacktrack);
 	ImGui::NextColumn();
 	ImGui::Checkbox("Enabled fake latency", &config->backtrack.fakeLatency);
-	ImGui::PushItemWidth(220.0f);
+	ImGui::PushItemWidth(200.0f);
 	ImGui::SliderInt("Ping", &config->backtrack.fakeLatencyAmount, 1, 200, "%d ms");
 	ImGui::PopItemWidth();
 	ImGui::Columns(1);
@@ -2005,11 +2004,6 @@ void GUI::renderMiscWindow() noexcept
 			ImGui::SetTooltip("audio file must be put in csgo/sound/ directory");
 	}
 	ImGui::PopID();
-	/*
-	ImGui::Text("Quick healthshot");
-	ImGui::SameLine();
-	hotkey(config->misc.quickHealthshotKey);
-	*/
 	ImGui::Checkbox("Grenade prediction", &config->misc.nadePredict);
 	ImGui::SameLine();
 	ImGui::PushID("Grenade prediction");
@@ -2172,7 +2166,11 @@ void GUI::renderMiscWindow() noexcept
 	}
 	ImGui::PopID();
 
+	if (ImGui::Button("Unhook"))
+		hooks->uninstall();
 
+
+#ifdef DEBUG
 	ImGuiCustom::colorPicker("Logger", config->misc.logger);
 	ImGui::SameLine();
 
@@ -2236,12 +2234,10 @@ void GUI::renderMiscWindow() noexcept
 	}
 	ImGui::PopID();
 
-	if (ImGui::Button("Unhook"))
-		hooks->uninstall();
-
 	static bool metrics_show{};
 	ImGui::Checkbox("Metrics", &metrics_show);
 	if (metrics_show) ImGui::ShowMetricsWindow(&metrics_show);
+#endif
 	ImGui::Columns(1);
 }
 
@@ -2383,10 +2379,11 @@ void Hovered() { ImGuiStyle* Style = &ImGui::GetStyle(); Style->Colors[ImGuiCol_
 void GUI::renderGuiStyle() noexcept
 {
 	ImGuiStyle* Style = &ImGui::GetStyle();
-	Style->WindowRounding = 5.5;
-	Style->WindowBorderSize = 2.5;
-	Style->ChildRounding = 5.5;
-	Style->FrameBorderSize = 2.5;
+	Style->WindowRounding = 5.5f;
+	Style->WindowBorderSize = 2.5f;
+	Style->ChildRounding = 5.5f;
+	Style->FrameBorderSize = 2.f;
+	Style->FrameRounding = 5.5f;
 	Style->Colors[ImGuiCol_WindowBg] = ImColor(0, 0, 0, 0);
 	Style->Colors[ImGuiCol_ChildBg] = ImColor(31, 31, 31);
 	Style->Colors[ImGuiCol_Button] = ImColor(25, 30, 34);

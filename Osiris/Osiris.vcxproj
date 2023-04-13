@@ -49,14 +49,25 @@
     <ClCompile Include="Hacks\Tickbase.cpp" />
     <ClCompile Include="Hacks\Triggerbot.cpp" />
     <ClCompile Include="Hacks\Visuals.cpp" />
-    <ClCompile Include="Helpers.cpp" />
+    <ClCompile Include="Helpers.cpp">
+      <IncludeInUnityFile>false</IncludeInUnityFile>
+    </ClCompile>
     <ClCompile Include="Hooks\MinHook.cpp" />
     <ClCompile Include="Hooks\VmtHook.cpp" />
+    <ClCompile Include="Hooks\VmtLength.cpp" />
     <ClCompile Include="Hooks\VmtSwap.cpp" />
-    <ClCompile Include="imguiCustom.cpp" />
-    <ClCompile Include="imgui\imgui_freetype.cpp" />
-    <ClCompile Include="imgui\imgui_stdlib.cpp" />
-    <ClCompile Include="imgui\imgui_tables.cpp" />
+    <ClCompile Include="imguiCustom.cpp">
+      <IncludeInUnityFile>false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_freetype.cpp">
+      <IncludeInUnityFile>false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_stdlib.cpp">
+      <IncludeInUnityFile>false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_tables.cpp">
+      <IncludeInUnityFile>false</IncludeInUnityFile>
+    </ClCompile>
     <ClCompile Include="InputUtil.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MinHook\buffer.c" />
@@ -67,14 +78,28 @@
     <ClCompile Include="Netvars.cpp" />
     <ClCompile Include="Osiris.cpp" />
     <ClCompile Include="GUI.cpp" />
-    <ClCompile Include="Hacks\Misc.cpp" />
+    <ClCompile Include="Hacks\Misc.cpp">
+      <IncludeInUnityFile>false</IncludeInUnityFile>
+    </ClCompile>
     <ClCompile Include="Hooks.cpp" />
-    <ClCompile Include="imgui\imgui.cpp" />
-    <ClCompile Include="imgui\imgui_demo.cpp" />
-    <ClCompile Include="imgui\imgui_draw.cpp" />
-    <ClCompile Include="imgui\imgui_impl_dx9.cpp" />
-    <ClCompile Include="imgui\imgui_impl_win32.cpp" />
-    <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="imgui\imgui.cpp">
+      <IncludeInUnityFile>false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_demo.cpp">
+      <IncludeInUnityFile>false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_draw.cpp">
+      <IncludeInUnityFile>false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_dx9.cpp">
+      <IncludeInUnityFile>false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_win32.cpp">
+      <IncludeInUnityFile>false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_widgets.cpp">
+      <IncludeInUnityFile>false</IncludeInUnityFile>
+    </ClCompile>
     <ClCompile Include="Memory.cpp" />
     <ClCompile Include="PCG\pcg.cpp" />
     <ClCompile Include="SDK\AnimState.cpp" />
@@ -119,10 +144,12 @@
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Hooks\MinHook.h" />
     <ClInclude Include="Hooks\VmtHook.h" />
+    <ClInclude Include="Hooks\VmtLength.h" />
     <ClInclude Include="Hooks\VmtSwap.h" />
     <ClInclude Include="imguiCustom.h" />
     <ClInclude Include="imgui\imgui_freetype.h" />
     <ClInclude Include="imgui\imgui_stdlib.h" />
+    <ClInclude Include="imgui\imstb_sprintf.h" />
     <ClInclude Include="InputUtil.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="MinHook\buffer.h" />
@@ -170,7 +197,6 @@
     <ClInclude Include="imgui\imgui_internal.h" />
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
-    <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="Interfaces.h" />
     <ClInclude Include="Memory.h" />
     <ClInclude Include="SDK\FileSystem.h" />
@@ -247,6 +273,7 @@
     <SpectreMitigation>false</SpectreMitigation>
     <EnableASAN>true</EnableASAN>
     <EnableFuzzer>true</EnableFuzzer>
+    <EnableUnitySupport>true</EnableUnitySupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -257,6 +284,7 @@
     <SpectreMitigation>false</SpectreMitigation>
     <EnableASAN>false</EnableASAN>
     <EnableFuzzer>false</EnableFuzzer>
+    <EnableUnitySupport>true</EnableUnitySupport>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -285,11 +313,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;WIN32_LEAN_AND_MEAN;WINVER=0x0601;_WIN32_WINNT=0x0601;WIN32;_DEBUG;OSIRIS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;WIN32_LEAN_AND_MEAN;WINVER=0x0601;_WIN32_WINNT=0x0601;WIN32;_DEBUG;OSIRIS_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <CallingConvention>VectorCall</CallingConvention>
@@ -303,6 +331,8 @@
       <CreateHotpatchableImage>true</CreateHotpatchableImage>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <EnableParallelCodeGeneration>false</EnableParallelCodeGeneration>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -332,7 +362,7 @@
       <CreateHotpatchableImage>false</CreateHotpatchableImage>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <AdditionalOptions>/Gw /utf-8 /Ob3 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -341,7 +371,7 @@
       <ExceptionHandling>false</ExceptionHandling>
       <CallingConvention>VectorCall</CallingConvention>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <EnableParallelCodeGeneration>false</EnableParallelCodeGeneration>
       <OpenMPSupport>true</OpenMPSupport>
       <SDLCheck>false</SDLCheck>
       <IntelJCCErratum>true</IntelJCCErratum>

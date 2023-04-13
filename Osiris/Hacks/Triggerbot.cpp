@@ -81,19 +81,24 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 		hitbox[UpperChest] = (cfg.hitboxes & 1 << 1) == 1 << 1;
 		hitbox[Thorax] = (cfg.hitboxes & 1 << 1) == 1 << 1;
 		hitbox[LowerChest] = (cfg.hitboxes & 1 << 1) == 1 << 1;
-		//Stomach
+		// Stomach
 		hitbox[Belly] = (cfg.hitboxes & 1 << 2) == 1 << 2;
 		hitbox[Pelvis] = (cfg.hitboxes & 1 << 2) == 1 << 2;
-		//Arms
+		// Arms
 		hitbox[RightUpperArm] = (cfg.hitboxes & 1 << 3) == 1 << 3;
 		hitbox[RightForearm] = (cfg.hitboxes & 1 << 3) == 1 << 3;
+		hitbox[RightHand] = (cfg.hitboxes & 1 << 3) == 1 << 3;
 		hitbox[LeftUpperArm] = (cfg.hitboxes & 1 << 3) == 1 << 3;
 		hitbox[LeftForearm] = (cfg.hitboxes & 1 << 3) == 1 << 3;
-		//Legs
+		hitbox[LeftHand] = (cfg.hitboxes & 1 << 3) == 1 << 3;
+		// Legs
 		hitbox[RightCalf] = (cfg.hitboxes & 1 << 4) == 1 << 4;
 		hitbox[RightThigh] = (cfg.hitboxes & 1 << 4) == 1 << 4;
 		hitbox[LeftCalf] = (cfg.hitboxes & 1 << 4) == 1 << 4;
 		hitbox[LeftThigh] = (cfg.hitboxes & 1 << 4) == 1 << 4;
+		// Feet
+		hitbox[RightFoot] = (cfg.hitboxes & 1 << 4) == 1 << 5;
+		hitbox[LeftFoot] = (cfg.hitboxes & 1 << 4) == 1 << 5;
 	}
 
 	for (int i = 1; i <= interfaces->engine->getMaxClients(); i++) {

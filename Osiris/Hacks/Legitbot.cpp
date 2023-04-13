@@ -85,22 +85,28 @@ void Legitbot::run(UserCmd* cmd) noexcept
 		// Head
 		hitbox[Head] = (cfg[weaponIndex].hitboxes & 1 << 0) == 1 << 0;
 		// Chest
+		hitbox[Neck] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
 		hitbox[UpperChest] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
 		hitbox[Thorax] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
 		hitbox[LowerChest] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
-		//Stomach
+		// Stomach
 		hitbox[Belly] = (cfg[weaponIndex].hitboxes & 1 << 2) == 1 << 2;
 		hitbox[Pelvis] = (cfg[weaponIndex].hitboxes & 1 << 2) == 1 << 2;
-		//Arms
+		// Arms
 		hitbox[RightUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
 		hitbox[RightForearm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+		hitbox[RightHand] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
 		hitbox[LeftUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
 		hitbox[LeftForearm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
-		//Legs
+		hitbox[LeftHand] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+		// Legs
 		hitbox[RightCalf] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
 		hitbox[RightThigh] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
 		hitbox[LeftCalf] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
 		hitbox[LeftThigh] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
+		// Feet
+		hitbox[LeftFoot] = (cfg[weaponIndex].hitboxes & 1 << 5) == 1 << 5;
+		hitbox[RightFoot] = (cfg[weaponIndex].hitboxes & 1 << 5) == 1 << 5;
 
 		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++) {
 			auto entity = interfaces->entityList->getEntity(i);
@@ -132,7 +138,7 @@ void Legitbot::run(UserCmd* cmd) noexcept
 				if (!hitbox)
 					continue;
 
-				for (auto& bonePosition : AimbotFunction::multiPoint(entity, player.matrix.data(), hitbox, localPlayerEyePosition, j, 0, 0)) {
+				for (auto& bonePosition : AimbotFunction::multiPoint(entity, player.matrix.data(), hitbox, localPlayerEyePosition, j, 25, 25)) {
 					const auto angle{ AimbotFunction::calculateRelativeAngle(localPlayerEyePosition, bonePosition, cmd->viewangles + aimPunch) };
 					const auto fov{ angle.length2D() };
 					if (fov > bestFov)

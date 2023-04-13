@@ -480,12 +480,13 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 
 	switch (_hitbox) {
 	case Head:
-		for (auto i = 0; i < 4; ++i)
+		for (auto i = 0; i < 5; ++i)
 			vecArray.emplace_back(center);
 
 		vecArray[1] += top * (hitbox->capsuleRadius * headMultiPoint);
 		vecArray[2] += right * (hitbox->capsuleRadius * headMultiPoint);
 		vecArray[3] += left * (hitbox->capsuleRadius * headMultiPoint);
+		vecArray[4] += bottom * (hitbox->capsuleRadius * headMultiPoint);
 		break;
 	default://rest
 		if (!config->optimizations.lowPerformanceMode || toOptimize < _hitbox + 1) {
@@ -499,6 +500,33 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 		break;
 	}
 	return vecArray;
+}
+
+
+int AimbotFunction::approxHitchance(float wepInnacuracy, int hitbox, float distance)
+{
+	double multiplier = 1.;
+
+	switch (static_cast<Hitbox>(hitbox)) {
+	case Hitbox::Pelvis:
+	case Hitbox::Belly:
+	case Hitbox::Thorax:
+	case Hitbox::LowerChest:
+	case Hitbox::UpperChest:
+		multiplier = 1.8;
+		break;
+	case Hitbox::RightThigh:
+	case Hitbox::LeftThigh:
+		multiplier = 4./3.;
+		break;
+	case Hitbox::Neck:
+		multiplier = 1.154;
+		break;
+	}
+
+	wepInnacuracy = std::max(wepInnacuracy, 0.0000001f);
+	double b = std::sqrt(std::tan((wepInnacuracy) * 3.932) * distance);
+	return static_cast<int>(((5.1432 / b) * 100. * multiplier) * 0.8); // * 0.8 => 0-120 --> 0-100 range
 }
 
 bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitboxSet* set, const matrix3x4 matrix[MAXSTUDIOBONES], Entity* activeWeapon, const Vector& destination, const UserCmd* cmd, const int hitChance) noexcept
