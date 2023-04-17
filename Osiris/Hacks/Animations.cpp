@@ -44,6 +44,9 @@ static float moveWeight{ 0.0f };
 static float footYaw{};
 static std::array<float, 24> poseParameters{};
 static std::array<AnimationLayer, 13> sendPacketLayers{};
+static bool lockAngles = false;
+static Vector holdAimAngles;
+static Vector anglesToAnimate;
 
 void Animations::init() noexcept
 {
@@ -124,7 +127,18 @@ void Animations::update(UserCmd* cmd, bool& _sendPacket) noexcept
 	localPlayer->getEFlags() &= ~0x1000;
 	localPlayer->getAbsVelocity() = EnginePrediction::getVelocity();
 
-	localPlayer->updateState(localPlayer->getAnimstate(), viewangles);
+	if (!sendPacket && AntiAim::getIsShooting()) {
+		holdAimAngles = cmd->viewangles;
+		lockAngles = true;
+	}
+
+	if (lockAngles && sendPacket) {
+		anglesToAnimate = holdAimAngles;
+		lockAngles = false;
+	} else
+		anglesToAnimate = cmd->viewangles;
+
+	localPlayer->updateState(localPlayer->getAnimstate(), anglesToAnimate);
 	localPlayer->updateClientSideAnimation();
 
 	std::memcpy(&layers, localPlayer->animOverlays(), sizeof(AnimationLayer) * localPlayer->getAnimationLayersCount());
@@ -259,21 +273,10 @@ float getExtraTicks() noexcept
 	return static_cast<float>(config->backtrack.fakeLatencyAmount) / 1000.f;
 }
 
-float getMaximumTicks() noexcept
-{
-	static auto frameRate = 1.0f;
-	frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
-
-	if (static_cast<int>(1 / frameRate) <= 1 / memory->globalVars->intervalPerTick && config->optimizations.lowPerformanceModeBacktrack)
-		return 0.f;
-
-	return static_cast<float>(config->backtrack.timeLimit) / 1000.f + getExtraTicks();
-}
-
 void Animations::handlePlayers(FrameStage stage) noexcept
 {
-	const float timeLimit = getMaximumTicks();
 	static auto gravity = interfaces->cvar->findVar("sv_gravity");
+	const float timeLimit = static_cast<float>(config->backtrack.timeLimit) / 1000.f + getExtraTicks();
 	if (stage != FrameStage::NET_UPDATE_END)
 		return;
 
@@ -412,7 +415,7 @@ void Animations::handlePlayers(FrameStage stage) noexcept
 			//Run animations
 
 			updatingEntity = true;
-			if (player.chokedPackets <= 0) //We dont need to simulate commands
+			if (true) //We dont need to simulate commands player.chokedPackets <= 0
 			{
 				if (entity->getAnimstate()->lastUpdateFrame == memory->globalVars->framecount)
 					entity->getAnimstate()->lastUpdateFrame -= 1;

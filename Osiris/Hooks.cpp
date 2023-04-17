@@ -313,6 +313,14 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 		Misc::autoStrafe(cmd, currentViewAngles);
 		Misc::jumpBug(cmd);
 
+		if (AntiAim::canRun(cmd)) {
+			AntiAim::setIsShooting(false);
+			AntiAim::run(cmd, previousViewAngles, currentViewAngles, sendPacket);
+		} else {
+			AntiAim::setLastShotTime(memory->globalVars->realtime);
+			AntiAim::setIsShooting(true);
+		}
+
 		//Clamp angles and fix movement
 		auto viewAnglesDelta{ cmd->viewangles - previousViewAngles };
 		viewAnglesDelta.normalize();
@@ -351,6 +359,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 		Misc::jumpStats(cmd);
 		Animations::update(cmd, sendPacket);
 		Animations::fake();
+		AntiAim::setDidShoot(AntiAim::getIsShooting());
 		return false;
 	}
 
@@ -361,7 +370,6 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 	memory->globalVars->serverTime(cmd);
 	Misc::antiAfkKick(cmd);
 	Misc::fastStop(cmd);
-	Misc::prepareRevolver(cmd);
 	Visuals::removeShadows();
 	Visuals::fullBright();
 	Visuals::shadowChanger();
@@ -397,8 +405,12 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 	Misc::fastPlant(cmd);
 
 	if (AntiAim::canRun(cmd)) {
+		AntiAim::setIsShooting(false);
 		Fakelag::run(cmd, sendPacket);
 		AntiAim::run(cmd, previousViewAngles, currentViewAngles, sendPacket);
+	} else {
+		AntiAim::setLastShotTime(memory->globalVars->realtime);
+		AntiAim::setIsShooting(true);
 	}
 
 	Misc::fakeDuck(cmd, sendPacket);
@@ -439,6 +451,8 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 	cmd->sidemove = std::clamp(cmd->sidemove, -450.0f, 450.0f);
 	cmd->upmove = std::clamp(cmd->upmove, -320.0f, 320.0f);
 
+	Misc::prepareRevolver(cmd);
+
 	previousViewAngles = cmd->viewangles;
 
 	Visuals::updateShots(cmd);
@@ -448,6 +462,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 	Misc::jumpStats(cmd);
 	Animations::update(cmd, sendPacket);
 	Animations::fake();
+	AntiAim::setDidShoot(AntiAim::getIsShooting());
 	return false;
 }
 

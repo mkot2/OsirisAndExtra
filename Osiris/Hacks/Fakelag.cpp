@@ -24,6 +24,11 @@ void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
 	if (!netChannel)
 		return;
 
+	if (AntiAim::getDidShoot()) {
+		sendPacket = true;
+		return;
+	}
+
 	if (EnginePrediction::getVelocity().length2D() < 1)
 		return;
 
@@ -68,10 +73,6 @@ void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
 			break;
 		case 2: // Random
 			choked_packets = std::uniform_int_distribution<int>(config->fakelag[static_cast<int>(moving_flag)].randomMinLimit, config->fakelag[static_cast<int>(moving_flag)].limit)(PCG::generator);
-			break;
-		case 3: // rand() Random
-			srand(static_cast<unsigned>(time(nullptr)));
-			choked_packets = rand() % config->fakelag[static_cast<int>(moving_flag)].limit + config->fakelag[static_cast<int>(moving_flag)].randomMinLimit; // NOLINT(concurrency-mt-unsafe)
 			break;
 		default:
 			break;

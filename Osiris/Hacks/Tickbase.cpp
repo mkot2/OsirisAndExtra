@@ -123,7 +123,7 @@ bool Tickbase::canRun() noexcept
 		return true;
 	}
 
-	if ((ticksAllowedForProcessing < targetTickShift || chokedPackets > maxUserCmdProcessTicks - targetTickShift) && memory->globalVars->realtime - realTime > 1.0f) {
+	if ((ticksAllowedForProcessing < targetTickShift || chokedPackets > maxUserCmdProcessTicks - targetTickShift) && memory->globalVars->realtime - realTime > 1.0f && (memory->globalVars->realtime - AntiAim::getLastShotTime() > 1.0f || hasHadTickbaseActive == false)) {
 		ticksAllowedForProcessing = std::min(ticksAllowedForProcessing++, maxUserCmdProcessTicks);
 		chokedPackets = std::max(chokedPackets--, 0);
 		pauseTicks++;

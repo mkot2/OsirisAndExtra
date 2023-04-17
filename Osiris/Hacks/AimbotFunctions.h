@@ -27,5 +27,4 @@ namespace AimbotFunction
 
 	int approxHitchance(float wepInnacuracy, int hitbox, float distance);
 	bool hitChance(Entity* localPlayer, Entity* entity, StudioHitboxSet*, const matrix3x4 matrix[MAXSTUDIOBONES], Entity* activeWeapon, const Vector& destination, const UserCmd* cmd, int hitChance) noexcept;
-	bool relativeHitchance(Entity* localPlayer, Entity* entity, StudioHitboxSet*, const matrix3x4 matrix[MAXSTUDIOBONES], Entity* activeWeapon, const Vector& destination, const UserCmd* cmd, float relativeHitchance) noexcept;
 }

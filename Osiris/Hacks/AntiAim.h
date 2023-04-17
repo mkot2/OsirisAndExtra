@@ -57,4 +57,11 @@ namespace AntiAim
 	inline moving_flag latest_moving_flag{};
 
 	moving_flag get_moving_flag(const UserCmd* cmd) noexcept;
+
+	float getLastShotTime();
+	bool getIsShooting();
+	bool getDidShoot();
+	void setLastShotTime(float shotTime);
+	void setIsShooting(bool shooting);
+	void setDidShoot(bool shot);
 }

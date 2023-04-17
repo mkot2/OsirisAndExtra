@@ -53,9 +53,6 @@
       <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <ClCompile Include="Hooks\MinHook.cpp" />
-    <ClCompile Include="Hooks\VmtHook.cpp" />
-    <ClCompile Include="Hooks\VmtLength.cpp" />
-    <ClCompile Include="Hooks\VmtSwap.cpp" />
     <ClCompile Include="imguiCustom.cpp">
       <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
@@ -143,9 +140,6 @@
     <ClInclude Include="Hacks\Visuals.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Hooks\MinHook.h" />
-    <ClInclude Include="Hooks\VmtHook.h" />
-    <ClInclude Include="Hooks\VmtLength.h" />
-    <ClInclude Include="Hooks\VmtSwap.h" />
     <ClInclude Include="imguiCustom.h" />
     <ClInclude Include="imgui\imgui_freetype.h" />
     <ClInclude Include="imgui\imgui_stdlib.h" />
@@ -317,22 +311,24 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>
+      </EnableEnhancedInstructionSet>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /d2archSSE42 %(AdditionalOptions)</AdditionalOptions>
       <CallingConvention>VectorCall</CallingConvention>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <OpenMPSupport>true</OpenMPSupport>
       <StringPooling>true</StringPooling>
       <FloatingPointModel>Fast</FloatingPointModel>
       <IntelJCCErratum>true</IntelJCCErratum>
-      <EnableModules>true</EnableModules>
+      <EnableModules>false</EnableModules>
       <FloatingPointExceptions>true</FloatingPointExceptions>
       <CreateHotpatchableImage>true</CreateHotpatchableImage>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <EnableParallelCodeGeneration>false</EnableParallelCodeGeneration>
       <ControlFlowGuard>Guard</ControlFlowGuard>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -362,9 +358,10 @@
       <CreateHotpatchableImage>false</CreateHotpatchableImage>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>
+      </EnableEnhancedInstructionSet>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <AdditionalOptions>/Gw /utf-8 /Ob3 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Gw /utf-8 /Ob3 /d2archSSE42 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ControlFlowGuard>false</ControlFlowGuard>
@@ -375,9 +372,10 @@
       <OpenMPSupport>true</OpenMPSupport>
       <SDLCheck>false</SDLCheck>
       <IntelJCCErratum>true</IntelJCCErratum>
-      <EnableModules>true</EnableModules>
+      <EnableModules>false</EnableModules>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <MinimalRebuild>false</MinimalRebuild>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

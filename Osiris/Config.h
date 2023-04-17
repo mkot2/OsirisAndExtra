@@ -50,9 +50,7 @@ public:
 		int priority{ 0 };
 		float fov{ 0.0f };
 		int hitboxes{ 0 };
-		bool relativeHitchanceSwitch{ false };
 		int hitChance{ 50 };
-		float relativeHitchance{ 0.85f };
 		float accuracyBoost{ 0.f };
 		int headMultiPoint{ 0 };
 		int bodyMultiPoint{ 0 };
@@ -65,7 +63,6 @@ public:
 
 	struct Optimizations {
 		bool lowPerformanceMode{ false };
-		bool lowPerformanceModeBacktrack{ false };
 	} optimizations;
 
 	struct Fakelag {

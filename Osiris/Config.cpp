@@ -278,11 +278,10 @@ static void from_json(const json& j, Config::Ragebot& r)
 	read(j, "Priority", r.priority);
 	read(j, "Fov", r.fov);
 	read(j, "Hitboxes", r.hitboxes);
-	read(j, "Relative hitchance switch", r.relativeHitchanceSwitch);
+	read(j, "Hitchance", r.hitChance);
+	read(j, "Accuracy boost", r.accuracyBoost);
 	read(j, "Head Multipoint", r.headMultiPoint);
 	read(j, "Body Multipoint", r.bodyMultiPoint);
-	read(j, "Relative hitchance", r.relativeHitchance);
-	read(j, "Accuracy boost", r.accuracyBoost);
 	read(j, "Min damage", r.minDamage);
 	read(j, "Min damage override", r.minDamageOverride);
 }
@@ -290,7 +289,6 @@ static void from_json(const json& j, Config::Ragebot& r)
 static void from_json(const json& j, Config::Optimizations& o)
 {
 	read(j, "Low Performance Mode", o.lowPerformanceMode);
-	read(j, "Low Performance Mode Backtrack", o.lowPerformanceModeBacktrack);
 }
 
 static void from_json(const json& j, Config::Triggerbot& t)
@@ -1037,9 +1035,7 @@ static void to_json(json& j, const Config::Ragebot& o, const Config::Ragebot& du
 	WRITE("Priority", priority);
 	WRITE("Fov", fov);
 	WRITE("Hitboxes", hitboxes);
-	WRITE("Relative hitchance switch", relativeHitchanceSwitch);
 	WRITE("Hitchance", hitChance);
-	WRITE("Relative hitchance", relativeHitchance);
 	WRITE("Accuracy boost", accuracyBoost);
 	WRITE("Head Multipoint", headMultiPoint);
 	WRITE("Body Multipoint", bodyMultiPoint);
@@ -1050,7 +1046,6 @@ static void to_json(json& j, const Config::Ragebot& o, const Config::Ragebot& du
 static void to_json(json& j, const Config::Optimizations& o, const Config::Optimizations& dummy = {})
 {
 	WRITE("Low Performance Mode", lowPerformanceMode);
-	WRITE("Low Performance Mode Backtrack", lowPerformanceModeBacktrack);
 }
 
 static void to_json(json& j, const Config::Triggerbot& o, const Config::Triggerbot& dummy = {})

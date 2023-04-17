@@ -58,18 +58,21 @@ void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const Ragebot::
 		for (const auto& bonePosition : AimbotFunction::multiPoint(entity, matrix, hitbox, localPlayerEyePosition, i, headMultiPoint, bodyMultiPoint)) {
 			const auto angle{ AimbotFunction::calculateRelativeAngle(localPlayerEyePosition, bonePosition, cmd->viewangles + aimPunch) };
 			const auto fov{ angle.length2D() };
+			const auto extrapolatedPoint{ bonePosition + entity->velocity() * memory->globalVars->intervalPerTick };
+			
+
 			if (fov > cfg[weaponIndex].fov)
 				continue;
 
-			if (!cfg[weaponIndex].ignoreSmoke && memory->lineGoesThroughSmoke(localPlayerEyePosition, bonePosition, 1))
+			if (!cfg[weaponIndex].ignoreSmoke && memory->lineGoesThroughSmoke(localPlayerEyePosition, extrapolatedPoint, 1))
 				continue;
 
-			float damage = AimbotFunction::getScanDamage(entity, bonePosition, activeWeapon->getWeaponData(), minDamage, cfg[weaponIndex].friendlyFire);
+			float damage = AimbotFunction::getScanDamage(entity, extrapolatedPoint, activeWeapon->getWeaponData(), minDamage, cfg[weaponIndex].friendlyFire);
 			damage = std::clamp(damage, 0.0f, static_cast<float>(entity->maxHealth()));
 			if (damage <= 0.05f)
 				continue;
 
-			if (!entity->isVisible(bonePosition) && (cfg[weaponIndex].visibleOnly || !static_cast<bool>(damage)))
+			if (!entity->isVisible(extrapolatedPoint) && (cfg[weaponIndex].visibleOnly || !static_cast<bool>(damage)))
 				continue;
 
 			if (cfg[weaponIndex].scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped())
@@ -116,13 +119,7 @@ void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const Ragebot::
 	}
 
 	if (bestTarget.notNull()) {
-		if (cfg[weaponIndex].relativeHitchanceSwitch && !AimbotFunction::relativeHitchance(localPlayer.get(), entity, set, matrix, activeWeapon, bestAngle, cmd, cfg[weaponIndex].relativeHitchance)) {
-			bestTarget = Vector{ };
-			bestAngle = Vector{ };
-			bestIndex = -1;
-			bestSimulationTime = 0;
-			damageDiff = FLT_MAX;
-		} else if ((AimbotFunction::approxHitchance(activeWeapon->getInaccuracy(), hitboxId, localPlayerEyePosition.distTo(bestTarget)) < static_cast<int>(std::round(cfg[weaponIndex].hitChance*.6f))) && !AimbotFunction::hitChance(localPlayer.get(), entity, set, matrix, activeWeapon, bestAngle, cmd, cfg[weaponIndex].hitChance)) {
+		if ((AimbotFunction::approxHitchance(activeWeapon->getInaccuracy(), hitboxId, localPlayerEyePosition.distTo(bestTarget)) < static_cast<int>(std::round(cfg[weaponIndex].hitChance*.5f))) || !AimbotFunction::hitChance(localPlayer.get(), entity, set, matrix, activeWeapon, bestAngle, cmd, cfg[weaponIndex].hitChance)) {
 			bestTarget = Vector{ };
 			bestAngle = Vector{ };
 			damageDiff = FLT_MAX;
@@ -246,9 +243,6 @@ void Ragebot::run(UserCmd* cmd) noexcept
 		break;
 	}
 
-	auto headMultiPoint = cfg[weaponIndex].headMultiPoint;
-	auto bodyMultiPoint = cfg[weaponIndex].bodyMultiPoint;
-
 	for (const auto& target : enemies) {
 		auto entity{ interfaces->entityList->getEntity(target.id) };
 		auto player = Animations::getPlayer(target.id);
@@ -263,7 +257,7 @@ void Ragebot::run(UserCmd* cmd) noexcept
 		for (int cycle = 0; cycle < 2; cycle++) {
 			float currentSimulationTime = -1.0f;
 
-			if (config->backtrack.enabled && !(static_cast<int>(1 / frameRate) <= 1 / memory->globalVars->intervalPerTick && config->optimizations.lowPerformanceModeBacktrack)) {
+			if (config->backtrack.enabled) {
 				const auto records = Animations::getBacktrackRecords(entity->index());
 				if (!records || records->empty())
 					continue;
@@ -307,7 +301,7 @@ void Ragebot::run(UserCmd* cmd) noexcept
 				currentSimulationTime = player.simulationTime;
 			}
 
-			runRagebot(cmd, entity, entity->getBoneCache().memory, target, hitbox, activeWeapon, weaponIndex, localPlayerEyePosition, aimPunch, headMultiPoint, bodyMultiPoint, minDamage, damageDiff, bestAngle, bestTarget, bestIndex, bestSimulationTime);
+			runRagebot(cmd, entity, entity->getBoneCache().memory, target, hitbox, activeWeapon, weaponIndex, localPlayerEyePosition, aimPunch, cfg[weaponIndex].headMultiPoint, cfg[weaponIndex].bodyMultiPoint, minDamage, damageDiff, bestAngle, bestTarget, bestIndex, bestSimulationTime);
 			resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 			if (bestTarget.notNull()) {
 				bestSimulationTime = currentSimulationTime;

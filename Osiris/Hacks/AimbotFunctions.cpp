@@ -408,9 +408,6 @@ bool AimbotFunction::hitboxIntersection(const matrix3x4 matrix[MAXSTUDIOBONES], 
 	if (!hitbox)
 		return false;
 
-	if (hitbox->capsuleRadius == -1.f)
-		return false;
-
 	Vector mins, maxs;
 	const auto isCapsule = hitbox->capsuleRadius != -1.f;
 	if (isCapsule) {
@@ -425,7 +422,7 @@ bool AimbotFunction::hitboxIntersection(const matrix3x4 matrix[MAXSTUDIOBONES], 
 		VectorTransform_Wrapper(vectorRotate(hitbox->bbMax, hitbox->offsetOrientation), matrix[hitbox->bone], maxs);
 
 		vectorITransform(start, matrix[hitbox->bone], mins);
-		vectorIRotate(end, matrix[hitbox->bone], maxs);
+		vectorITransform(end, matrix[hitbox->bone], maxs);
 
 		if (intersectLineWithBb(mins, maxs, hitbox->bbMin, hitbox->bbMax))
 			return true;
@@ -505,7 +502,7 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 
 int AimbotFunction::approxHitchance(float wepInnacuracy, int hitbox, float distance)
 {
-	double multiplier = 1.;
+	float multiplier = 1.f;
 
 	switch (static_cast<Hitbox>(hitbox)) {
 	case Hitbox::Pelvis:
@@ -513,20 +510,20 @@ int AimbotFunction::approxHitchance(float wepInnacuracy, int hitbox, float dista
 	case Hitbox::Thorax:
 	case Hitbox::LowerChest:
 	case Hitbox::UpperChest:
-		multiplier = 1.8;
+		multiplier = 1.8f;
 		break;
 	case Hitbox::RightThigh:
 	case Hitbox::LeftThigh:
-		multiplier = 4./3.;
+		multiplier = 4.f/3.f;
 		break;
 	case Hitbox::Neck:
-		multiplier = 1.154;
+		multiplier = 1.154f;
 		break;
 	}
 
 	wepInnacuracy = std::max(wepInnacuracy, 0.0000001f);
-	double b = std::sqrt(std::tan((wepInnacuracy) * 3.932) * distance);
-	return static_cast<int>(((5.1432 / b) * 100. * multiplier) * 0.8); // * 0.8 => 0-120 --> 0-100 range
+	float b = std::sqrt(std::tan((wepInnacuracy) * 3.932f) * distance);
+	return static_cast<int>(((5.1432f / b) * 100.f * multiplier) * 0.8f); // * 0.8 => 0-120 --> 0-100 range
 }
 
 bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitboxSet* set, const matrix3x4 matrix[MAXSTUDIOBONES], Entity* activeWeapon, const Vector& destination, const UserCmd* cmd, const int hitChance) noexcept
@@ -535,7 +532,7 @@ bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitbox
 	if (!hitChance || isSpreadEnabled->getInt() >= 1)
 		return true;
 
-	constexpr int maxSeed = 255;
+	constexpr int maxSeed = 512;
 
 	const Angle angles(destination + cmd->viewangles);
 
@@ -546,7 +543,6 @@ bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitbox
 	const auto weapInaccuracy = activeWeapon->getInaccuracy();
 	const auto localEyePosition = localPlayer->getEyePosition();
 	const auto range = activeWeapon->getWeaponData()->range;
-	bool plz_hit_my_ass = false;
 
 	for (int i = 0; i < maxSeed; i++) {
 		const float spreadX = std::uniform_real_distribution<float>(0.f, 2.f * static_cast<float>(M_PI))(PCG::generator);
@@ -566,52 +562,7 @@ bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitbox
 		}
 
 		if (hits >= hitsNeed)
-			plz_hit_my_ass = true;
-
-		// if ((maxSeed - i + hits) < hitsNeed)
-			// return false;
+			return true;
 	}
-	return plz_hit_my_ass;
-}
-
-bool AimbotFunction::relativeHitchance(Entity* localPlayer, Entity* entity, StudioHitboxSet* set, const matrix3x4 matrix[MAXSTUDIOBONES], Entity* activeWeapon, const Vector& destination, const UserCmd* cmd, const float relativeHitchance) noexcept
-{
-	static auto isSpreadEnabled = interfaces->cvar->findVar("weapon_accuracy_nospread");
-	if (!relativeHitchance || isSpreadEnabled->getInt() >= 1)
-		return true;
-
-	constexpr int maxSeed = 255;//default is 255,if you wanna reduce calcu just made it less
-
-	const Angle angles(destination + cmd->viewangles);
-
-	int hits = 0;
-	const int hits_need = static_cast<int>(static_cast<float>(maxSeed) * relativeHitchance);
-	const auto weapSpread = activeWeapon->getSpread();
-	const auto weapInaccuracy = activeWeapon->getInaccuracy();
-	const auto localEyePosition = localPlayer->getEyePosition();
-	const auto range = activeWeapon->getWeaponData()->range;
-	bool plz_hit_my_ass = false;
-
-	for (int i = 0; i < maxSeed; ++i) {
-		const float spreadX = std::uniform_real_distribution<float>(0.f, 2.f * static_cast<float>(M_PI))(PCG::generator);
-		const float spreadY = std::uniform_real_distribution<float>(0.f, 2.f * static_cast<float>(M_PI))(PCG::generator);
-		auto inaccuracy = weapInaccuracy * std::uniform_real_distribution<float>(0.f, 1.f)(PCG::generator);
-		if (inaccuracy == 0.f) inaccuracy = 0.000001f;  // NOLINT(clang-diagnostic-float-equal)
-		auto spread = weapSpread * std::uniform_real_distribution<float>(0.f, 1.f)(PCG::generator);
-
-		Vector spreadView{ (cosf(spreadX) * inaccuracy) + (cosf(spreadY) * spread),
-						   (sinf(spreadX) * inaccuracy) + (sinf(spreadY) * spread) };
-		Vector direction{ (angles.forward + (angles.right * spreadView.x) + (angles.up * spreadView.y)) * range };
-
-		for (int hitbox = 0; hitbox < Max; hitbox++) {
-			if (hitboxIntersection(matrix, hitbox, set, localEyePosition, localEyePosition + direction)) {
-				hits++;
-				break;
-			}
-		}
-
-		if (hits_need * hits < i * (1.f - inaccuracy))
-			plz_hit_my_ass = true;
-	}
-	return plz_hit_my_ass;
+	return false;
 }

@@ -463,11 +463,7 @@ void GUI::renderRagebotWindow() noexcept
 	ImGui::NextColumn();
 	ImGui::PushItemWidth(240.0f);
 	ImGui::SliderFloat("Fov", &config->ragebot[currentWeapon].fov, 0.0f, 255.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
-	ImGui::Checkbox("Relative hitchance", &config->ragebot[currentWeapon].relativeHitchanceSwitch);
-	if (config->ragebot[currentWeapon].relativeHitchanceSwitch)
-		ImGui::SliderFloat("Relative hitchance", &config->ragebot[currentWeapon].relativeHitchance, 0, 1.0f, "%.2f");
-	else
-		ImGui::SliderInt("Absolute hitchance", &config->ragebot[currentWeapon].hitChance, 0, 100, "%d");
+	ImGui::SliderInt("Hitchance", &config->ragebot[currentWeapon].hitChance, 0, 100, "%d");
 	ImGui::SliderFloat("Accuracy boost", &config->ragebot[currentWeapon].accuracyBoost, 0, 1.0f, "%.2f");
 	ImGui::SliderInt("Head multipoint", &config->ragebot[currentWeapon].headMultiPoint, 0, 100, "%d");
 	ImGui::SliderInt("Body multipoint", &config->ragebot[currentWeapon].bodyMultiPoint, 0, 100, "%d");
@@ -752,7 +748,6 @@ void GUI::renderBacktrackWindow() noexcept
 	ImGui::PushItemWidth(200.0f);
 	ImGui::SliderInt("Time limit", &config->backtrack.timeLimit, 1, 200, "%d ms");
 	ImGui::PopItemWidth();
-	ImGui::Checkbox("Low performance mode", &config->optimizations.lowPerformanceModeBacktrack);
 	ImGui::NextColumn();
 	ImGui::Checkbox("Enabled fake latency", &config->backtrack.fakeLatency);
 	ImGui::PushItemWidth(200.0f);
