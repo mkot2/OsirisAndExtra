@@ -50,12 +50,12 @@ public:
 		int priority{ 0 };
 		float fov{ 0.0f };
 		int hitboxes{ 0 };
-		int hitChance{ 50 };
+		int hitChance{ 0 };
 		float accuracyBoost{ 0.f };
 		int headMultiPoint{ 0 };
 		int bodyMultiPoint{ 0 };
-		int minDamage{ 1 };
-		int minDamageOverride{ 1 };
+		int minDamage{ 0 };
+		int minDamageOverride{ 0 };
 	};
 	std::array<Ragebot, 40> ragebot;
 	KeyBind ragebotKey{ std::string("ragebot") };
@@ -142,9 +142,9 @@ public:
 		bool autoScope{ false };
 		float fov{ 0.0f };
 		float smooth{ 1.0f };
-		int reactionTime{ 100 };
+		int reactionTime{ 0 };
 		int hitboxes{ 0 };
-		int minDamage{ 1 };
+		int minDamage{ 0 };
 		bool killshot{ false };
 		bool betweenShots{ true };
 	};
@@ -156,8 +156,8 @@ public:
 		bool enabled{ false };
 		bool silent{ false };
 		int shotsFired{ 0 };
-		float horizontal{ 1.0f };
-		float vertical{ 1.0f };
+		int horizontal{ 100 };
+		int vertical{ 100 };
 	} recoilControlSystem;
 
 	struct Triggerbot {
@@ -170,7 +170,7 @@ public:
 		int hitboxes = 0;
 		int hitChance = 50;
 		int shotDelay = 0;
-		int minDamage = 1;
+		int minDamage = 0;
 	};
 	std::array<Triggerbot, 40> triggerbot;
 	KeyBind triggerbotKey{ std::string("triggerbot") };

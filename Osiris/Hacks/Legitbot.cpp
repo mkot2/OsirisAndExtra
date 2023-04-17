@@ -47,8 +47,8 @@ void Legitbot::run(UserCmd* cmd) noexcept
 			if (cmd->buttons & UserCmd::IN_ATTACK) {
 				Vector currentPunch = aimPunch;
 
-				currentPunch.x *= config->recoilControlSystem.vertical;
-				currentPunch.y *= config->recoilControlSystem.horizontal;
+				currentPunch.x *= config->recoilControlSystem.vertical / 100.f;
+				currentPunch.y *= config->recoilControlSystem.horizontal / 100.f;
 
 				if (!config->recoilControlSystem.silent) {
 					cmd->viewangles.y += lastAimPunch.y - currentPunch.y;
