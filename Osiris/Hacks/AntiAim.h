@@ -20,29 +20,29 @@ namespace AntiAim
 
 	inline const char* moving_flag_text[]
 	{
-		"Freestanding",
-		"Moving",
-		"Jumping",
-		"Ducking",
-		"Duck-jumping",
-		"Slow-walking",
-		"Fake-ducking"
+		xorstr_("Freestanding"),
+		xorstr_("Moving"),
+		xorstr_("Jumping"),
+		xorstr_("Ducking"),
+		xorstr_("Duck-jumping"),
+		xorstr_("Slow-walking"),
+		xorstr_("Fake-ducking")
 	};
 
 	inline const char* peek_mode_text[]
 	{
-		"Off",
-		"Peek Real",
-		"Peek Fake",
-		"Jitter",
-		"Switch"
+		xorstr_("Off"),
+		xorstr_("Peek Real"),
+		xorstr_("Peek Fake"),
+		xorstr_("Jitter"),
+		xorstr_("Switch")
 	};
 
 	inline const char* lby_mode_text[]
 	{
-		"Normal",
-		"Opposite",
-		"Sway"
+		xorstr_("Normal"),
+		xorstr_("Opposite"),
+		xorstr_("Sway")
 	};
 
 	void rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector& currentViewAngles, bool& sendPacket) noexcept;

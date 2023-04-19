@@ -363,7 +363,7 @@ static void renderWeaponBox(const WeaponData& weaponData, const Weapon& config) 
 	}
 
 	if (config.ammo.enabled && weaponData.clip != -1) {
-		const auto text{ std::to_string(weaponData.clip) + " / " + std::to_string(weaponData.reserveAmmo) };
+		const auto text{ std::to_string(weaponData.clip) + xorstr_(" / ") + std::to_string(weaponData.reserveAmmo) };
 		renderText(weaponData.distanceToLocal, config.textCullDistance, config.ammo, text.c_str(), { (bbox.min.x + bbox.max.x) / 2, bbox.max.y + 1 }, true, false);
 	}
 }
@@ -488,7 +488,7 @@ static bool renderPlayerEsp(const PlayerData& playerData, const Player& playerCo
 
 static void renderWeaponEsp(const WeaponData& weaponData, const Weapon& parentConfig, const Weapon& itemConfig) noexcept
 {
-	const auto& config = itemConfig.enabled ? itemConfig : (parentConfig.enabled ? parentConfig : ::config->streamProofESP.weapons["All"]);
+	const auto& config = itemConfig.enabled ? itemConfig : (parentConfig.enabled ? parentConfig : ::config->streamProofESP.weapons[xorstr_("All")]);
 	if (config.enabled) {
 		renderWeaponBox(weaponData, config);
 	}
@@ -498,7 +498,7 @@ static void renderEntityEsp(const BaseData& entityData, const std::unordered_map
 {
 	if (const auto cfg = map.find(name); cfg != map.cend() && cfg->second.enabled) {
 		renderEntityBox(entityData, name, cfg->second);
-	} else if (const auto cfg = map.find("All"); cfg != map.cend() && cfg->second.enabled) {
+	} else if (const auto cfg = map.find(xorstr_("All")); cfg != map.cend() && cfg->second.enabled) {
 		renderEntityBox(entityData, name, cfg->second);
 	}
 }
@@ -543,7 +543,7 @@ void StreamProofESP::render() noexcept
 	}
 
 	for (const auto& projectile : GameData::projectiles())
-		renderProjectileEsp(projectile, config->streamProofESP.projectiles["All"], config->streamProofESP.projectiles[projectile.name], projectile.name);
+		renderProjectileEsp(projectile, config->streamProofESP.projectiles[xorstr_("All")], config->streamProofESP.projectiles[projectile.name], projectile.name);
 
 	for (const auto& player : GameData::players()) {
 		if ((player.dormant && player.fadingAlpha() == 0.0f) || !player.alive || !player.inViewFrustum)
@@ -551,8 +551,8 @@ void StreamProofESP::render() noexcept
 
 		auto& playerConfig = player.enemy ? config->streamProofESP.enemies : config->streamProofESP.allies;
 
-		if (!renderPlayerEsp(player, playerConfig["All"]))
-			renderPlayerEsp(player, playerConfig[player.visible ? "Visible" : "Occluded"]);
+		if (!renderPlayerEsp(player, playerConfig[xorstr_("All")]))
+			renderPlayerEsp(player, playerConfig[player.visible ? xorstr_("Visible") : xorstr_("Occluded")]);
 	}
 }
 

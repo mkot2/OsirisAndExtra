@@ -58,8 +58,8 @@ public:
 		int minDamageOverride{ 0 };
 	};
 	std::array<Ragebot, 40> ragebot;
-	KeyBind ragebotKey{ std::string("ragebot") };
-	KeyBind minDamageOverrideKey{ std::string("min damage override"), Off };
+	KeyBind ragebotKey{ std::string(xorstr_("ragebot")) };
+	KeyBind minDamageOverrideKey{ std::string(xorstr_("min damage override")), Off };
 
 	struct Optimizations {
 		bool lowPerformanceMode{ false };
@@ -93,11 +93,11 @@ public:
 		bool rollAlt{ false };
 	};
 	std::array<RageAntiAimConfig, 7> rageAntiAim;
-	KeyBind manualForward{ std::string("manual forward"), Off },
-		manualBackward{ std::string("manual backward"), Off },
-		manualRight{ std::string("manual right"), Off },
-		manualLeft{ std::string("manual left"), Off };
-	KeyBind autoDirection{ std::string("auto direction"), Off };
+	KeyBind manualForward{ std::string(xorstr_("manual forward")), Off },
+		manualBackward{ std::string(xorstr_("manual backward")), Off },
+		manualRight{ std::string(xorstr_("manual right")), Off },
+		manualLeft{ std::string(xorstr_("manual left")), Off };
+	KeyBind autoDirection{ std::string(xorstr_("auto direction")), Off };
 
 	struct FakeAngle {
 		bool enabled = false;
@@ -107,11 +107,11 @@ public:
 		int lbyMode = 0; // Normal, Opposite, sway,
 	};
 	std::array<FakeAngle, 7> fakeAngle;
-	KeyBind invert{ std::string("fake angle invert") };
+	KeyBind invert{ std::string(xorstr_("fake angle invert")) };
 
 	struct Tickbase {
-		KeyBind doubletap{ std::string("doubletap"), Off };
-		KeyBind hideshots{ std::string("hideshots"), Off };
+		KeyBind doubletap{ std::string(xorstr_("doubletap")), Off };
+		KeyBind hideshots{ std::string(xorstr_("hideshots")), Off };
 		bool teleport{ false };
 		bool onshotFl{ false };
 		int onshotFlAmount{ 1 };
@@ -125,7 +125,7 @@ public:
 	struct LegitAntiAimConfig {
 		bool enabled = false;
 		bool extend = false;
-		KeyBind invert{ std::string("legit aa invert") };
+		KeyBind invert{ std::string(xorstr_("legit aa invert")) };
 	} legitAntiAim;
 
 	bool disableInFreezetime{ true };
@@ -149,7 +149,7 @@ public:
 		bool betweenShots{ true };
 	};
 	std::array<Legitbot, 40> legitbot;
-	KeyBind legitbotKey{ std::string("legitbot") };
+	KeyBind legitbotKey{ std::string(xorstr_("legitbot")) };
 	ColorToggle legitbotFov{ 1.0f, 1.0f, 1.0f, 1.0f };
 
 	struct RecoilControlSystem {
@@ -173,7 +173,7 @@ public:
 		int minDamage = 0;
 	};
 	std::array<Triggerbot, 40> triggerbot;
-	KeyBind triggerbotKey{ std::string("triggerbot") };
+	KeyBind triggerbotKey{ std::string(xorstr_("triggerbot")) };
 
 	struct Backtrack {
 		bool enabled = false;
@@ -198,7 +198,7 @@ public:
 	};
 
 	std::unordered_map<std::string, Chams> chams;
-	KeyBind chamsKey{ std::string("chams") };
+	KeyBind chamsKey{ std::string(xorstr_("chams")) };
 
 	struct GlowItem : Color4 {
 		bool enabled = false;
@@ -213,11 +213,11 @@ public:
 
 	std::unordered_map<std::string, PlayerGlow> playerGlow;
 	std::unordered_map<std::string, GlowItem> glow;
-	KeyBind glowKey{ std::string("glow") };
+	KeyBind glowKey{ std::string(xorstr_("glow")) };
 
 
 	struct StreamProofESP {
-		KeyBind key{ std::string("esp") };
+		KeyBind key{ std::string(xorstr_("esp")) };
 
 		std::unordered_map<std::string, Player> allies;
 		std::unordered_map<std::string, Player> enemies;
@@ -265,12 +265,12 @@ public:
 		} shadowsChanger;
 		bool fullBright{ false };
 		bool zoom{ false };
-		KeyBind zoomKey{ std::string("zoom") };
+		KeyBind zoomKey{ std::string(xorstr_("zoom")) };
 		bool thirdperson{ false };
-		KeyBind thirdpersonKey{ std::string("thirdperson") };
+		KeyBind thirdpersonKey{ std::string(xorstr_("thirdperson")) };
 		int thirdpersonDistance{ 0 };
 		bool freeCam{ false };
-		KeyBind freeCamKey{ std::string("freecam") };
+		KeyBind freeCamKey{ std::string(xorstr_("freecam")) };
 		int freeCamSpeed{ 2 };
 		bool keepFov{ false };
 		int fov{ 0 };
@@ -358,34 +358,34 @@ public:
 		bool customClanTag{ false };
 		int tagType{ 0 };
 		float tagUpdateInterval{ 0.5f };
-		std::vector<std::string> tagAnimationSteps{ "", "" };
+		std::vector<std::string> tagAnimationSteps{ xorstr_(""), xorstr_("") };
 		bool fastDuck{ false };
 		bool knifeBot{ false };
 		int knifeBotMode{ 0 };
 		bool moonwalk{ false };
 		bool leg_break{ false };
 		bool blockBot{ false };
-		KeyBind blockBotKey{ std::string("block bot") };
+		KeyBind blockBotKey{ std::string(xorstr_("block bot")) };
 		bool edgeJump{ false };
-		KeyBind edgeJumpKey{ std::string("edgejump") };
+		KeyBind edgeJumpKey{ std::string(xorstr_("edgejump")) };
 		bool miniJump{ false };
 		int miniJumpCrouchLock{ 0 };
-		KeyBind miniJumpKey{ std::string("mini jump") };
+		KeyBind miniJumpKey{ std::string(xorstr_("mini jump")) };
 		bool jumpBug{ false };
-		KeyBind jumpBugKey{ std::string("jump bug") };
+		KeyBind jumpBugKey{ std::string(xorstr_("jump bug")) };
 		bool edgeBug{ false };
 		int edgeBugPredAmnt{ 20 };
-		KeyBind edgeBugKey{ std::string("edge bug") };
+		KeyBind edgeBugKey{ std::string(xorstr_("edge bug")) };
 		bool autoPixelSurf{ false };
 		int autoPixelSurfPredAmnt{ 2 };
-		KeyBind autoPixelSurfKey{ std::string("auto pixel surf") };
+		KeyBind autoPixelSurfKey{ std::string(xorstr_("auto pixel surf")) };
 		bool slowwalk{ false };
 		int slowwalkAmnt{ 0 };
-		KeyBind slowwalkKey{ std::string("slowwalk") };
+		KeyBind slowwalkKey{ std::string(xorstr_("slowwalk")) };
 		bool fakeduck{ false };
-		KeyBind fakeduckKey{ std::string("fakeduck") };
+		KeyBind fakeduckKey{ std::string(xorstr_("fakeduck")) };
 		ColorToggle autoPeek{ 1.0f, 1.0f, 1.0f, 1.0f };
-		KeyBind autoPeekKey{ std::string("autopeek") };
+		KeyBind autoPeekKey{ std::string(xorstr_("autopeek")) };
 		bool autoPistol{ false };
 		bool autoReload{ false };
 		bool autoAccept{ false };
@@ -398,7 +398,7 @@ public:
 		bool nameStealer{ false };
 		bool disablePanoramablur{ false };
 		bool killMessage{ false };
-		std::vector<std::string> killMessages{ "" };
+		std::vector<std::string> killMessages{ xorstr_("") };
 		bool nadePredict{ false };
 		bool fixTabletSignal{ false };
 		bool fastPlant{ false };
@@ -452,7 +452,7 @@ public:
 		ColorToggle3 bombTimer{ 0.3f, 0.1f, 0.3f };
 		ColorToggle3 hurtIndicator{ 0.0f, 0.8f, 0.7f };
 		ColorToggle yawIndicator{ 0.47f, 0.32f, 0.66f, 0.8f };
-		KeyBind prepareRevolverKey{ std::string("prepare revolver") };
+		KeyBind prepareRevolverKey{ std::string(xorstr_("prepare revolver")) };
 		int hitSound{ 0 };
 		int quickHealthshotKey{ 0 };
 		float maxAngleDelta{ 255.0f };
@@ -516,8 +516,8 @@ public:
 	const auto& getSystemFonts() noexcept { return systemFonts; }
 	const auto& getFonts() noexcept { return fonts; }
 private:
-	std::vector<std::string> scheduledFonts{ "Default" };
-	std::vector<std::string> systemFonts{ "Default" };
+	std::vector<std::string> scheduledFonts{ xorstr_("Default") };
+	std::vector<std::string> systemFonts{ xorstr_("Default") };
 	std::unordered_map<std::string, Font> fonts;
 	std::filesystem::path path;
 	std::vector<std::string> configs;

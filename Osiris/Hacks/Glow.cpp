@@ -106,20 +106,20 @@ void Glow::render() noexcept
 			if (!entity->isAlive())
 				break;
 			if (auto activeWeapon{ entity->getActiveWeapon() }; activeWeapon && activeWeapon->getClientClass()->classId == ClassId::C4 && activeWeapon->c4StartedArming())
-				applyPlayerGlow("Planting", entity);
+				applyPlayerGlow(xorstr_("Planting"), entity);
 			else if (entity->isDefusing())
-				applyPlayerGlow("Defusing", entity);
+				applyPlayerGlow(xorstr_("Defusing"), entity);
 			else if (entity == localPlayer.get())
-				applyGlow(glow["Local Player"], entity->health());
+				applyGlow(glow[xorstr_("Local Player")], entity->health());
 			else if (entity->isOtherEnemy(localPlayer.get()))
-				applyPlayerGlow("Enemies", entity);
+				applyPlayerGlow(xorstr_("Enemies"), entity);
 			else
-				applyPlayerGlow("Allies", entity);
+				applyPlayerGlow(xorstr_("Allies"), entity);
 			break;
-		case ClassId::C4: applyGlow(glow["C4"]); break;
-		case ClassId::PlantedC4: applyGlow(glow["Planted C4"]); break;
-		case ClassId::Chicken: applyGlow(glow["Chickens"]); break;
-		case ClassId::EconEntity: applyGlow(glow["Defuse Kits"]); break;
+		case ClassId::C4: applyGlow(glow[xorstr_("C4")]); break;
+		case ClassId::PlantedC4: applyGlow(glow[xorstr_("Planted C4")]); break;
+		case ClassId::Chicken: applyGlow(glow[xorstr_("Chickens")]); break;
+		case ClassId::EconEntity: applyGlow(glow[xorstr_("Defuse Kits")]); break;
 
 		case ClassId::BaseCSGrenadeProjectile:
 		case ClassId::BreachChargeProjectile:
@@ -129,13 +129,13 @@ void Glow::render() noexcept
 		case ClassId::SensorGrenadeProjectile:
 		case ClassId::SmokeGrenadeProjectile:
 		case ClassId::SnowballProjectile:
-			applyGlow(glow["Projectiles"]); break;
+			applyGlow(glow[xorstr_("Projectiles")]); break;
 
-		case ClassId::Hostage: applyGlow(glow["Hostages"]); break;
+		case ClassId::Hostage: applyGlow(glow[xorstr_("Hostages")]); break;
 		default:
 			if (entity->isWeapon()) {
-				applyGlow(glow["Weapons"]);
-				if (!glow["Weapons"].enabled) glowobject.renderWhenOccluded = false;
+				applyGlow(glow[xorstr_("Weapons")]);
+				if (!glow[xorstr_("Weapons")].enabled) glowobject.renderWhenOccluded = false;
 			}
 		}
 	}

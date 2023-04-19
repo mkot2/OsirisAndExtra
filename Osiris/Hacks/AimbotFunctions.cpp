@@ -528,7 +528,7 @@ int AimbotFunction::approxHitchance(float wepInnacuracy, int hitbox, float dista
 
 bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitboxSet* set, const matrix3x4 matrix[MAXSTUDIOBONES], Entity* activeWeapon, const Vector& destination, const UserCmd* cmd, const int hitChance) noexcept
 {
-	static auto isSpreadEnabled = interfaces->cvar->findVar("weapon_accuracy_nospread");
+	static auto isSpreadEnabled = interfaces->cvar->findVar(xorstr_("weapon_accuracy_nospread"));
 	if (!hitChance || isSpreadEnabled->getInt() >= 1)
 		return true;
 

@@ -75,7 +75,7 @@ void resolver::get_event(GameEvent* event) noexcept
 		//Reset player
 		if (snapshots.empty())
 			break;
-		const auto playerId = event->getInt("userid");
+		const auto playerId = event->getInt(xorstr_("userid"));
 		if (playerId == localPlayer->getUserId())
 			break;
 
@@ -92,18 +92,19 @@ void resolver::get_event(GameEvent* event) noexcept
 			return;
 		}
 
-		if (event->getInt("attacker") != localPlayer->getUserId())
+		if (event->getInt(xorstr_("attacker")) != localPlayer->getUserId())
 			break;
 
-		const auto hitgroup = event->getInt("hitgroup");
+		const auto hitgroup = event->getInt(xorstr_("hitgroup"));
 		if (hitgroup < HitGroup::Head || hitgroup > HitGroup::RightLeg)
 			break;
-		const auto index{ interfaces->engine->getPlayerForUserID(event->getInt("userid")) };
+		const auto index{ interfaces->engine->getPlayerForUserID(event->getInt(xorstr_("userid"))) };
 		const auto& [player, model, eyePosition, bulletImpact, gotImpact, time, playerIndex, backtrackRecord] = snapshots.front();
 		if (desync_angle != 0.f && hitgroup == HitGroup::Head)
 			Animations::setPlayer(index)->workingangle = desync_angle;
 		const auto entity = interfaces->entityList->getEntity(playerIndex);
-		Logger::addLog(std::format("Resolver: Hit {}{}, Hitgroup {}, Desync Angle: {}", entity->getPlayerName(), backtrackRecord > 0 ? std::format(", BT[{}]", backtrackRecord) : "", HitGroup::hitgroup_text[hitgroup], desync_angle));
+		// I am deeply sorry for such a disgusting line code
+		Logger::addLog(std::vformat(std::string_view(xorstr_("Resolver: Hit {}{}, Hitgroup {}, Desync Angle: {}")), std::make_format_args(entity->getPlayerName(), backtrackRecord > 0 ? std::vformat(std::string_view(xorstr_(", BT[{}]")), std::make_format_args(backtrackRecord)) : xorstr_(""), HitGroup::hitgroup_text[hitgroup], desync_angle)));
 		++hits;
 		hit_rate = misses != 0 ? hits / (static_cast<double>(hits) + misses) * 100. : 100.;
 		if (!entity->isAlive())
@@ -117,13 +118,13 @@ void resolver::get_event(GameEvent* event) noexcept
 			break;
 
 		auto& [player, model, eyePosition, bulletImpact, gotImpact, time, playerIndex, backtrackRecord] = snapshots.front();
-		if (event->getInt("userid") == localPlayer->getUserId() && !gotImpact) {
+		if (event->getInt(xorstr_("userid")) == localPlayer->getUserId() && !gotImpact) {
 			time = memory->globalVars->serverTime();
-			bulletImpact = Vector{ event->getFloat("x"), event->getFloat("y"), event->getFloat("z") };
+			bulletImpact = Vector{ event->getFloat(xorstr_("x")), event->getFloat(xorstr_("y")), event->getFloat(xorstr_("z")) };
 			gotImpact = true;
 		}
 		if (player.shot)
-			anti_one_tap(event->getInt("userid"), interfaces->entityList->getEntity(playerIndex), Vector{ event->getFloat("x"),event->getFloat("y"),event->getFloat("z") });
+			anti_one_tap(event->getInt(xorstr_("userid")), interfaces->entityList->getEntity(playerIndex), Vector{ event->getFloat(xorstr_("x")),event->getFloat(xorstr_("y")),event->getFloat(xorstr_("z")) });
 		break;
 	}
 	default:
@@ -196,14 +197,16 @@ void resolver::process_missed_shots() noexcept
 			Animations::setPlayer(playerIndex)->misses++;
 			if (!std::ranges::count(player.blacklisted, desync_angle))
 				player.blacklisted.push_back(desync_angle);
-			Logger::addLog(std::format("Resolver: Missed {} shots to {} due to resolver{}, Hitbox: {}, Desync Angle: {}", player.misses + 1, entity->getPlayerName(), backtrackRecord > 0 ? std::format(", BT[{}]", backtrackRecord) : "", hitbox_text[hitbox], desync_angle));
+			// I am sorry for this too
+			Logger::addLog(std::vformat(std::string_view(xorstr_("Resolver: Missed {} shots to {} due to resolver{}, Hitbox: {}, Desync Angle: {}")), std::make_format_args(player.misses + 1, entity->getPlayerName(), backtrackRecord > 0 ? std::vformat(std::string_view(xorstr_(", BT[{}]")), std::make_format_args(backtrackRecord)) : xorstr_(""), hitbox_text[hitbox], desync_angle)));
 			++misses;
 			hit_rate = hits / (static_cast<double>(hits) + misses) * 100.;
 			desync_angle = 0;
 			break;
 		}
 	if (!resolver_missed) {
-		Logger::addLog(std::format("Resolver: Missed {} due to spread", entity->getPlayerName()));
+		// And this too
+		Logger::addLog(std::vformat(std::string_view(xorstr_("Resolver: Missed {} due to spread")), std::make_format_args(entity->getPlayerName())));
 		++misses;
 		hit_rate = hits / (static_cast<double>(hits) + misses) * 100.;
 	}
@@ -572,7 +575,7 @@ void resolver::anti_one_tap(const int userid, Entity* entity, const Vector shot)
 			const auto [lx, ly, lz] = calc_angle(eye_pos, localPlayer->getEyePosition());
 			const Vector delta = { lx - x, ly - y, 0 };
 			if (const float fov = sqrt(delta.x * delta.x + delta.y * delta.y); fov < 20.f) {
-				Logger::addLog("Resolver: " + player.get().name + " missed");
+				Logger::addLog(xorstr_("Resolver: ") + player.get().name + xorstr_(" missed"));
 			}
 		}
 	}
@@ -602,10 +605,10 @@ void resolver::update_event_listeners(const bool force_remove) noexcept
 		return;
 	const auto weapon_index = getWeaponIndex(active_weapon->itemDefinitionIndex2());
 	if (static bool listener_registered = false; config->ragebot[weapon_index].resolver && !listener_registered) {
-		interfaces->gameEventManager->addListener(listener.data(), "bullet_impact");
-		interfaces->gameEventManager->addListener(&listener[1], "player_hurt");
-		interfaces->gameEventManager->addListener(&listener[2], "round_start");
-		interfaces->gameEventManager->addListener(&listener[3], "weapon_fire");
+		interfaces->gameEventManager->addListener(listener.data(), xorstr_("bullet_impact"));
+		interfaces->gameEventManager->addListener(&listener[1], xorstr_("player_hurt"));
+		interfaces->gameEventManager->addListener(&listener[2], xorstr_("round_start"));
+		interfaces->gameEventManager->addListener(&listener[3], xorstr_("weapon_fire"));
 		listener_registered = true;
 	} else if ((!config->ragebot[weapon_index].resolver || force_remove) && listener_registered) {
 		interfaces->gameEventManager->removeListener(listener.data());

@@ -67,20 +67,20 @@ namespace HitGroup
 		Gear = 10
 	};
 
-	inline const char* invalid{ "Invalid" };
+	inline const char* invalid{ xorstr_("Invalid") };
 	inline const char* hitgroup_text[]
 	{
-		"Generic",
-		"Head",
-		"Chest",
-		"Stomach",
-		"Left Arm",
-		"Right Arm",
-		"Left Leg",
-		"Right Leg",
-		"",
-		"",
-		"Gear"
+		xorstr_("Generic"),
+		xorstr_("Head"),
+		xorstr_("Chest"),
+		xorstr_("Stomach"),
+		xorstr_("Left Arm"),
+		xorstr_("Right Arm"),
+		xorstr_("Left Leg"),
+		xorstr_("Right Leg"),
+		xorstr_(""),
+		xorstr_(""),
+		xorstr_("Gear")
 	};
 	float getDamageMultiplier(int hitGroup, const WeaponInfo* weaponData, bool hasHeavyArmor, int teamNumber) noexcept;
 	bool isArmored(int hitGroup, bool helmet, int armorValue, bool hasHeavyArmor) noexcept;
@@ -133,7 +133,7 @@ public:
 		static int tracesThisFrame, lastFrame;
 
 		if (lastFrame != memory->globalVars->framecount) {
-			memory->debugMsg("traces: frame - %d | count - %d\n", lastFrame, tracesThisFrame);
+			memory->debugMsg(xorstr_("traces: frame - %d | count - %d\n"), lastFrame, tracesThisFrame);
 			tracesThisFrame = 0;
 			lastFrame = memory->globalVars->framecount;
 		}

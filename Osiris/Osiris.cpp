@@ -12,7 +12,7 @@ BOOL APIENTRY DllEntryPoint(HMODULE moduleHandle, DWORD reason, LPVOID reserved)
 		return FALSE;
 
 	if (reason == DLL_PROCESS_ATTACH) {
-		std::setlocale(LC_CTYPE, ".utf8");
+		std::setlocale(LC_CTYPE, xorstr_(".utf8"));
 		hooks = std::make_unique<Hooks>(moduleHandle);
 	}
 	return TRUE;

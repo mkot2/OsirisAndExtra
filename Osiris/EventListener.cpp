@@ -20,24 +20,24 @@ EventListener::EventListener() noexcept
 	// If you add here listeners which aren't used by client.dll (e.g., item_purchase, bullet_impact), the cheat will be detected by AntiDLL (community anticheat).
 	// Instead, register listeners dynamically and only when certain functions are enabled - see Misc::updateEventListeners(), Visuals::updateEventListeners()
 
-	interfaces->gameEventManager->addListener(this, "round_start");
-	interfaces->gameEventManager->addListener(this, "round_freeze_end");
-	interfaces->gameEventManager->addListener(this, "player_hurt");
-	interfaces->gameEventManager->addListener(this, "bullet_impact");
+	interfaces->gameEventManager->addListener(this, xorstr_("round_start"));
+	interfaces->gameEventManager->addListener(this, xorstr_("round_freeze_end"));
+	interfaces->gameEventManager->addListener(this, xorstr_("player_hurt"));
+	interfaces->gameEventManager->addListener(this, xorstr_("bullet_impact"));
 
-	interfaces->gameEventManager->addListener(this, "bomb_planted");
-	interfaces->gameEventManager->addListener(this, "hostage_follows");
+	interfaces->gameEventManager->addListener(this, xorstr_("bomb_planted"));
+	interfaces->gameEventManager->addListener(this, xorstr_("hostage_follows"));
 
-	interfaces->gameEventManager->addListener(this, "weapon_fire");
+	interfaces->gameEventManager->addListener(this, xorstr_("weapon_fire"));
 
-	interfaces->gameEventManager->addListener(this, "smokegrenade_detonate");
-	interfaces->gameEventManager->addListener(this, "molotov_detonate");
-	interfaces->gameEventManager->addListener(this, "inferno_expire");
+	interfaces->gameEventManager->addListener(this, xorstr_("smokegrenade_detonate"));
+	interfaces->gameEventManager->addListener(this, xorstr_("molotov_detonate"));
+	interfaces->gameEventManager->addListener(this, xorstr_("inferno_expire"));
 
-	interfaces->gameEventManager->addListener(this, "player_death");
-	interfaces->gameEventManager->addListener(this, "vote_cast");
+	interfaces->gameEventManager->addListener(this, xorstr_("player_death"));
+	interfaces->gameEventManager->addListener(this, xorstr_("vote_cast"));
 
-	if (const auto desc = memory->getEventDescriptor(interfaces->gameEventManager, "player_death", nullptr))
+	if (const auto desc = memory->getEventDescriptor(interfaces->gameEventManager, xorstr_("player_death"), nullptr))
 		std::swap(desc->listeners[0], desc->listeners[desc->listeners.size - 1]);
 	else
 		assert(false);

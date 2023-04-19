@@ -56,13 +56,13 @@ Config::Config() noexcept
 		CoTaskMemFree(pathToDocuments);
 	}
 
-	path /= "Osiris";
+	path /= xorstr_("Osiris");
 	listConfigs();
 	misc.clanTag[0] = '\0';
 	misc.name[0] = '\0';
 	visuals.playerModel[0] = '\0';
 
-	load(u8"default.json", false);
+	load(xorstr_(u8"default.json"), false);
 
 	LOGFONTW logfont;
 	logfont.lfCharSet = ANSI_CHARSET;
@@ -78,53 +78,53 @@ Config::Config() noexcept
 static void from_json(const json& j, ColorToggle& ct)
 {
 	from_json(j, static_cast<Color4&>(ct));
-	read(j, "Enabled", ct.enabled);
+	read(j, xorstr_("Enabled"), ct.enabled);
 }
 
 static void from_json(const json& j, Color3& c)
 {
-	read(j, "Color", c.color);
-	read(j, "Rainbow", c.rainbow);
-	read(j, "Rainbow Speed", c.rainbowSpeed);
+	read(j, xorstr_("Color"), c.color);
+	read(j, xorstr_("Rainbow"), c.rainbow);
+	read(j, xorstr_("Rainbow Speed"), c.rainbowSpeed);
 }
 
 static void from_json(const json& j, ColorToggle3& ct)
 {
 	from_json(j, static_cast<Color3&>(ct));
-	read(j, "Enabled", ct.enabled);
+	read(j, xorstr_("Enabled"), ct.enabled);
 }
 
 static void from_json(const json& j, ColorToggleRounding& ctr)
 {
 	from_json(j, static_cast<ColorToggle&>(ctr));
 
-	read(j, "Rounding", ctr.rounding);
+	read(j, xorstr_("Rounding"), ctr.rounding);
 }
 
 static void from_json(const json& j, ColorToggleOutline& cto)
 {
 	from_json(j, static_cast<ColorToggle&>(cto));
 
-	read(j, "Outline", cto.outline);
+	read(j, xorstr_("Outline"), cto.outline);
 }
 
 static void from_json(const json& j, ColorToggleThickness& ctt)
 {
 	from_json(j, static_cast<ColorToggle&>(ctt));
 
-	read(j, "Thickness", ctt.thickness);
+	read(j, xorstr_("Thickness"), ctt.thickness);
 }
 
 static void from_json(const json& j, ColorToggleThicknessRounding& cttr)
 {
 	from_json(j, static_cast<ColorToggleRounding&>(cttr));
 
-	read(j, "Thickness", cttr.thickness);
+	read(j, xorstr_("Thickness"), cttr.thickness);
 }
 
 static void from_json(const json& j, Font& f)
 {
-	read<value_t::string>(j, "Name", f.name);
+	read<value_t::string>(j, xorstr_("Name"), f.name);
 
 	if (!f.name.empty())
 		config->scheduleFontLoad(f.name);
@@ -139,83 +139,83 @@ static void from_json(const json& j, Snapline& s)
 {
 	from_json(j, static_cast<ColorToggleThickness&>(s));
 
-	read(j, "Type", s.type);
+	read(j, xorstr_("Type"), s.type);
 }
 
 static void from_json(const json& j, Box& b)
 {
 	from_json(j, static_cast<ColorToggleRounding&>(b));
 
-	read(j, "Type", b.type);
-	read(j, "Scale", b.scale);
-	read<value_t::object>(j, "Fill", b.fill);
+	read(j, xorstr_("Type"), b.type);
+	read(j, xorstr_("Scale"), b.scale);
+	read<value_t::object>(j, xorstr_("Fill"), b.fill);
 }
 
 static void from_json(const json& j, Shared& s)
 {
-	read(j, "Enabled", s.enabled);
-	read<value_t::object>(j, "Font", s.font);
-	read<value_t::object>(j, "Snapline", s.snapline);
-	read<value_t::object>(j, "Box", s.box);
-	read<value_t::object>(j, "Name", s.name);
-	read(j, "Text Cull Distance", s.textCullDistance);
+	read(j, xorstr_("Enabled"), s.enabled);
+	read<value_t::object>(j, xorstr_("Font"), s.font);
+	read<value_t::object>(j, xorstr_("Snapline"), s.snapline);
+	read<value_t::object>(j, xorstr_("Box"), s.box);
+	read<value_t::object>(j, xorstr_("Name"), s.name);
+	read(j, xorstr_("Text Cull Distance"), s.textCullDistance);
 }
 
 static void from_json(const json& j, Weapon& w)
 {
 	from_json(j, static_cast<Shared&>(w));
 
-	read<value_t::object>(j, "Ammo", w.ammo);
+	read<value_t::object>(j, xorstr_("Ammo"), w.ammo);
 }
 
 static void from_json(const json& j, Trail& t)
 {
 	from_json(j, static_cast<ColorToggleThickness&>(t));
 
-	read(j, "Type", t.type);
-	read(j, "Time", t.time);
+	read(j, xorstr_("Type"), t.type);
+	read(j, xorstr_("Time"), t.time);
 }
 
 static void from_json(const json& j, Trails& t)
 {
-	read(j, "Enabled", t.enabled);
-	read<value_t::object>(j, "Local Player", t.localPlayer);
-	read<value_t::object>(j, "Allies", t.allies);
-	read<value_t::object>(j, "Enemies", t.enemies);
+	read(j, xorstr_("Enabled"), t.enabled);
+	read<value_t::object>(j, xorstr_("Local Player"), t.localPlayer);
+	read<value_t::object>(j, xorstr_("Allies"), t.allies);
+	read<value_t::object>(j, xorstr_("Enemies"), t.enemies);
 }
 
 static void from_json(const json& j, Projectile& p)
 {
 	from_json(j, static_cast<Shared&>(p));
 
-	read<value_t::object>(j, "Trails", p.trails);
+	read<value_t::object>(j, xorstr_("Trails"), p.trails);
 }
 
 static void from_json(const json& j, HealthBar& o)
 {
 	from_json(j, static_cast<ColorToggle&>(o));
-	read(j, "Type", o.type);
+	read(j, xorstr_("Type"), o.type);
 }
 
 static void from_json(const json& j, Player& p)
 {
 	from_json(j, static_cast<Shared&>(p));
 
-	read<value_t::object>(j, "Weapon", p.weapon);
-	read<value_t::object>(j, "Flash Duration", p.flashDuration);
-	read(j, "Audible Only", p.audibleOnly);
-	read(j, "Spotted Only", p.spottedOnly);
-	read<value_t::object>(j, "Health Bar", p.healthBar);
-	read<value_t::object>(j, "Skeleton", p.skeleton);
-	read<value_t::object>(j, "Head Box", p.headBox);
-	read<value_t::object>(j, "Line of sight", p.lineOfSight);
+	read<value_t::object>(j, xorstr_("Weapon"), p.weapon);
+	read<value_t::object>(j, xorstr_("Flash Duration"), p.flashDuration);
+	read(j, xorstr_("Audible Only"), p.audibleOnly);
+	read(j, xorstr_("Spotted Only"), p.spottedOnly);
+	read<value_t::object>(j, xorstr_("Health Bar"), p.healthBar);
+	read<value_t::object>(j, xorstr_("Skeleton"), p.skeleton);
+	read<value_t::object>(j, xorstr_("Head Box"), p.headBox);
+	read<value_t::object>(j, xorstr_("Line of sight"), p.lineOfSight);
 }
 
 static void from_json(const json& j, OffscreenEnemies& o)
 {
 	from_json(j, static_cast<ColorToggle&>(o));
 
-	read<value_t::object>(j, "Health Bar", o.healthBar);
+	read<value_t::object>(j, xorstr_("Health Bar"), o.healthBar);
 }
 
 static void from_json(const json& j, BulletTracers& o)
@@ -225,563 +225,563 @@ static void from_json(const json& j, BulletTracers& o)
 
 static void from_json(const json& j, ImVec2& v)
 {
-	read(j, "X", v.x);
-	read(j, "Y", v.y);
+	read(j, xorstr_("X"), v.x);
+	read(j, xorstr_("Y"), v.y);
 }
 
 static void from_json(const json& j, Config::Legitbot& a)
 {
-	read(j, "Enabled", a.enabled);
-	read(j, "Aimlock", a.aimlock);
-	read(j, "Silent", a.silent);
-	read(j, "Friendly fire", a.friendlyFire);
-	read(j, "Visible only", a.visibleOnly);
-	read(j, "Scoped only", a.scopedOnly);
-	read(j, "Ignore flash", a.ignoreFlash);
-	read(j, "Ignore smoke", a.ignoreSmoke);
-	read(j, "Auto scope", a.autoScope);
-	read(j, "Fov", a.fov);
-	read(j, "Smooth", a.smooth);
-	read(j, "Reaction time", a.reactionTime);
-	read(j, "Hitboxes", a.hitboxes);
-	read(j, "Min damage", a.minDamage);
-	read(j, "Killshot", a.killshot);
-	read(j, "Between shots", a.betweenShots);
+	read(j, xorstr_("Enabled"), a.enabled);
+	read(j, xorstr_("Aimlock"), a.aimlock);
+	read(j, xorstr_("Silent"), a.silent);
+	read(j, xorstr_("Friendly fire"), a.friendlyFire);
+	read(j, xorstr_("Visible only"), a.visibleOnly);
+	read(j, xorstr_("Scoped only"), a.scopedOnly);
+	read(j, xorstr_("Ignore flash"), a.ignoreFlash);
+	read(j, xorstr_("Ignore smoke"), a.ignoreSmoke);
+	read(j, xorstr_("Auto scope"), a.autoScope);
+	read(j, xorstr_("Fov"), a.fov);
+	read(j, xorstr_("Smooth"), a.smooth);
+	read(j, xorstr_("Reaction time"), a.reactionTime);
+	read(j, xorstr_("Hitboxes"), a.hitboxes);
+	read(j, xorstr_("Min damage"), a.minDamage);
+	read(j, xorstr_("Killshot"), a.killshot);
+	read(j, xorstr_("Between shots"), a.betweenShots);
 }
 
 static void from_json(const json& j, Config::RecoilControlSystem& r)
 {
-	read(j, "Enabled", r.enabled);
-	read(j, "Silent", r.silent);
-	read(j, "Ignore Shots", r.shotsFired);
-	read(j, "Horizontal", r.horizontal);
-	read(j, "Vertical", r.vertical);
+	read(j, xorstr_("Enabled"), r.enabled);
+	read(j, xorstr_("Silent"), r.silent);
+	read(j, xorstr_("Ignore Shots"), r.shotsFired);
+	read(j, xorstr_("Horizontal"), r.horizontal);
+	read(j, xorstr_("Vertical"), r.vertical);
 }
 
 static void from_json(const json& j, Config::Ragebot& r)
 {
-	read(j, "Enabled", r.enabled);
-	read(j, "Resolver", r.resolver);
-	read(j, "Aimlock", r.aimlock);
-	read(j, "Silent", r.silent);
-	read(j, "Friendly fire", r.friendlyFire);
-	read(j, "Visible only", r.visibleOnly);
-	read(j, "Scoped only", r.scopedOnly);
-	read(j, "Ignore flash", r.ignoreFlash);
-	read(j, "Ignore smoke", r.ignoreSmoke);
-	read(j, "Auto shot", r.autoShot);
-	read(j, "Auto scope", r.autoScope);
-	read(j, "Auto stop", r.autoStop);
-	read(j, "Between shots", r.betweenShots);
-	read(j, "Full stop", r.fullStop);
-	read(j, "Duck stop", r.duckStop);
-	read(j, "Priority", r.priority);
-	read(j, "Fov", r.fov);
-	read(j, "Hitboxes", r.hitboxes);
-	read(j, "Hitchance", r.hitChance);
-	read(j, "Accuracy boost", r.accuracyBoost);
-	read(j, "Head Multipoint", r.headMultiPoint);
-	read(j, "Body Multipoint", r.bodyMultiPoint);
-	read(j, "Min damage", r.minDamage);
-	read(j, "Min damage override", r.minDamageOverride);
+	read(j, xorstr_("Enabled"), r.enabled);
+	read(j, xorstr_("Resolver"), r.resolver);
+	read(j, xorstr_("Aimlock"), r.aimlock);
+	read(j, xorstr_("Silent"), r.silent);
+	read(j, xorstr_("Friendly fire"), r.friendlyFire);
+	read(j, xorstr_("Visible only"), r.visibleOnly);
+	read(j, xorstr_("Scoped only"), r.scopedOnly);
+	read(j, xorstr_("Ignore flash"), r.ignoreFlash);
+	read(j, xorstr_("Ignore smoke"), r.ignoreSmoke);
+	read(j, xorstr_("Auto shot"), r.autoShot);
+	read(j, xorstr_("Auto scope"), r.autoScope);
+	read(j, xorstr_("Auto stop"), r.autoStop);
+	read(j, xorstr_("Between shots"), r.betweenShots);
+	read(j, xorstr_("Full stop"), r.fullStop);
+	read(j, xorstr_("Duck stop"), r.duckStop);
+	read(j, xorstr_("Priority"), r.priority);
+	read(j, xorstr_("Fov"), r.fov);
+	read(j, xorstr_("Hitboxes"), r.hitboxes);
+	read(j, xorstr_("Hitchance"), r.hitChance);
+	read(j, xorstr_("Accuracy boost"), r.accuracyBoost);
+	read(j, xorstr_("Head Multipoint"), r.headMultiPoint);
+	read(j, xorstr_("Body Multipoint"), r.bodyMultiPoint);
+	read(j, xorstr_("Min damage"), r.minDamage);
+	read(j, xorstr_("Min damage override"), r.minDamageOverride);
 }
 
 static void from_json(const json& j, Config::Optimizations& o)
 {
-	read(j, "Low Performance Mode", o.lowPerformanceMode);
+	read(j, xorstr_("Low Performance Mode"), o.lowPerformanceMode);
 }
 
 static void from_json(const json& j, Config::Triggerbot& t)
 {
-	read(j, "Enabled", t.enabled);
-	read(j, "Friendly fire", t.friendlyFire);
-	read(j, "Scoped only", t.scopedOnly);
-	read(j, "Ignore flash", t.ignoreFlash);
-	read(j, "Ignore smoke", t.ignoreSmoke);
-	read(j, "Hitboxes", t.hitboxes);
-	read(j, "Hitchance", t.hitChance);
-	read(j, "Shot delay", t.shotDelay);
-	read(j, "Min damage", t.minDamage);
-	read(j, "Killshot", t.killshot);
+	read(j, xorstr_("Enabled"), t.enabled);
+	read(j, xorstr_("Friendly fire"), t.friendlyFire);
+	read(j, xorstr_("Scoped only"), t.scopedOnly);
+	read(j, xorstr_("Ignore flash"), t.ignoreFlash);
+	read(j, xorstr_("Ignore smoke"), t.ignoreSmoke);
+	read(j, xorstr_("Hitboxes"), t.hitboxes);
+	read(j, xorstr_("Hitchance"), t.hitChance);
+	read(j, xorstr_("Shot delay"), t.shotDelay);
+	read(j, xorstr_("Min damage"), t.minDamage);
+	read(j, xorstr_("Killshot"), t.killshot);
 }
 
 static void from_json(const json& j, Config::LegitAntiAimConfig& a)
 {
-	read(j, "Enabled", a.enabled);
-	read(j, "Extend", a.extend);
-	read(j, "Invert key", a.invert);
+	read(j, xorstr_("Enabled"), a.enabled);
+	read(j, xorstr_("Extend"), a.extend);
+	read(j, xorstr_("Invert key"), a.invert);
 }
 
 static void from_json(const json& j, Config::RageAntiAimConfig& a)
 {
-	read(j, "Enabled", a.enabled);
-	read(j, "Pitch", a.pitch);
-	read(j, "Yaw base", reinterpret_cast<int&>(a.yawBase));
-	read(j, "Yaw modifier", a.yawModifier);
-	read(j, "Paranoia min", a.paranoiaMin);
-	read(j, "Paranoia max", a.paranoiaMax);
-	read(j, "Yaw add", a.yawAdd);
-	read(j, "Jitter Range", a.jitterRange);
-	read(j, "Spin base", a.spinBase);
-	read(j, "At targets", a.atTargets);
-	read(j, "Roll", a.roll);
-	read(j, "Roll add", a.rollAdd);
-	read(j, "Roll offset", a.rollOffset);
-	read(j, "Roll pitch", a.rollPitch);
-	read(j, "Exploit pitch switch", a.exploitPitchSwitch);
-	read(j, "Exploit pitch", a.exploitPitch);
-	read(j, "Roll alt", a.rollAlt);
+	read(j, xorstr_("Enabled"), a.enabled);
+	read(j, xorstr_("Pitch"), a.pitch);
+	read(j, xorstr_("Yaw base"), reinterpret_cast<int&>(a.yawBase));
+	read(j, xorstr_("Yaw modifier"), a.yawModifier);
+	read(j, xorstr_("Paranoia min"), a.paranoiaMin);
+	read(j, xorstr_("Paranoia max"), a.paranoiaMax);
+	read(j, xorstr_("Yaw add"), a.yawAdd);
+	read(j, xorstr_("Jitter Range"), a.jitterRange);
+	read(j, xorstr_("Spin base"), a.spinBase);
+	read(j, xorstr_("At targets"), a.atTargets);
+	read(j, xorstr_("Roll"), a.roll);
+	read(j, xorstr_("Roll add"), a.rollAdd);
+	read(j, xorstr_("Roll offset"), a.rollOffset);
+	read(j, xorstr_("Roll pitch"), a.rollPitch);
+	read(j, xorstr_("Exploit pitch switch"), a.exploitPitchSwitch);
+	read(j, xorstr_("Exploit pitch"), a.exploitPitch);
+	read(j, xorstr_("Roll alt"), a.rollAlt);
 }
 
 static void from_json(const json& j, Config::FakeAngle& a)
 {
-	read(j, "Enabled", a.enabled);
-	read(j, "Left limit", a.leftLimit);
-	read(j, "Right limit", a.rightLimit);
-	read(j, "Peek mode", a.peekMode);
-	read(j, "Lby mode", a.lbyMode);
+	read(j, xorstr_("Enabled"), a.enabled);
+	read(j, xorstr_("Left limit"), a.leftLimit);
+	read(j, xorstr_("Right limit"), a.rightLimit);
+	read(j, xorstr_("Peek mode"), a.peekMode);
+	read(j, xorstr_("Lby mode"), a.lbyMode);
 }
 
 static void from_json(const json& j, Config::Fakelag& f)
 {
-	read(j, "Enabled", f.enabled);
-	read(j, "Mode", f.mode);
-	read(j, "Limit", f.limit);
-	read(j, "Random min limit", f.randomMinLimit);
+	read(j, xorstr_("Enabled"), f.enabled);
+	read(j, xorstr_("Mode"), f.mode);
+	read(j, xorstr_("Limit"), f.limit);
+	read(j, xorstr_("Random min limit"), f.randomMinLimit);
 }
 
 static void from_json(const json& j, Config::Tickbase& t)
 {
-	read(j, "Doubletap", t.doubletap);
-	read(j, "Hideshots", t.hideshots);
-	read(j, "Teleport", t.teleport);
-	read(j, "OnshotFl", t.onshotFl);
-	read(j, "OnshotFl amount", t.onshotFlAmount);
-	read(j, "Onshot desync", t.onshotDesync);
+	read(j, xorstr_("Doubletap"), t.doubletap);
+	read(j, xorstr_("Hideshots"), t.hideshots);
+	read(j, xorstr_("Teleport"), t.teleport);
+	read(j, xorstr_("OnshotFl"), t.onshotFl);
+	read(j, xorstr_("OnshotFl amount"), t.onshotFlAmount);
+	read(j, xorstr_("Onshot desync"), t.onshotDesync);
 }
 
 static void from_json(const json& j, Config::Backtrack& b)
 {
-	read(j, "Enabled", b.enabled);
-	read(j, "Ignore smoke", b.ignoreSmoke);
-	read(j, "Ignore flash", b.ignoreFlash);
-	read(j, "Time limit", b.timeLimit);
-	read(j, "Fake Latency", b.fakeLatency);
-	read(j, "Fake Latency Amount", b.fakeLatencyAmount);
+	read(j, xorstr_("Enabled"), b.enabled);
+	read(j, xorstr_("Ignore smoke"), b.ignoreSmoke);
+	read(j, xorstr_("Ignore flash"), b.ignoreFlash);
+	read(j, xorstr_("Time limit"), b.timeLimit);
+	read(j, xorstr_("Fake Latency"), b.fakeLatency);
+	read(j, xorstr_("Fake Latency Amount"), b.fakeLatencyAmount);
 }
 
 static void from_json(const json& j, Config::Chams::Material& m)
 {
 	from_json(j, static_cast<Color4&>(m));
 
-	read(j, "Enabled", m.enabled);
-	read(j, "Health based", m.healthBased);
-	read(j, "Blinking", m.blinking);
-	read(j, "Wireframe", m.wireframe);
-	read(j, "Cover", m.cover);
-	read(j, "Ignore-Z", m.ignorez);
-	read(j, "Material", m.material);
+	read(j, xorstr_("Enabled"), m.enabled);
+	read(j, xorstr_("Health based"), m.healthBased);
+	read(j, xorstr_("Blinking"), m.blinking);
+	read(j, xorstr_("Wireframe"), m.wireframe);
+	read(j, xorstr_("Cover"), m.cover);
+	read(j, xorstr_("Ignore-Z"), m.ignorez);
+	read(j, xorstr_("Material"), m.material);
 }
 
 static void from_json(const json& j, Config::Chams& c)
 {
-	read_array_opt(j, "Materials", c.materials);
+	read_array_opt(j, xorstr_("Materials"), c.materials);
 }
 
 static void from_json(const json& j, Config::GlowItem& g)
 {
 	from_json(j, static_cast<Color4&>(g));
 
-	read(j, "Enabled", g.enabled);
-	read(j, "Health based", g.healthBased);
-	read(j, "Audible only", g.audibleOnly);
-	read(j, "Style", g.style);
+	read(j, xorstr_("Enabled"), g.enabled);
+	read(j, xorstr_("Health based"), g.healthBased);
+	read(j, xorstr_("Audible only"), g.audibleOnly);
+	read(j, xorstr_("Style"), g.style);
 }
 
 static void from_json(const json& j, Config::PlayerGlow& g)
 {
-	read<value_t::object>(j, "All", g.all);
-	read<value_t::object>(j, "Visible", g.visible);
-	read<value_t::object>(j, "Occluded", g.occluded);
+	read<value_t::object>(j, xorstr_("All"), g.all);
+	read<value_t::object>(j, xorstr_("Visible"), g.visible);
+	read<value_t::object>(j, xorstr_("Occluded"), g.occluded);
 }
 
 static void from_json(const json& j, Config::StreamProofESP& e)
 {
-	read(j, "Key", e.key);
-	read(j, "Allies", e.allies);
-	read(j, "Enemies", e.enemies);
-	read(j, "Weapons", e.weapons);
-	read(j, "Projectiles", e.projectiles);
-	read(j, "Loot Crates", e.lootCrates);
-	read(j, "Other Entities", e.otherEntities);
+	read(j, xorstr_("Key"), e.key);
+	read(j, xorstr_("Allies"), e.allies);
+	read(j, xorstr_("Enemies"), e.enemies);
+	read(j, xorstr_("Weapons"), e.weapons);
+	read(j, xorstr_("Projectiles"), e.projectiles);
+	read(j, xorstr_("Loot Crates"), e.lootCrates);
+	read(j, xorstr_("Other Entities"), e.otherEntities);
 }
 
 static void from_json(const json& j, Config::Visuals::FootstepESP& ft)
 {
-	read<value_t::object>(j, "Enabled", ft.footstepBeams);
-	read(j, "Thickness", ft.footstepBeamThickness);
-	read(j, "Radius", ft.footstepBeamRadius);
+	read<value_t::object>(j, xorstr_("Enabled"), ft.footstepBeams);
+	read(j, xorstr_("Thickness"), ft.footstepBeamThickness);
+	read(j, xorstr_("Radius"), ft.footstepBeamRadius);
 }
 
 static void from_json(const json& j, Config::Visuals& v)
 {
-	read(j, "Disable post-processing", v.disablePostProcessing);
-	read(j, "Inverse ragdoll gravity", v.inverseRagdollGravity);
-	read(j, "No fog", v.noFog);
-	read<value_t::object>(j, "Fog controller", v.fog);
-	read<value_t::object>(j, "Fog options", v.fogOptions);
-	read(j, "No 3d sky", v.no3dSky);
-	read(j, "No aim punch", v.noAimPunch);
-	read(j, "No view punch", v.noViewPunch);
-	read(j, "No view bob", v.noViewBob);
-	read(j, "No hands", v.noHands);
-	read(j, "No sleeves", v.noSleeves);
-	read(j, "No weapons", v.noWeapons);
-	read(j, "No smoke", v.noSmoke);
-	read(j, "Wireframe smoke", v.wireframeSmoke);
-	read(j, "No molotov", v.noMolotov);
-	read(j, "Wireframe molotov", v.wireframeMolotov);
-	read(j, "No blur", v.noBlur);
-	read(j, "No scope overlay", v.noScopeOverlay);
-	read(j, "No grass", v.noGrass);
-	read(j, "No shadows", v.noShadows);
-	read<value_t::object>(j, "Motion Blur", v.motionBlur);
-	read<value_t::object>(j, "Shadows changer", v.shadowsChanger);
-	read(j, "Full bright", v.fullBright);
-	read(j, "Zoom", v.zoom);
-	read(j, "Zoom key", v.zoomKey);
-	read(j, "Thirdperson", v.thirdperson);
-	read(j, "Thirdperson key", v.thirdpersonKey);
-	read(j, "Thirdperson distance", v.thirdpersonDistance);
-	read(j, "Freecam", v.freeCam);
-	read(j, "Freecam key", v.freeCamKey);
-	read(j, "Freecam speed", v.freeCamSpeed);
-	read(j, "Keep FOV", v.keepFov);
-	read(j, "FOV", v.fov);
-	read(j, "Far Z", v.farZ);
-	read(j, "Flash reduction", v.flashReduction);
-	read(j, "Glow thickness", v.glowOutlineWidth);
-	read(j, "Skybox", v.skybox);
-	read<value_t::object>(j, "World", v.world);
-	read<value_t::object>(j, "Props", v.props);
-	read<value_t::object>(j, "Sky", v.sky);
-	read<value_t::string>(j, "Custom skybox", v.customSkybox);
-	read(j, "Deagle spinner", v.deagleSpinner);
-	read<value_t::object>(j, "Footstep ESP", v.footsteps);
-	read(j, "Screen effect", v.screenEffect);
-	read(j, "Hit effect", v.hitEffect);
-	read(j, "Hit effect time", v.hitEffectTime);
-	read(j, "Hit marker", v.hitMarker);
-	read(j, "Hit marker time", v.hitMarkerTime);
-	read(j, "Playermodel T", v.playerModelT);
-	read(j, "Playermodel CT", v.playerModelCT);
-	read(j, "Custom Playermodel", v.playerModel, sizeof(v.playerModel));
-	read(j, "Disable jiggle bones", v.disableJiggleBones);
-	read<value_t::object>(j, "Bullet Tracers", v.bulletTracers);
-	read<value_t::object>(j, "Bullet Impacts", v.bulletImpacts);
-	read<value_t::object>(j, "Hitbox on Hit", v.onHitHitbox);
-	read(j, "Bullet Impacts time", v.bulletImpactsTime);
-	read<value_t::object>(j, "Molotov Hull", v.molotovHull);
-	read<value_t::object>(j, "Smoke Hull", v.smokeHull);
-	read<value_t::object>(j, "Molotov Polygon", v.molotovPolygon);
-	read<value_t::object>(j, "Viewmodel", v.viewModel);
-	read<value_t::object>(j, "Spread circle", v.spreadCircle);
-	read(j, "Asus walls", v.asusWalls);
-	read(j, "Asus props", v.asusProps);
-	read(j, "Smoke timer", v.smokeTimer);
-	read<value_t::object>(j, "Smoke timer BG", v.smokeTimerBG);
-	read<value_t::object>(j, "Smoke timer TIMER", v.smokeTimerTimer);
-	read<value_t::object>(j, "Smoke timer TEXT", v.smokeTimerText);
-	read(j, "Molotov timer", v.molotovTimer);
-	read<value_t::object>(j, "Molotov timer BG", v.molotovTimerBG);
-	read<value_t::object>(j, "Molotov timer TIMER", v.molotovTimerTimer);
-	read<value_t::object>(j, "Molotov timer TEXT", v.molotovTimerText);
-	read<value_t::object>(j, "Footstep", v.footsteps);
+	read(j, xorstr_("Disable post-processing"), v.disablePostProcessing);
+	read(j, xorstr_("Inverse ragdoll gravity"), v.inverseRagdollGravity);
+	read(j, xorstr_("No fog"), v.noFog);
+	read<value_t::object>(j, xorstr_("Fog controller"), v.fog);
+	read<value_t::object>(j, xorstr_("Fog options"), v.fogOptions);
+	read(j, xorstr_("No 3d sky"), v.no3dSky);
+	read(j, xorstr_("No aim punch"), v.noAimPunch);
+	read(j, xorstr_("No view punch"), v.noViewPunch);
+	read(j, xorstr_("No view bob"), v.noViewBob);
+	read(j, xorstr_("No hands"), v.noHands);
+	read(j, xorstr_("No sleeves"), v.noSleeves);
+	read(j, xorstr_("No weapons"), v.noWeapons);
+	read(j, xorstr_("No smoke"), v.noSmoke);
+	read(j, xorstr_("Wireframe smoke"), v.wireframeSmoke);
+	read(j, xorstr_("No molotov"), v.noMolotov);
+	read(j, xorstr_("Wireframe molotov"), v.wireframeMolotov);
+	read(j, xorstr_("No blur"), v.noBlur);
+	read(j, xorstr_("No scope overlay"), v.noScopeOverlay);
+	read(j, xorstr_("No grass"), v.noGrass);
+	read(j, xorstr_("No shadows"), v.noShadows);
+	read<value_t::object>(j, xorstr_("Motion Blur"), v.motionBlur);
+	read<value_t::object>(j, xorstr_("Shadows changer"), v.shadowsChanger);
+	read(j, xorstr_("Full bright"), v.fullBright);
+	read(j, xorstr_("Zoom"), v.zoom);
+	read(j, xorstr_("Zoom key"), v.zoomKey);
+	read(j, xorstr_("Thirdperson"), v.thirdperson);
+	read(j, xorstr_("Thirdperson key"), v.thirdpersonKey);
+	read(j, xorstr_("Thirdperson distance"), v.thirdpersonDistance);
+	read(j, xorstr_("Freecam"), v.freeCam);
+	read(j, xorstr_("Freecam key"), v.freeCamKey);
+	read(j, xorstr_("Freecam speed"), v.freeCamSpeed);
+	read(j, xorstr_("Keep FOV"), v.keepFov);
+	read(j, xorstr_("FOV"), v.fov);
+	read(j, xorstr_("Far Z"), v.farZ);
+	read(j, xorstr_("Flash reduction"), v.flashReduction);
+	read(j, xorstr_("Glow thickness"), v.glowOutlineWidth);
+	read(j, xorstr_("Skybox"), v.skybox);
+	read<value_t::object>(j, xorstr_("World"), v.world);
+	read<value_t::object>(j, xorstr_("Props"), v.props);
+	read<value_t::object>(j, xorstr_("Sky"), v.sky);
+	read<value_t::string>(j, xorstr_("Custom skybox"), v.customSkybox);
+	read(j, xorstr_("Deagle spinner"), v.deagleSpinner);
+	read<value_t::object>(j, xorstr_("Footstep ESP"), v.footsteps);
+	read(j, xorstr_("Screen effect"), v.screenEffect);
+	read(j, xorstr_("Hit effect"), v.hitEffect);
+	read(j, xorstr_("Hit effect time"), v.hitEffectTime);
+	read(j, xorstr_("Hit marker"), v.hitMarker);
+	read(j, xorstr_("Hit marker time"), v.hitMarkerTime);
+	read(j, xorstr_("Playermodel T"), v.playerModelT);
+	read(j, xorstr_("Playermodel CT"), v.playerModelCT);
+	read(j, xorstr_("Custom Playermodel"), v.playerModel, sizeof(v.playerModel));
+	read(j, xorstr_("Disable jiggle bones"), v.disableJiggleBones);
+	read<value_t::object>(j, xorstr_("Bullet Tracers"), v.bulletTracers);
+	read<value_t::object>(j, xorstr_("Bullet Impacts"), v.bulletImpacts);
+	read<value_t::object>(j, xorstr_("Hitbox on Hit"), v.onHitHitbox);
+	read(j, xorstr_("Bullet Impacts time"), v.bulletImpactsTime);
+	read<value_t::object>(j, xorstr_("Molotov Hull"), v.molotovHull);
+	read<value_t::object>(j, xorstr_("Smoke Hull"), v.smokeHull);
+	read<value_t::object>(j, xorstr_("Molotov Polygon"), v.molotovPolygon);
+	read<value_t::object>(j, xorstr_("Viewmodel"), v.viewModel);
+	read<value_t::object>(j, xorstr_("Spread circle"), v.spreadCircle);
+	read(j, xorstr_("Asus walls"), v.asusWalls);
+	read(j, xorstr_("Asus props"), v.asusProps);
+	read(j, xorstr_("Smoke timer"), v.smokeTimer);
+	read<value_t::object>(j, xorstr_("Smoke timer BG"), v.smokeTimerBG);
+	read<value_t::object>(j, xorstr_("Smoke timer TIMER"), v.smokeTimerTimer);
+	read<value_t::object>(j, xorstr_("Smoke timer TEXT"), v.smokeTimerText);
+	read(j, xorstr_("Molotov timer"), v.molotovTimer);
+	read<value_t::object>(j, xorstr_("Molotov timer BG"), v.molotovTimerBG);
+	read<value_t::object>(j, xorstr_("Molotov timer TIMER"), v.molotovTimerTimer);
+	read<value_t::object>(j, xorstr_("Molotov timer TEXT"), v.molotovTimerText);
+	read<value_t::object>(j, xorstr_("Footstep"), v.footsteps);
 }
 
 static void from_json(const json& j, sticker_setting& s)
 {
-	read(j, "Kit", s.kit);
-	read(j, "Wear", s.wear);
-	read(j, "Scale", s.scale);
-	read(j, "Rotation", s.rotation);
+	read(j, xorstr_("Kit"), s.kit);
+	read(j, xorstr_("Wear"), s.wear);
+	read(j, xorstr_("Scale"), s.scale);
+	read(j, xorstr_("Rotation"), s.rotation);
 
 	s.onLoad();
 }
 
 static void from_json(const json& j, item_setting& i)
 {
-	read(j, "Enabled", i.enabled);
-	read(j, "Definition index", i.itemId);
-	read(j, "Quality", i.quality);
-	read(j, "Paint Kit", i.paintKit);
-	read(j, "Definition override", i.definition_override_index);
-	read(j, "Seed", i.seed);
-	read(j, "StatTrak", i.stat_trak);
-	read(j, "Wear", i.wear);
-	read(j, "Custom name", i.custom_name, sizeof(i.custom_name));
-	read(j, "Stickers", i.stickers);
+	read(j, xorstr_("Enabled"), i.enabled);
+	read(j, xorstr_("Definition index"), i.itemId);
+	read(j, xorstr_("Quality"), i.quality);
+	read(j, xorstr_("Paint Kit"), i.paintKit);
+	read(j, xorstr_("Definition override"), i.definition_override_index);
+	read(j, xorstr_("Seed"), i.seed);
+	read(j, xorstr_("StatTrak"), i.stat_trak);
+	read(j, xorstr_("Wear"), i.wear);
+	read(j, xorstr_("Custom name"), i.custom_name, sizeof(i.custom_name));
+	read(j, xorstr_("Stickers"), i.stickers);
 
 	i.onLoad();
 }
 
 static void from_json(const json& j, PurchaseList& pl)
 {
-	read(j, "Enabled", pl.enabled);
-	read(j, "Only During Freeze Time", pl.onlyDuringFreezeTime);
-	read(j, "Show Prices", pl.showPrices);
-	read(j, "No Title Bar", pl.noTitleBar);
-	read(j, "Mode", pl.mode);
-	read<value_t::object>(j, "Pos", pl.pos);
+	read(j, xorstr_("Enabled"), pl.enabled);
+	read(j, xorstr_("Only During Freeze Time"), pl.onlyDuringFreezeTime);
+	read(j, xorstr_("Show Prices"), pl.showPrices);
+	read(j, xorstr_("No Title Bar"), pl.noTitleBar);
+	read(j, xorstr_("Mode"), pl.mode);
+	read<value_t::object>(j, xorstr_("Pos"), pl.pos);
 }
 
 static void from_json(const json& j, Config::Misc::SpectatorList& sl)
 {
-	read(j, "Enabled", sl.enabled);
-	read(j, "No Title Bar", sl.noTitleBar);
-	read<value_t::object>(j, "Pos", sl.pos);
+	read(j, xorstr_("Enabled"), sl.enabled);
+	read(j, xorstr_("No Title Bar"), sl.noTitleBar);
+	read<value_t::object>(j, xorstr_("Pos"), sl.pos);
 }
 
 static void from_json(const json& j, Config::Misc::KeyBindList& sl)
 {
-	read(j, "Enabled", sl.enabled);
-	read(j, "No Title Bar", sl.noTitleBar);
-	read<value_t::object>(j, "Pos", sl.pos);
+	read(j, xorstr_("Enabled"), sl.enabled);
+	read(j, xorstr_("No Title Bar"), sl.noTitleBar);
+	read<value_t::object>(j, xorstr_("Pos"), sl.pos);
 }
 
 static void from_json(const json& j, Config::Misc::PlayerList& o)
 {
-	read(j, "Enabled", o.enabled);
-	read(j, "Steam ID", o.steamID);
-	read(j, "Rank", o.rank);
-	read(j, "Wins", o.wins);
-	read(j, "Money", o.money);
-	read(j, "Health", o.health);
-	read(j, "Armor", o.armor);
-	read<value_t::object>(j, "Pos", o.pos);
+	read(j, xorstr_("Enabled"), o.enabled);
+	read(j, xorstr_("Steam ID"), o.steamID);
+	read(j, xorstr_("Rank"), o.rank);
+	read(j, xorstr_("Wins"), o.wins);
+	read(j, xorstr_("Money"), o.money);
+	read(j, xorstr_("Health"), o.health);
+	read(j, xorstr_("Armor"), o.armor);
+	read<value_t::object>(j, xorstr_("Pos"), o.pos);
 }
 
 static void from_json(const json& j, Config::Misc::JumpStats& js)
 {
-	read(j, "Enabled", js.enabled);
-	read(j, "Show fails", js.showFails);
-	read(j, "Show color on fail", js.showColorOnFail);
-	read(j, "Simplify naming", js.simplifyNaming);
+	read(j, xorstr_("Enabled"), js.enabled);
+	read(j, xorstr_("Show fails"), js.showFails);
+	read(j, xorstr_("Show color on fail"), js.showColorOnFail);
+	read(j, xorstr_("Simplify naming"), js.simplifyNaming);
 }
 
 static void from_json(const json& j, Config::Misc::Velocity& v)
 {
-	read(j, "Enabled", v.enabled);
-	read(j, "Position", v.position);
-	read(j, "Alpha", v.alpha);
-	read<value_t::object>(j, "Color", v.color);
+	read(j, xorstr_("Enabled"), v.enabled);
+	read(j, xorstr_("Position"), v.position);
+	read(j, xorstr_("Alpha"), v.alpha);
+	read<value_t::object>(j, xorstr_("Color"), v.color);
 }
 
 static void from_json(const json& j, Config::Misc::KeyBoardDisplay& kbd)
 {
-	read(j, "Enabled", kbd.enabled);
-	read(j, "Position", kbd.position);
-	read(j, "Show key Tiles", kbd.showKeyTiles);
-	read<value_t::object>(j, "Color", kbd.color);
+	read(j, xorstr_("Enabled"), kbd.enabled);
+	read(j, xorstr_("Position"), kbd.position);
+	read(j, xorstr_("Show key Tiles"), kbd.showKeyTiles);
+	read<value_t::object>(j, xorstr_("Color"), kbd.color);
 }
 
 static void from_json(const json& j, Config::Misc::Watermark& o)
 {
-	read(j, "Enabled", o.enabled);
-	read<value_t::object>(j, "Pos", o.pos);
+	read(j, xorstr_("Enabled"), o.enabled);
+	read<value_t::object>(j, xorstr_("Pos"), o.pos);
 }
 
 static void from_json(const json& j, PreserveKillfeed& o)
 {
-	read(j, "Enabled", o.enabled);
-	read(j, "Only Headshots", o.onlyHeadshots);
+	read(j, xorstr_("Enabled"), o.enabled);
+	read(j, xorstr_("Only Headshots"), o.onlyHeadshots);
 }
 
 static void from_json(const json& j, KillfeedChanger& o)
 {
-	read(j, "Enabled", o.enabled);
-	read(j, "Headshot", o.headshot);
-	read(j, "Dominated", o.dominated);
-	read(j, "Revenge", o.revenge);
-	read(j, "Penetrated", o.penetrated);
-	read(j, "Noscope", o.noscope);
-	read(j, "Thrusmoke", o.thrusmoke);
-	read(j, "Attackerblind", o.attackerblind);
+	read(j, xorstr_("Enabled"), o.enabled);
+	read(j, xorstr_("Headshot"), o.headshot);
+	read(j, xorstr_("Dominated"), o.dominated);
+	read(j, xorstr_("Revenge"), o.revenge);
+	read(j, xorstr_("Penetrated"), o.penetrated);
+	read(j, xorstr_("Noscope"), o.noscope);
+	read(j, xorstr_("Thrusmoke"), o.thrusmoke);
+	read(j, xorstr_("Attackerblind"), o.attackerblind);
 }
 
 static void from_json(const json& j, AutoBuy& o)
 {
-	read(j, "Enabled", o.enabled);
-	read(j, "Primary weapon", o.primaryWeapon);
-	read(j, "Secondary weapon", o.secondaryWeapon);
-	read(j, "Armor", o.armor);
-	read(j, "Utility", o.utility);
-	read(j, "Grenades", o.grenades);
+	read(j, xorstr_("Enabled"), o.enabled);
+	read(j, xorstr_("Primary weapon"), o.primaryWeapon);
+	read(j, xorstr_("Secondary weapon"), o.secondaryWeapon);
+	read(j, xorstr_("Armor"), o.armor);
+	read(j, xorstr_("Utility"), o.utility);
+	read(j, xorstr_("Grenades"), o.grenades);
 }
 
 static void from_json(const json& j, Config::Misc::Logger& o)
 {
-	read(j, "Modes", o.modes);
-	read(j, "Events", o.events);
+	read(j, xorstr_("Modes"), o.modes);
+	read(j, xorstr_("Events"), o.events);
 }
 
 static void from_json(const json& j, Config::Visuals::MotionBlur& mb)
 {
-	read(j, "Enabled", mb.enabled);
-	read(j, "Forward", mb.forwardEnabled);
-	read(j, "Falling min", mb.fallingMin);
-	read(j, "Falling max", mb.fallingMax);
-	read(j, "Falling intensity", mb.fallingIntensity);
-	read(j, "Rotation intensity", mb.rotationIntensity);
-	read(j, "Strength", mb.strength);
+	read(j, xorstr_("Enabled"), mb.enabled);
+	read(j, xorstr_("Forward"), mb.forwardEnabled);
+	read(j, xorstr_("Falling min"), mb.fallingMin);
+	read(j, xorstr_("Falling max"), mb.fallingMax);
+	read(j, xorstr_("Falling intensity"), mb.fallingIntensity);
+	read(j, xorstr_("Rotation intensity"), mb.rotationIntensity);
+	read(j, xorstr_("Strength"), mb.strength);
 }
 
 static void from_json(const json& j, Config::Visuals::Fog& f)
 {
-	read(j, "Start", f.start);
-	read(j, "End", f.end);
-	read(j, "Density", f.density);
+	read(j, xorstr_("Start"), f.start);
+	read(j, xorstr_("End"), f.end);
+	read(j, xorstr_("Density"), f.density);
 }
 
 static void from_json(const json& j, Config::Visuals::ShadowsChanger& sw)
 {
-	read(j, "Enabled", sw.enabled);
-	read(j, "X", sw.x);
-	read(j, "Y", sw.y);
+	read(j, xorstr_("Enabled"), sw.enabled);
+	read(j, xorstr_("X"), sw.x);
+	read(j, xorstr_("Y"), sw.y);
 }
 
 static void from_json(const json& j, Config::Visuals::Viewmodel& vxyz)
 {
-	read(j, "Enabled", vxyz.enabled);
-	read(j, "Fov", vxyz.fov);
-	read(j, "X", vxyz.x);
-	read(j, "Y", vxyz.y);
-	read(j, "Z", vxyz.z);
-	read(j, "Roll", vxyz.roll);
+	read(j, xorstr_("Enabled"), vxyz.enabled);
+	read(j, xorstr_("Fov"), vxyz.fov);
+	read(j, xorstr_("X"), vxyz.x);
+	read(j, xorstr_("Y"), vxyz.y);
+	read(j, xorstr_("Z"), vxyz.z);
+	read(j, xorstr_("Roll"), vxyz.roll);
 }
 
 static void from_json(const json& j, Config::Visuals::MolotovPolygon& mp)
 {
-	read(j, "Enabled", mp.enabled);
-	read<value_t::object>(j, "Self", mp.self);
-	read<value_t::object>(j, "Team", mp.team);
-	read<value_t::object>(j, "Enemy", mp.enemy);
+	read(j, xorstr_("Enabled"), mp.enabled);
+	read<value_t::object>(j, xorstr_("Self"), mp.self);
+	read<value_t::object>(j, xorstr_("Team"), mp.team);
+	read<value_t::object>(j, xorstr_("Enemy"), mp.enemy);
 }
 
 static void from_json(const json& j, Config::Visuals::OnHitHitbox& h)
 {
-	read<value_t::object>(j, "Color", h.color);
-	read(j, "Duration", h.duration);
+	read<value_t::object>(j, xorstr_("Color"), h.color);
+	read(j, xorstr_("Duration"), h.duration);
 }
 
 static void from_json(const json& j, Config::Misc& m)
 {
-	read(j, "Menu key", m.menuKey);
-	read(j, "Anti AFK kick", m.antiAfkKick);
-	read(j, "Adblock", m.adBlock);
-	read(j, "Force relay", m.forceRelayCluster);
-	read(j, "Auto strafe", m.autoStrafe);
-	read(j, "Bunny hop", m.bunnyHop);
-	read(j, "Custom clan tag", m.customClanTag);
-	read(j, "Clan tag", m.clanTag, sizeof(m.clanTag));
-	read(j, "Clan tag type", m.tagType);
-	read(j, "Clan tag update interval", m.tagUpdateInterval);
-	read(j, "Clan tag animation steps", m.tagAnimationSteps);
-	read(j, "Fast duck", m.fastDuck);
-	read(j, "Moonwalk", m.moonwalk);
-	read(j, "Leg break", m.leg_break);
-	read(j, "Knifebot", m.knifeBot);
-	read(j, "Knifebot mode", m.knifeBotMode);
-	read(j, "Block bot", m.blockBot);
-	read(j, "Block bot Key", m.blockBotKey);
-	read(j, "Edge Jump", m.edgeJump);
-	read(j, "Edge Jump Key", m.edgeJumpKey);
-	read(j, "Mini Jump", m.miniJump);
-	read(j, "Mini Jump Crouch lock", m.miniJumpCrouchLock);
-	read(j, "Mini Jump Key", m.miniJumpKey);
-	read(j, "Jump Bug", m.jumpBug);
-	read(j, "Jump Bug Key", m.jumpBugKey);
-	read(j, "Edge Bug", m.edgeBug);
-	read(j, "Edge Bug Key", m.edgeBugKey);
-	read(j, "Pred Amnt", m.edgeBugPredAmnt);
-	read(j, "Auto pixel surf", m.autoPixelSurf);
-	read(j, "Auto pixel surf Pred Amnt", m.autoPixelSurfPredAmnt);
-	read(j, "Auto pixel surf Key", m.autoPixelSurfKey);
-	read<value_t::object>(j, "Velocity", m.velocity);
-	read<value_t::object>(j, "Keyboard display", m.keyBoardDisplay);
-	read(j, "Slowwalk", m.slowwalk);
-	read(j, "Slowwalk key", m.slowwalkKey);
-	read(j, "Slowwalk Amnt", m.slowwalkAmnt);
-	read(j, "Fake duck", m.fakeduck);
-	read(j, "Fake duck key", m.fakeduckKey);
-	read<value_t::object>(j, "Auto peek", m.autoPeek);
-	read(j, "Auto peek key", m.autoPeekKey);
-	read(j, "Noscope crosshair", m.noscopeCrosshair);
-	read(j, "Recoil crosshair", m.recoilCrosshair);
-	read(j, "Auto pistol", m.autoPistol);
-	read(j, "Auto reload", m.autoReload);
-	read(j, "Auto accept", m.autoAccept);
-	read(j, "Radar hack", m.radarHack);
-	read(j, "Reveal ranks", m.revealRanks);
-	read(j, "Reveal money", m.revealMoney);
-	read(j, "Reveal suspect", m.revealSuspect);
-	read(j, "Reveal votes", m.revealVotes);
-	read<value_t::object>(j, "Spectator list", m.spectatorList);
-	read<value_t::object>(j, "Keybind list", m.keybindList);
-	read<value_t::object>(j, "Player list", m.playerList);
-	read<value_t::object>(j, "Jump stats", m.jumpStats);
-	read<value_t::object>(j, "Watermark", m.watermark);
-	read<value_t::object>(j, "Offscreen Enemies", m.offscreenEnemies);
-	read(j, "Disable model occlusion", m.disableModelOcclusion);
-	read(j, "Aspect Ratio", m.aspectratio);
-	read(j, "Kill message", m.killMessage);
-	read(j, "Kill message string", m.killMessages);
-	read(j, "Name stealer", m.nameStealer);
-	read(j, "Disable HUD blur", m.disablePanoramablur);
-	read(j, "Fast plant", m.fastPlant);
-	read(j, "Fast Stop", m.fastStop);
-	read<value_t::object>(j, "Bomb timer", m.bombTimer);
-	read<value_t::object>(j, "Hurt indicator", m.hurtIndicator);
-	read<value_t::object>(j, "Yaw indicator", m.yawIndicator);
-	read(j, "Prepare revolver", m.prepareRevolver);
-	read(j, "Prepare revolver key", m.prepareRevolverKey);
-	read(j, "Hit sound", m.hitSound);
-	read(j, "Quick healthshot key", m.quickHealthshotKey);
-	read(j, "Grenade predict", m.nadePredict);
-	read<value_t::object>(j, "Grenade predict Damage", m.nadeDamagePredict);
-	read<value_t::object>(j, "Grenade predict Trail", m.nadeTrailPredict);
-	read<value_t::object>(j, "Grenade predict Circle", m.nadeCirclePredict);
-	read(j, "Max angle delta", m.maxAngleDelta);
-	read(j, "Fix tablet signal", m.fixTabletSignal);
-	read<value_t::string>(j, "Custom Hit Sound", m.customHitSound);
-	read(j, "Kill sound", m.killSound);
-	read<value_t::string>(j, "Custom Kill Sound", m.customKillSound);
-	read<value_t::object>(j, "Purchase List", m.purchaseList);
-	read<value_t::object>(j, "Reportbot", m.reportbot);
-	read(j, "Opposite Hand Knife", m.oppositeHandKnife);
-	read<value_t::object>(j, "Preserve Killfeed", m.preserveKillfeed);
-	read<value_t::object>(j, "Killfeed changer", m.killfeedChanger);
-	read(j, "Sv pure bypass", m.svPureBypass);
-	read(j, "Inventory Unlocker", m.inventoryUnlocker);
-	read(j, "Unlock hidden cvars", m.unhideConvars);
-	read<value_t::object>(j, "Autobuy", m.autoBuy);
-	read<value_t::object>(j, "Logger", m.logger);
-	read<value_t::object>(j, "Logger options", m.loggerOptions);
-	read(j, "Name", m.name, sizeof(m.name));
-	read(j, "Custom name", m.customName);
+	read(j, xorstr_("Menu key"), m.menuKey);
+	read(j, xorstr_("Anti AFK kick"), m.antiAfkKick);
+	read(j, xorstr_("Adblock"), m.adBlock);
+	read(j, xorstr_("Force relay"), m.forceRelayCluster);
+	read(j, xorstr_("Auto strafe"), m.autoStrafe);
+	read(j, xorstr_("Bunny hop"), m.bunnyHop);
+	read(j, xorstr_("Custom clan tag"), m.customClanTag);
+	read(j, xorstr_("Clan tag"), m.clanTag, sizeof(m.clanTag));
+	read(j, xorstr_("Clan tag type"), m.tagType);
+	read(j, xorstr_("Clan tag update interval"), m.tagUpdateInterval);
+	read(j, xorstr_("Clan tag animation steps"), m.tagAnimationSteps);
+	read(j, xorstr_("Fast duck"), m.fastDuck);
+	read(j, xorstr_("Moonwalk"), m.moonwalk);
+	read(j, xorstr_("Leg break"), m.leg_break);
+	read(j, xorstr_("Knifebot"), m.knifeBot);
+	read(j, xorstr_("Knifebot mode"), m.knifeBotMode);
+	read(j, xorstr_("Block bot"), m.blockBot);
+	read(j, xorstr_("Block bot Key"), m.blockBotKey);
+	read(j, xorstr_("Edge Jump"), m.edgeJump);
+	read(j, xorstr_("Edge Jump Key"), m.edgeJumpKey);
+	read(j, xorstr_("Mini Jump"), m.miniJump);
+	read(j, xorstr_("Mini Jump Crouch lock"), m.miniJumpCrouchLock);
+	read(j, xorstr_("Mini Jump Key"), m.miniJumpKey);
+	read(j, xorstr_("Jump Bug"), m.jumpBug);
+	read(j, xorstr_("Jump Bug Key"), m.jumpBugKey);
+	read(j, xorstr_("Edge Bug"), m.edgeBug);
+	read(j, xorstr_("Edge Bug Key"), m.edgeBugKey);
+	read(j, xorstr_("Pred Amnt"), m.edgeBugPredAmnt);
+	read(j, xorstr_("Auto pixel surf"), m.autoPixelSurf);
+	read(j, xorstr_("Auto pixel surf Pred Amnt"), m.autoPixelSurfPredAmnt);
+	read(j, xorstr_("Auto pixel surf Key"), m.autoPixelSurfKey);
+	read<value_t::object>(j, xorstr_("Velocity"), m.velocity);
+	read<value_t::object>(j, xorstr_("Keyboard display"), m.keyBoardDisplay);
+	read(j, xorstr_("Slowwalk"), m.slowwalk);
+	read(j, xorstr_("Slowwalk key"), m.slowwalkKey);
+	read(j, xorstr_("Slowwalk Amnt"), m.slowwalkAmnt);
+	read(j, xorstr_("Fake duck"), m.fakeduck);
+	read(j, xorstr_("Fake duck key"), m.fakeduckKey);
+	read<value_t::object>(j, xorstr_("Auto peek"), m.autoPeek);
+	read(j, xorstr_("Auto peek key"), m.autoPeekKey);
+	read(j, xorstr_("Noscope crosshair"), m.noscopeCrosshair);
+	read(j, xorstr_("Recoil crosshair"), m.recoilCrosshair);
+	read(j, xorstr_("Auto pistol"), m.autoPistol);
+	read(j, xorstr_("Auto reload"), m.autoReload);
+	read(j, xorstr_("Auto accept"), m.autoAccept);
+	read(j, xorstr_("Radar hack"), m.radarHack);
+	read(j, xorstr_("Reveal ranks"), m.revealRanks);
+	read(j, xorstr_("Reveal money"), m.revealMoney);
+	read(j, xorstr_("Reveal suspect"), m.revealSuspect);
+	read(j, xorstr_("Reveal votes"), m.revealVotes);
+	read<value_t::object>(j, xorstr_("Spectator list"), m.spectatorList);
+	read<value_t::object>(j, xorstr_("Keybind list"), m.keybindList);
+	read<value_t::object>(j, xorstr_("Player list"), m.playerList);
+	read<value_t::object>(j, xorstr_("Jump stats"), m.jumpStats);
+	read<value_t::object>(j, xorstr_("Watermark"), m.watermark);
+	read<value_t::object>(j, xorstr_("Offscreen Enemies"), m.offscreenEnemies);
+	read(j, xorstr_("Disable model occlusion"), m.disableModelOcclusion);
+	read(j, xorstr_("Aspect Ratio"), m.aspectratio);
+	read(j, xorstr_("Kill message"), m.killMessage);
+	read(j, xorstr_("Kill message string"), m.killMessages);
+	read(j, xorstr_("Name stealer"), m.nameStealer);
+	read(j, xorstr_("Disable HUD blur"), m.disablePanoramablur);
+	read(j, xorstr_("Fast plant"), m.fastPlant);
+	read(j, xorstr_("Fast Stop"), m.fastStop);
+	read<value_t::object>(j, xorstr_("Bomb timer"), m.bombTimer);
+	read<value_t::object>(j, xorstr_("Hurt indicator"), m.hurtIndicator);
+	read<value_t::object>(j, xorstr_("Yaw indicator"), m.yawIndicator);
+	read(j, xorstr_("Prepare revolver"), m.prepareRevolver);
+	read(j, xorstr_("Prepare revolver key"), m.prepareRevolverKey);
+	read(j, xorstr_("Hit sound"), m.hitSound);
+	read(j, xorstr_("Quick healthshot key"), m.quickHealthshotKey);
+	read(j, xorstr_("Grenade predict"), m.nadePredict);
+	read<value_t::object>(j, xorstr_("Grenade predict Damage"), m.nadeDamagePredict);
+	read<value_t::object>(j, xorstr_("Grenade predict Trail"), m.nadeTrailPredict);
+	read<value_t::object>(j, xorstr_("Grenade predict Circle"), m.nadeCirclePredict);
+	read(j, xorstr_("Max angle delta"), m.maxAngleDelta);
+	read(j, xorstr_("Fix tablet signal"), m.fixTabletSignal);
+	read<value_t::string>(j, xorstr_("Custom Hit Sound"), m.customHitSound);
+	read(j, xorstr_("Kill sound"), m.killSound);
+	read<value_t::string>(j, xorstr_("Custom Kill Sound"), m.customKillSound);
+	read<value_t::object>(j, xorstr_("Purchase List"), m.purchaseList);
+	read<value_t::object>(j, xorstr_("Reportbot"), m.reportbot);
+	read(j, xorstr_("Opposite Hand Knife"), m.oppositeHandKnife);
+	read<value_t::object>(j, xorstr_("Preserve Killfeed"), m.preserveKillfeed);
+	read<value_t::object>(j, xorstr_("Killfeed changer"), m.killfeedChanger);
+	read(j, xorstr_("Sv pure bypass"), m.svPureBypass);
+	read(j, xorstr_("Inventory Unlocker"), m.inventoryUnlocker);
+	read(j, xorstr_("Unlock hidden cvars"), m.unhideConvars);
+	read<value_t::object>(j, xorstr_("Autobuy"), m.autoBuy);
+	read<value_t::object>(j, xorstr_("Logger"), m.logger);
+	read<value_t::object>(j, xorstr_("Logger options"), m.loggerOptions);
+	read(j, xorstr_("Name"), m.name, sizeof(m.name));
+	read(j, xorstr_("Custom name"), m.customName);
 }
 
 static void from_json(const json& j, Config::Misc::Reportbot& r)
 {
-	read(j, "Enabled", r.enabled);
-	read(j, "Target", r.target);
-	read(j, "Delay", r.delay);
-	read(j, "Rounds", r.rounds);
-	read(j, "Abusive Communications", r.textAbuse);
-	read(j, "Griefing", r.griefing);
-	read(j, "Wall Hacking", r.wallhack);
-	read(j, "Aim Hacking", r.aimbot);
-	read(j, "Other Hacking", r.other);
+	read(j, xorstr_("Enabled"), r.enabled);
+	read(j, xorstr_("Target"), r.target);
+	read(j, xorstr_("Delay"), r.delay);
+	read(j, xorstr_("Rounds"), r.rounds);
+	read(j, xorstr_("Abusive Communications"), r.textAbuse);
+	read(j, xorstr_("Griefing"), r.griefing);
+	read(j, xorstr_("Wall Hacking"), r.wallhack);
+	read(j, xorstr_("Aim Hacking"), r.aimbot);
+	read(j, xorstr_("Other Hacking"), r.other);
 }
 
 void Config::load(size_t id, bool incremental) noexcept
@@ -804,45 +804,45 @@ void Config::load(const char8_t* name, bool incremental) noexcept
 	if (!incremental)
 		reset();
 
-	read(j, "Legitbot", legitbot);
-	read(j, "Legitbot Key", legitbotKey);
-	read<value_t::object>(j, "Draw legitbot fov", legitbotFov);
+	read(j, xorstr_("Legitbot"), legitbot);
+	read(j, xorstr_("Legitbot Key"), legitbotKey);
+	read<value_t::object>(j, xorstr_("Draw legitbot fov"), legitbotFov);
 
-	read<value_t::object>(j, "RCS", recoilControlSystem);
-	read<value_t::object>(j, "Optimizations", optimizations);
+	read<value_t::object>(j, xorstr_("RCS"), recoilControlSystem);
+	read<value_t::object>(j, xorstr_("Optimizations"), optimizations);
 
-	read(j, "Ragebot", ragebot);
-	read(j, "Ragebot Key", ragebotKey);
-	read(j, "Min damage override Key", minDamageOverrideKey);
+	read(j, xorstr_("Ragebot"), ragebot);
+	read(j, xorstr_("Ragebot Key"), ragebotKey);
+	read(j, xorstr_("Min damage override Key"), minDamageOverrideKey);
 
-	read(j, "Triggerbot", triggerbot);
-	read(j, "Triggerbot Key", triggerbotKey);
+	read(j, xorstr_("Triggerbot"), triggerbot);
+	read(j, xorstr_("Triggerbot Key"), triggerbotKey);
 
-	read<value_t::object>(j, "Legit Anti aim", legitAntiAim);
-	read<value_t::array>(j, "Rage Anti aim", rageAntiAim);
-	read(j, "Manual forward Key", manualForward);
-	read(j, "Manual backward Key", manualBackward);
-	read(j, "Manual right Key", manualRight);
-	read(j, "Manual left Key", manualLeft);
-	read(j, "Auto direction Key", autoDirection);
-	read(j, "Disable in freezetime", disableInFreezetime);
-	read<value_t::array>(j, "Fake angle", fakeAngle);
-	read(j, "Invert", invert);
-	read<value_t::array>(j, "Fakelag", fakelag);
-	read<value_t::object>(j, "Tickbase", tickbase);
-	read<value_t::object>(j, "Backtrack", backtrack);
+	read<value_t::object>(j, xorstr_("Legit Anti aim"), legitAntiAim);
+	read<value_t::array>(j, xorstr_("Rage Anti aim"), rageAntiAim);
+	read(j, xorstr_("Manual forward Key"), manualForward);
+	read(j, xorstr_("Manual backward Key"), manualBackward);
+	read(j, xorstr_("Manual right Key"), manualRight);
+	read(j, xorstr_("Manual left Key"), manualLeft);
+	read(j, xorstr_("Auto direction Key"), autoDirection);
+	read(j, xorstr_("Disable in freezetime"), disableInFreezetime);
+	read<value_t::array>(j, xorstr_("Fake angle"), fakeAngle);
+	read(j, xorstr_("Invert"), invert);
+	read<value_t::array>(j, xorstr_("Fakelag"), fakelag);
+	read<value_t::object>(j, xorstr_("Tickbase"), tickbase);
+	read<value_t::object>(j, xorstr_("Backtrack"), backtrack);
 
-	read(j["Glow"], "Items", glow);
-	read(j["Glow"], "Players", playerGlow);
-	read(j["Glow"], "Key", glowKey);
+	read(j[xorstr_("Glow")], xorstr_("Items"), glow);
+	read(j[xorstr_("Glow")], xorstr_("Players"), playerGlow);
+	read(j[xorstr_("Glow")], xorstr_("Key"), glowKey);
 
-	read(j, "Chams", chams);
-	read(j["Chams"], "Key", chamsKey);
-	read<value_t::object>(j, "ESP", streamProofESP);
-	read<value_t::object>(j, "Visuals", visuals);
-	read(j, "Skin changer", skinChanger);
-	Sound::fromJson(j["Sound"]);
-	read<value_t::object>(j, "Misc", misc);
+	read(j, xorstr_("Chams"), chams);
+	read(j[xorstr_("Chams")], xorstr_("Key"), chamsKey);
+	read<value_t::object>(j, xorstr_("ESP"), streamProofESP);
+	read<value_t::object>(j, xorstr_("Visuals"), visuals);
+	read(j, xorstr_("Skin changer"), skinChanger);
+	Sound::fromJson(j[xorstr_("Sound")]);
+	read<value_t::object>(j, xorstr_("Misc"), misc);
 }
 
 #pragma endregion
@@ -852,120 +852,120 @@ void Config::load(const char8_t* name, bool incremental) noexcept
 static void to_json(json& j, const ColorToggle& o, const ColorToggle& dummy = {})
 {
 	to_json(j, static_cast<const Color4&>(o), dummy);
-	WRITE("Enabled", enabled);
+	WRITE(xorstr_("Enabled"), enabled);
 }
 
 static void to_json(json& j, const Color3& o, const Color3& dummy = {})
 {
-	WRITE("Color", color);
-	WRITE("Rainbow", rainbow);
-	WRITE("Rainbow Speed", rainbowSpeed);
+	WRITE(xorstr_("Color"), color);
+	WRITE(xorstr_("Rainbow"), rainbow);
+	WRITE(xorstr_("Rainbow Speed"), rainbowSpeed);
 }
 
 static void to_json(json& j, const ColorToggle3& o, const ColorToggle3& dummy = {})
 {
 	to_json(j, static_cast<const Color3&>(o), dummy);
-	WRITE("Enabled", enabled);
+	WRITE(xorstr_("Enabled"), enabled);
 }
 
 static void to_json(json& j, const ColorToggleRounding& o, const ColorToggleRounding& dummy = {})
 {
 	to_json(j, static_cast<const ColorToggle&>(o), dummy);
-	WRITE("Rounding", rounding);
+	WRITE(xorstr_("Rounding"), rounding);
 }
 
 static void to_json(json& j, const ColorToggleThickness& o, const ColorToggleThickness& dummy = {})
 {
 	to_json(j, static_cast<const ColorToggle&>(o), dummy);
-	WRITE("Thickness", thickness);
+	WRITE(xorstr_("Thickness"), thickness);
 }
 
 static void to_json(json& j, const ColorToggleOutline& o, const ColorToggleOutline& dummy = {})
 {
 	to_json(j, static_cast<const ColorToggle&>(o), dummy);
-	WRITE("Outline", outline);
+	WRITE(xorstr_("Outline"), outline);
 }
 
 static void to_json(json& j, const ColorToggleThicknessRounding& o, const ColorToggleThicknessRounding& dummy = {})
 {
 	to_json(j, static_cast<const ColorToggleRounding&>(o), dummy);
-	WRITE("Thickness", thickness);
+	WRITE(xorstr_("Thickness"), thickness);
 }
 
 static void to_json(json& j, const Font& o, const Font& dummy = {})
 {
-	WRITE("Name", name);
+	WRITE(xorstr_("Name"), name);
 }
 
 static void to_json(json& j, const Snapline& o, const Snapline& dummy = {})
 {
 	to_json(j, static_cast<const ColorToggleThickness&>(o), dummy);
-	WRITE("Type", type);
+	WRITE(xorstr_("Type"), type);
 }
 
 static void to_json(json& j, const Box& o, const Box& dummy = {})
 {
 	to_json(j, static_cast<const ColorToggleRounding&>(o), dummy);
-	WRITE("Type", type);
-	WRITE("Scale", scale);
-	WRITE("Fill", fill);
+	WRITE(xorstr_("Type"), type);
+	WRITE(xorstr_("Scale"), scale);
+	WRITE(xorstr_("Fill"), fill);
 }
 
 static void to_json(json& j, const Shared& o, const Shared& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Font", font);
-	WRITE("Snapline", snapline);
-	WRITE("Box", box);
-	WRITE("Name", name);
-	WRITE("Text Cull Distance", textCullDistance);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Font"), font);
+	WRITE(xorstr_("Snapline"), snapline);
+	WRITE(xorstr_("Box"), box);
+	WRITE(xorstr_("Name"), name);
+	WRITE(xorstr_("Text Cull Distance"), textCullDistance);
 }
 
 static void to_json(json& j, const HealthBar& o, const HealthBar& dummy = {})
 {
 	to_json(j, static_cast<const ColorToggle&>(o), dummy);
-	WRITE("Type", type);
+	WRITE(xorstr_("Type"), type);
 }
 
 static void to_json(json& j, const Player& o, const Player& dummy = {})
 {
 	to_json(j, static_cast<const Shared&>(o), dummy);
-	WRITE("Weapon", weapon);
-	WRITE("Flash Duration", flashDuration);
-	WRITE("Audible Only", audibleOnly);
-	WRITE("Spotted Only", spottedOnly);
-	WRITE("Health Bar", healthBar);
-	WRITE("Skeleton", skeleton);
-	WRITE("Head Box", headBox);
-	WRITE("Line of sight", lineOfSight);
+	WRITE(xorstr_("Weapon"), weapon);
+	WRITE(xorstr_("Flash Duration"), flashDuration);
+	WRITE(xorstr_("Audible Only"), audibleOnly);
+	WRITE(xorstr_("Spotted Only"), spottedOnly);
+	WRITE(xorstr_("Health Bar"), healthBar);
+	WRITE(xorstr_("Skeleton"), skeleton);
+	WRITE(xorstr_("Head Box"), headBox);
+	WRITE(xorstr_("Line of sight"), lineOfSight);
 }
 
 static void to_json(json& j, const Weapon& o, const Weapon& dummy = {})
 {
 	to_json(j, static_cast<const Shared&>(o), dummy);
-	WRITE("Ammo", ammo);
+	WRITE(xorstr_("Ammo"), ammo);
 }
 
 static void to_json(json& j, const Trail& o, const Trail& dummy = {})
 {
 	to_json(j, static_cast<const ColorToggleThickness&>(o), dummy);
-	WRITE("Type", type);
-	WRITE("Time", time);
+	WRITE(xorstr_("Type"), type);
+	WRITE(xorstr_("Time"), time);
 }
 
 static void to_json(json& j, const Trails& o, const Trails& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Local Player", localPlayer);
-	WRITE("Allies", allies);
-	WRITE("Enemies", enemies);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Local Player"), localPlayer);
+	WRITE(xorstr_("Allies"), allies);
+	WRITE(xorstr_("Enemies"), enemies);
 }
 
 static void to_json(json& j, const OffscreenEnemies& o, const OffscreenEnemies& dummy = {})
 {
 	to_json(j, static_cast<const ColorToggle&>(o), dummy);
 
-	WRITE("Health Bar", healthBar);
+	WRITE(xorstr_("Health Bar"), healthBar);
 }
 
 static void to_json(json& j, const BulletTracers& o, const BulletTracers& dummy = {})
@@ -977,89 +977,89 @@ static void to_json(json& j, const Projectile& o, const Projectile& dummy = {})
 {
 	j = static_cast<const Shared&>(o);
 
-	WRITE("Trails", trails);
+	WRITE(xorstr_("Trails"), trails);
 }
 
 static void to_json(json& j, const ImVec2& o, const ImVec2& dummy = {})
 {
-	WRITE("X", x);
-	WRITE("Y", y);
+	WRITE(xorstr_("X"), x);
+	WRITE(xorstr_("Y"), y);
 }
 
 static void to_json(json& j, const Config::Legitbot& o, const Config::Legitbot& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Aimlock", aimlock);
-	WRITE("Silent", silent);
-	WRITE("Friendly fire", friendlyFire);
-	WRITE("Visible only", visibleOnly);
-	WRITE("Scoped only", scopedOnly);
-	WRITE("Ignore flash", ignoreFlash);
-	WRITE("Ignore smoke", ignoreSmoke);
-	WRITE("Auto scope", autoScope);
-	WRITE("Hitboxes", hitboxes);
-	WRITE("Fov", fov);
-	WRITE("Smooth", smooth);
-	WRITE("Reaction time", reactionTime);
-	WRITE("Min damage", minDamage);
-	WRITE("Killshot", killshot);
-	WRITE("Between shots", betweenShots);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Aimlock"), aimlock);
+	WRITE(xorstr_("Silent"), silent);
+	WRITE(xorstr_("Friendly fire"), friendlyFire);
+	WRITE(xorstr_("Visible only"), visibleOnly);
+	WRITE(xorstr_("Scoped only"), scopedOnly);
+	WRITE(xorstr_("Ignore flash"), ignoreFlash);
+	WRITE(xorstr_("Ignore smoke"), ignoreSmoke);
+	WRITE(xorstr_("Auto scope"), autoScope);
+	WRITE(xorstr_("Hitboxes"), hitboxes);
+	WRITE(xorstr_("Fov"), fov);
+	WRITE(xorstr_("Smooth"), smooth);
+	WRITE(xorstr_("Reaction time"), reactionTime);
+	WRITE(xorstr_("Min damage"), minDamage);
+	WRITE(xorstr_("Killshot"), killshot);
+	WRITE(xorstr_("Between shots"), betweenShots);
 }
 
 static void to_json(json& j, const Config::RecoilControlSystem& o, const Config::RecoilControlSystem& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Silent", silent);
-	WRITE("Ignore Shots", shotsFired);
-	WRITE("Horizontal", horizontal);
-	WRITE("Vertical", vertical);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Silent"), silent);
+	WRITE(xorstr_("Ignore Shots"), shotsFired);
+	WRITE(xorstr_("Horizontal"), horizontal);
+	WRITE(xorstr_("Vertical"), vertical);
 }
 
 static void to_json(json& j, const Config::Ragebot& o, const Config::Ragebot& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Aimlock", aimlock);
-	WRITE("Silent", silent);
-	WRITE("Friendly fire", friendlyFire);
-	WRITE("Visible only", visibleOnly);
-	WRITE("Scoped only", scopedOnly);
-	WRITE("Ignore flash", ignoreFlash);
-	WRITE("Ignore smoke", ignoreSmoke);
-	WRITE("Auto shot", autoShot);
-	WRITE("Auto scope", autoScope);
-	WRITE("Auto stop", autoStop);
-	WRITE("Resolver", resolver);
-	WRITE("Between shots", betweenShots);
-	WRITE("Full stop", fullStop);
-	WRITE("Duck stop", duckStop);
-	WRITE("Priority", priority);
-	WRITE("Fov", fov);
-	WRITE("Hitboxes", hitboxes);
-	WRITE("Hitchance", hitChance);
-	WRITE("Accuracy boost", accuracyBoost);
-	WRITE("Head Multipoint", headMultiPoint);
-	WRITE("Body Multipoint", bodyMultiPoint);
-	WRITE("Min damage", minDamage);
-	WRITE("Min damage override", minDamageOverride);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Aimlock"), aimlock);
+	WRITE(xorstr_("Silent"), silent);
+	WRITE(xorstr_("Friendly fire"), friendlyFire);
+	WRITE(xorstr_("Visible only"), visibleOnly);
+	WRITE(xorstr_("Scoped only"), scopedOnly);
+	WRITE(xorstr_("Ignore flash"), ignoreFlash);
+	WRITE(xorstr_("Ignore smoke"), ignoreSmoke);
+	WRITE(xorstr_("Auto shot"), autoShot);
+	WRITE(xorstr_("Auto scope"), autoScope);
+	WRITE(xorstr_("Auto stop"), autoStop);
+	WRITE(xorstr_("Resolver"), resolver);
+	WRITE(xorstr_("Between shots"), betweenShots);
+	WRITE(xorstr_("Full stop"), fullStop);
+	WRITE(xorstr_("Duck stop"), duckStop);
+	WRITE(xorstr_("Priority"), priority);
+	WRITE(xorstr_("Fov"), fov);
+	WRITE(xorstr_("Hitboxes"), hitboxes);
+	WRITE(xorstr_("Hitchance"), hitChance);
+	WRITE(xorstr_("Accuracy boost"), accuracyBoost);
+	WRITE(xorstr_("Head Multipoint"), headMultiPoint);
+	WRITE(xorstr_("Body Multipoint"), bodyMultiPoint);
+	WRITE(xorstr_("Min damage"), minDamage);
+	WRITE(xorstr_("Min damage override"), minDamageOverride);
 }
 
 static void to_json(json& j, const Config::Optimizations& o, const Config::Optimizations& dummy = {})
 {
-	WRITE("Low Performance Mode", lowPerformanceMode);
+	WRITE(xorstr_("Low Performance Mode"), lowPerformanceMode);
 }
 
 static void to_json(json& j, const Config::Triggerbot& o, const Config::Triggerbot& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Friendly fire", friendlyFire);
-	WRITE("Scoped only", scopedOnly);
-	WRITE("Ignore flash", ignoreFlash);
-	WRITE("Ignore smoke", ignoreSmoke);
-	WRITE("Hitboxes", hitboxes);
-	WRITE("Hitchance", hitChance);
-	WRITE("Shot delay", shotDelay);
-	WRITE("Min damage", minDamage);
-	WRITE("Killshot", killshot);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Friendly fire"), friendlyFire);
+	WRITE(xorstr_("Scoped only"), scopedOnly);
+	WRITE(xorstr_("Ignore flash"), ignoreFlash);
+	WRITE(xorstr_("Ignore smoke"), ignoreSmoke);
+	WRITE(xorstr_("Hitboxes"), hitboxes);
+	WRITE(xorstr_("Hitchance"), hitChance);
+	WRITE(xorstr_("Shot delay"), shotDelay);
+	WRITE(xorstr_("Min damage"), minDamage);
+	WRITE(xorstr_("Killshot"), killshot);
 }
 
 static void to_json(json& j, const Config::Chams::Material& o)
@@ -1067,479 +1067,479 @@ static void to_json(json& j, const Config::Chams::Material& o)
 	const Config::Chams::Material dummy;
 
 	to_json(j, static_cast<const Color4&>(o), dummy);
-	WRITE("Enabled", enabled);
-	WRITE("Health based", healthBased);
-	WRITE("Blinking", blinking);
-	WRITE("Wireframe", wireframe);
-	WRITE("Cover", cover);
-	WRITE("Ignore-Z", ignorez);
-	WRITE("Material", material);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Health based"), healthBased);
+	WRITE(xorstr_("Blinking"), blinking);
+	WRITE(xorstr_("Wireframe"), wireframe);
+	WRITE(xorstr_("Cover"), cover);
+	WRITE(xorstr_("Ignore-Z"), ignorez);
+	WRITE(xorstr_("Material"), material);
 }
 
 static void to_json(json& j, const Config::Chams& o)
 {
-	j["Materials"] = o.materials;
+	j[xorstr_("Materials")] = o.materials;
 }
 
 static void to_json(json& j, const Config::GlowItem& o, const  Config::GlowItem& dummy = {})
 {
 	to_json(j, static_cast<const Color4&>(o), dummy);
-	WRITE("Enabled", enabled);
-	WRITE("Health based", healthBased);
-	WRITE("Audible only", audibleOnly);
-	WRITE("Style", style);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Health based"), healthBased);
+	WRITE(xorstr_("Audible only"), audibleOnly);
+	WRITE(xorstr_("Style"), style);
 }
 
 static void to_json(json& j, const  Config::PlayerGlow& o, const  Config::PlayerGlow& dummy = {})
 {
-	WRITE("All", all);
-	WRITE("Visible", visible);
-	WRITE("Occluded", occluded);
+	WRITE(xorstr_("All"), all);
+	WRITE(xorstr_("Visible"), visible);
+	WRITE(xorstr_("Occluded"), occluded);
 }
 
 static void to_json(json& j, const Config::StreamProofESP& o, const Config::StreamProofESP& dummy = {})
 {
-	WRITE("Key", key);
-	j["Allies"] = o.allies;
-	j["Enemies"] = o.enemies;
-	j["Weapons"] = o.weapons;
-	j["Projectiles"] = o.projectiles;
-	j["Loot Crates"] = o.lootCrates;
-	j["Other Entities"] = o.otherEntities;
+	WRITE(xorstr_("Key"), key);
+	j[xorstr_("Allies")] = o.allies;
+	j[xorstr_("Enemies")] = o.enemies;
+	j[xorstr_("Weapons")] = o.weapons;
+	j[xorstr_("Projectiles")] = o.projectiles;
+	j[xorstr_("Loot Crates")] = o.lootCrates;
+	j[xorstr_("Other Entities")] = o.otherEntities;
 }
 
 static void to_json(json& j, const Config::Misc::Reportbot& o, const Config::Misc::Reportbot& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Target", target);
-	WRITE("Delay", delay);
-	WRITE("Rounds", rounds);
-	WRITE("Abusive Communications", textAbuse);
-	WRITE("Griefing", griefing);
-	WRITE("Wall Hacking", wallhack);
-	WRITE("Aim Hacking", aimbot);
-	WRITE("Other Hacking", other);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Target"), target);
+	WRITE(xorstr_("Delay"), delay);
+	WRITE(xorstr_("Rounds"), rounds);
+	WRITE(xorstr_("Abusive Communications"), textAbuse);
+	WRITE(xorstr_("Griefing"), griefing);
+	WRITE(xorstr_("Wall Hacking"), wallhack);
+	WRITE(xorstr_("Aim Hacking"), aimbot);
+	WRITE(xorstr_("Other Hacking"), other);
 }
 
 static void to_json(json& j, const Config::LegitAntiAimConfig& o, const Config::LegitAntiAimConfig& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Extend", extend);
-	WRITE("Invert key", invert);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Extend"), extend);
+	WRITE(xorstr_("Invert key"), invert);
 }
 
 static void to_json(json& j, const Config::RageAntiAimConfig& o, const Config::RageAntiAimConfig& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Pitch", pitch);
-	WRITE_ENUM("Yaw base", yawBase);
-	WRITE("Yaw modifier", yawModifier);
-	WRITE("Paranoia min", paranoiaMin);
-	WRITE("Paranoia max", paranoiaMax);
-	WRITE("Yaw add", yawAdd);
-	WRITE("Jitter Range", jitterRange);
-	WRITE("Spin base", spinBase);
-	WRITE("At targets", atTargets);
-	WRITE("Roll", roll);
-	WRITE("Roll add", rollAdd);
-	WRITE("Roll offset", rollOffset);
-	WRITE("Roll pitch", rollPitch);
-	WRITE("Exploit pitch switch", exploitPitchSwitch);
-	WRITE("Exploit pitch", exploitPitch);
-	WRITE("Roll alt", rollAlt);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Pitch"), pitch);
+	WRITE_ENUM(xorstr_("Yaw base"), yawBase);
+	WRITE(xorstr_("Yaw modifier"), yawModifier);
+	WRITE(xorstr_("Paranoia min"), paranoiaMin);
+	WRITE(xorstr_("Paranoia max"), paranoiaMax);
+	WRITE(xorstr_("Yaw add"), yawAdd);
+	WRITE(xorstr_("Jitter Range"), jitterRange);
+	WRITE(xorstr_("Spin base"), spinBase);
+	WRITE(xorstr_("At targets"), atTargets);
+	WRITE(xorstr_("Roll"), roll);
+	WRITE(xorstr_("Roll add"), rollAdd);
+	WRITE(xorstr_("Roll offset"), rollOffset);
+	WRITE(xorstr_("Roll pitch"), rollPitch);
+	WRITE(xorstr_("Exploit pitch switch"), exploitPitchSwitch);
+	WRITE(xorstr_("Exploit pitch"), exploitPitch);
+	WRITE(xorstr_("Roll alt"), rollAlt);
 }
 
 static void to_json(json& j, const Config::FakeAngle& o, const Config::FakeAngle& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Left limit", leftLimit);
-	WRITE("Right limit", rightLimit);
-	WRITE("Peek mode", peekMode);
-	WRITE("Lby mode", lbyMode);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Left limit"), leftLimit);
+	WRITE(xorstr_("Right limit"), rightLimit);
+	WRITE(xorstr_("Peek mode"), peekMode);
+	WRITE(xorstr_("Lby mode"), lbyMode);
 }
 
 static void to_json(json& j, const Config::Fakelag& o, const Config::Fakelag& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Mode", mode);
-	WRITE("Limit", limit);
-	WRITE("Random min limit", randomMinLimit);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Mode"), mode);
+	WRITE(xorstr_("Limit"), limit);
+	WRITE(xorstr_("Random min limit"), randomMinLimit);
 }
 
 static void to_json(json& j, const Config::Tickbase& o, const Config::Tickbase& dummy = {})
 {
-	WRITE("Doubletap", doubletap);
-	WRITE("Hideshots", hideshots);
-	WRITE("Teleport", teleport);
-	WRITE("OnshotFl", onshotFl);
-	WRITE("OnshotFl amount", onshotFlAmount);
-	WRITE("Onshot desync", onshotDesync);
+	WRITE(xorstr_("Doubletap"), doubletap);
+	WRITE(xorstr_("Hideshots"), hideshots);
+	WRITE(xorstr_("Teleport"), teleport);
+	WRITE(xorstr_("OnshotFl"), onshotFl);
+	WRITE(xorstr_("OnshotFl amount"), onshotFlAmount);
+	WRITE(xorstr_("Onshot desync"), onshotDesync);
 }
 
 static void to_json(json& j, const Config::Backtrack& o, const Config::Backtrack& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Ignore smoke", ignoreSmoke);
-	WRITE("Ignore flash", ignoreFlash);
-	WRITE("Time limit", timeLimit);
-	WRITE("Fake Latency", fakeLatency);
-	WRITE("Fake Latency Amount", fakeLatencyAmount);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Ignore smoke"), ignoreSmoke);
+	WRITE(xorstr_("Ignore flash"), ignoreFlash);
+	WRITE(xorstr_("Time limit"), timeLimit);
+	WRITE(xorstr_("Fake Latency"), fakeLatency);
+	WRITE(xorstr_("Fake Latency Amount"), fakeLatencyAmount);
 }
 
 static void to_json(json& j, const PurchaseList& o, const PurchaseList& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Only During Freeze Time", onlyDuringFreezeTime);
-	WRITE("Show Prices", showPrices);
-	WRITE("No Title Bar", noTitleBar);
-	WRITE("Mode", mode);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Only During Freeze Time"), onlyDuringFreezeTime);
+	WRITE(xorstr_("Show Prices"), showPrices);
+	WRITE(xorstr_("No Title Bar"), noTitleBar);
+	WRITE(xorstr_("Mode"), mode);
 
-	if (const auto window = ImGui::FindWindowByName("Purchases")) {
-		j["Pos"] = window->Pos;
+	if (const auto window = ImGui::FindWindowByName(xorstr_("Purchases"))) {
+		j[xorstr_("Pos")] = window->Pos;
 	}
 }
 
 static void to_json(json& j, const Config::Misc::SpectatorList& o, const Config::Misc::SpectatorList& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("No Title Bar", noTitleBar);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("No Title Bar"), noTitleBar);
 
-	if (const auto window = ImGui::FindWindowByName("Spectator list")) {
-		j["Pos"] = window->Pos;
+	if (const auto window = ImGui::FindWindowByName(xorstr_("Spectator list"))) {
+		j[xorstr_("Pos")] = window->Pos;
 	}
 }
 
 static void to_json(json& j, const Config::Misc::KeyBindList& o, const Config::Misc::KeyBindList& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("No Title Bar", noTitleBar);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("No Title Bar"), noTitleBar);
 
-	if (const auto window = ImGui::FindWindowByName("Keybind list")) {
-		j["Pos"] = window->Pos;
+	if (const auto window = ImGui::FindWindowByName(xorstr_("Keybind list"))) {
+		j[xorstr_("Pos")] = window->Pos;
 	}
 }
 
 static void to_json(json& j, const Config::Misc::PlayerList& o, const Config::Misc::PlayerList& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Steam ID", steamID);
-	WRITE("Rank", rank);
-	WRITE("Wins", wins);
-	WRITE("Money", money);
-	WRITE("Health", health);
-	WRITE("Armor", armor);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Steam ID"), steamID);
+	WRITE(xorstr_("Rank"), rank);
+	WRITE(xorstr_("Wins"), wins);
+	WRITE(xorstr_("Money"), money);
+	WRITE(xorstr_("Health"), health);
+	WRITE(xorstr_("Armor"), armor);
 
-	if (const auto window = ImGui::FindWindowByName("Player List")) {
-		j["Pos"] = window->Pos;
+	if (const auto window = ImGui::FindWindowByName(xorstr_("Player List"))) {
+		j[xorstr_("Pos")] = window->Pos;
 	}
 }
 
 static void to_json(json& j, const Config::Misc::JumpStats& o, const Config::Misc::JumpStats& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Show fails", showFails);
-	WRITE("Show color on fail", showColorOnFail);
-	WRITE("Simplify naming", simplifyNaming);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Show fails"), showFails);
+	WRITE(xorstr_("Show color on fail"), showColorOnFail);
+	WRITE(xorstr_("Simplify naming"), simplifyNaming);
 }
 
 static void to_json(json& j, const Config::Misc::Velocity& o, const Config::Misc::Velocity& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Position", position);
-	WRITE("Alpha", alpha);
-	WRITE("Color", color);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Position"), position);
+	WRITE(xorstr_("Alpha"), alpha);
+	WRITE(xorstr_("Color"), color);
 }
 
 static void to_json(json& j, const Config::Misc::KeyBoardDisplay& o, const Config::Misc::KeyBoardDisplay& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Position", position);
-	WRITE("Show key Tiles", showKeyTiles);
-	WRITE("Color", color);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Position"), position);
+	WRITE(xorstr_("Show key Tiles"), showKeyTiles);
+	WRITE(xorstr_("Color"), color);
 }
 
 static void to_json(json& j, const Config::Misc::Watermark& o, const Config::Misc::Watermark& dummy = {})
 {
-	WRITE("Enabled", enabled);
+	WRITE(xorstr_("Enabled"), enabled);
 
-	if (const auto window = ImGui::FindWindowByName("Watermark")) {
-		j["Pos"] = window->Pos;
+	if (const auto window = ImGui::FindWindowByName(xorstr_("Watermark"))) {
+		j[xorstr_("Pos")] = window->Pos;
 	}
 }
 
 static void to_json(json& j, const PreserveKillfeed& o, const PreserveKillfeed& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Only Headshots", onlyHeadshots);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Only Headshots"), onlyHeadshots);
 }
 
 static void to_json(json& j, const KillfeedChanger& o, const KillfeedChanger& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Headshot", headshot);
-	WRITE("Dominated", dominated);
-	WRITE("Revenge", revenge);
-	WRITE("Penetrated", penetrated);
-	WRITE("Noscope", noscope);
-	WRITE("Thrusmoke", thrusmoke);
-	WRITE("Attackerblind", attackerblind);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Headshot"), headshot);
+	WRITE(xorstr_("Dominated"), dominated);
+	WRITE(xorstr_("Revenge"), revenge);
+	WRITE(xorstr_("Penetrated"), penetrated);
+	WRITE(xorstr_("Noscope"), noscope);
+	WRITE(xorstr_("Thrusmoke"), thrusmoke);
+	WRITE(xorstr_("Attackerblind"), attackerblind);
 }
 
 static void to_json(json& j, const AutoBuy& o, const AutoBuy& dummy = {})
 {
-	WRITE("Enabled", enabled);
-	WRITE("Primary weapon", primaryWeapon);
-	WRITE("Secondary weapon", secondaryWeapon);
-	WRITE("Armor", armor);
-	WRITE("Utility", utility);
-	WRITE("Grenades", grenades);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Primary weapon"), primaryWeapon);
+	WRITE(xorstr_("Secondary weapon"), secondaryWeapon);
+	WRITE(xorstr_("Armor"), armor);
+	WRITE(xorstr_("Utility"), utility);
+	WRITE(xorstr_("Grenades"), grenades);
 }
 
 static void to_json(json& j, const Config::Misc::Logger& o, const Config::Misc::Logger& dummy = {})
 {
-	WRITE("Modes", modes);
-	WRITE("Events", events);
+	WRITE(xorstr_("Modes"), modes);
+	WRITE(xorstr_("Events"), events);
 }
 
 static void to_json(json& j, const Config::Visuals::FootstepESP& o, const Config::Visuals::FootstepESP& dummy)
 {
-	WRITE("Enabled", footstepBeams);
-	WRITE("Thickness", footstepBeamThickness);
-	WRITE("Radius", footstepBeamRadius);
+	WRITE(xorstr_("Enabled"), footstepBeams);
+	WRITE(xorstr_("Thickness"), footstepBeamThickness);
+	WRITE(xorstr_("Radius"), footstepBeamRadius);
 }
 
 static void to_json(json& j, const Config::Visuals::MotionBlur& o, const Config::Visuals::MotionBlur& dummy)
 {
-	WRITE("Enabled", enabled);
-	WRITE("Forward", forwardEnabled);
-	WRITE("Falling min", fallingMin);
-	WRITE("Falling max", fallingMax);
-	WRITE("Falling intensity", fallingIntensity);
-	WRITE("Rotation intensity", rotationIntensity);
-	WRITE("Strength", strength);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Forward"), forwardEnabled);
+	WRITE(xorstr_("Falling min"), fallingMin);
+	WRITE(xorstr_("Falling max"), fallingMax);
+	WRITE(xorstr_("Falling intensity"), fallingIntensity);
+	WRITE(xorstr_("Rotation intensity"), rotationIntensity);
+	WRITE(xorstr_("Strength"), strength);
 }
 
 static void to_json(json& j, const Config::Visuals::Fog& o, const Config::Visuals::Fog& dummy)
 {
-	WRITE("Start", start);
-	WRITE("End", end);
-	WRITE("Density", density);
+	WRITE(xorstr_("Start"), start);
+	WRITE(xorstr_("End"), end);
+	WRITE(xorstr_("Density"), density);
 }
 
 static void to_json(json& j, const Config::Visuals::ShadowsChanger& o, const Config::Visuals::ShadowsChanger& dummy)
 {
-	WRITE("Enabled", enabled);
-	WRITE("X", x);
-	WRITE("Y", y);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("X"), x);
+	WRITE(xorstr_("Y"), y);
 }
 
 static void to_json(json& j, const Config::Visuals::Viewmodel& o, const Config::Visuals::Viewmodel& dummy)
 {
-	WRITE("Enabled", enabled);
-	WRITE("Fov", fov);
-	WRITE("X", x);
-	WRITE("Y", y);
-	WRITE("Z", z);
-	WRITE("Roll", roll);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Fov"), fov);
+	WRITE(xorstr_("X"), x);
+	WRITE(xorstr_("Y"), y);
+	WRITE(xorstr_("Z"), z);
+	WRITE(xorstr_("Roll"), roll);
 }
 
 static void to_json(json& j, const Config::Visuals::MolotovPolygon& o, const Config::Visuals::MolotovPolygon& dummy)
 {
-	WRITE("Enabled", enabled);
-	WRITE("Self", self);
-	WRITE("Team", team);
-	WRITE("Enemy", enemy);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Self"), self);
+	WRITE(xorstr_("Team"), team);
+	WRITE(xorstr_("Enemy"), enemy);
 }
 
 static void to_json(json& j, const Config::Visuals::OnHitHitbox& o, const Config::Visuals::OnHitHitbox& dummy)
 {
-	WRITE("Color", color);
-	WRITE("Duration", duration);
+	WRITE(xorstr_("Color"), color);
+	WRITE(xorstr_("Duration"), duration);
 }
 
 static void to_json(json& j, const Config::Misc& o)
 {
 	const Config::Misc dummy;
 
-	WRITE("Menu key", menuKey);
-	WRITE("Anti AFK kick", antiAfkKick);
-	WRITE("Adblock", adBlock);
-	WRITE("Force relay", forceRelayCluster);
-	WRITE("Auto strafe", autoStrafe);
-	WRITE("Bunny hop", bunnyHop);
-	WRITE("Custom clan tag", customClanTag);
+	WRITE(xorstr_("Menu key"), menuKey);
+	WRITE(xorstr_("Anti AFK kick"), antiAfkKick);
+	WRITE(xorstr_("Adblock"), adBlock);
+	WRITE(xorstr_("Force relay"), forceRelayCluster);
+	WRITE(xorstr_("Auto strafe"), autoStrafe);
+	WRITE(xorstr_("Bunny hop"), bunnyHop);
+	WRITE(xorstr_("Custom clan tag"), customClanTag);
 
 	if (o.clanTag[0])
-		j["Clan tag"] = o.clanTag;
+		j[xorstr_("Clan tag")] = o.clanTag;
 
 
-	WRITE("Clan tag type", tagType);
-	WRITE("Clan tag update interval", tagUpdateInterval);
-	WRITE("Clan tag animation steps", tagAnimationSteps);
-	WRITE("Fast duck", fastDuck);
-	WRITE("Moonwalk", moonwalk);
-	WRITE("Leg break", leg_break);
-	WRITE("Knifebot", knifeBot);
-	WRITE("Knifebot mode", knifeBotMode);
-	WRITE("Block bot", blockBot);
-	WRITE("Block bot Key", blockBotKey);
-	WRITE("Edge Jump", edgeJump);
-	WRITE("Edge Jump Key", edgeJumpKey);
-	WRITE("Mini Jump", miniJump);
-	WRITE("Mini Jump Crouch lock", miniJumpCrouchLock);
-	WRITE("Mini Jump Key", miniJumpKey);
-	WRITE("Jump Bug", jumpBug);
-	WRITE("Jump Bug Key", jumpBugKey);
-	WRITE("Edge Bug", edgeBug);
-	WRITE("Edge Bug Key", edgeBugKey);
-	WRITE("Pred Amnt", edgeBugPredAmnt);
-	WRITE("Auto pixel surf", autoPixelSurf);
-	WRITE("Auto pixel surf Pred Amnt", autoPixelSurfPredAmnt);
-	WRITE("Auto pixel surf Key", autoPixelSurfKey);
-	WRITE("Velocity", velocity);
-	WRITE("Keyboard display", keyBoardDisplay);
-	WRITE("Slowwalk", slowwalk);
-	WRITE("Slowwalk key", slowwalkKey);
-	WRITE("Slowwalk Amnt", slowwalkAmnt);
-	WRITE("Fake duck", fakeduck);
-	WRITE("Fake duck key", fakeduckKey);
-	WRITE("Auto peek", autoPeek);
-	WRITE("Auto peek key", autoPeekKey);
-	WRITE("Noscope crosshair", noscopeCrosshair);
-	WRITE("Recoil crosshair", recoilCrosshair);
-	WRITE("Auto pistol", autoPistol);
-	WRITE("Auto reload", autoReload);
-	WRITE("Auto accept", autoAccept);
-	WRITE("Radar hack", radarHack);
-	WRITE("Reveal ranks", revealRanks);
-	WRITE("Reveal money", revealMoney);
-	WRITE("Reveal suspect", revealSuspect);
-	WRITE("Reveal votes", revealVotes);
-	WRITE("Spectator list", spectatorList);
-	WRITE("Keybind list", keybindList);
-	WRITE("Player list", playerList);
-	WRITE("Jump stats", jumpStats);
-	WRITE("Watermark", watermark);
-	WRITE("Offscreen Enemies", offscreenEnemies);
-	WRITE("Disable model occlusion", disableModelOcclusion);
-	WRITE("Aspect Ratio", aspectratio);
-	WRITE("Kill message", killMessage);
-	WRITE("Kill message string", killMessages);
-	WRITE("Name stealer", nameStealer);
-	WRITE("Disable HUD blur", disablePanoramablur);
-	WRITE("Fast plant", fastPlant);
-	WRITE("Fast Stop", fastStop);
-	WRITE("Bomb timer", bombTimer);
-	WRITE("Hurt indicator", hurtIndicator);
-	WRITE("Yaw indicator", yawIndicator);
-	WRITE("Prepare revolver", prepareRevolver);
-	WRITE("Prepare revolver key", prepareRevolverKey);
-	WRITE("Hit sound", hitSound);
-	WRITE("Quick healthshot key", quickHealthshotKey);
-	WRITE("Grenade predict", nadePredict);
-	WRITE("Grenade predict Damage", nadeDamagePredict);
-	WRITE("Grenade predict Trail", nadeTrailPredict);
-	WRITE("Grenade predict Circle", nadeCirclePredict);
-	WRITE("Max angle delta", maxAngleDelta);
-	WRITE("Fix tablet signal", fixTabletSignal);
-	WRITE("Custom Hit Sound", customHitSound);
-	WRITE("Kill sound", killSound);
-	WRITE("Custom Kill Sound", customKillSound);
-	WRITE("Purchase List", purchaseList);
-	WRITE("Reportbot", reportbot);
-	WRITE("Opposite Hand Knife", oppositeHandKnife);
-	WRITE("Preserve Killfeed", preserveKillfeed);
-	WRITE("Killfeed changer", killfeedChanger);
-	WRITE("Sv pure bypass", svPureBypass);
-	WRITE("Inventory Unlocker", inventoryUnlocker);
-	WRITE("Unlock hidden cvars", unhideConvars);
-	WRITE("Autobuy", autoBuy);
-	WRITE("Logger", logger);
-	WRITE("Logger options", loggerOptions);
-	WRITE("Custom clantag", customClanTag);
-	WRITE("Custom name", customName);
+	WRITE(xorstr_("Clan tag type"), tagType);
+	WRITE(xorstr_("Clan tag update interval"), tagUpdateInterval);
+	WRITE(xorstr_("Clan tag animation steps"), tagAnimationSteps);
+	WRITE(xorstr_("Fast duck"), fastDuck);
+	WRITE(xorstr_("Moonwalk"), moonwalk);
+	WRITE(xorstr_("Leg break"), leg_break);
+	WRITE(xorstr_("Knifebot"), knifeBot);
+	WRITE(xorstr_("Knifebot mode"), knifeBotMode);
+	WRITE(xorstr_("Block bot"), blockBot);
+	WRITE(xorstr_("Block bot Key"), blockBotKey);
+	WRITE(xorstr_("Edge Jump"), edgeJump);
+	WRITE(xorstr_("Edge Jump Key"), edgeJumpKey);
+	WRITE(xorstr_("Mini Jump"), miniJump);
+	WRITE(xorstr_("Mini Jump Crouch lock"), miniJumpCrouchLock);
+	WRITE(xorstr_("Mini Jump Key"), miniJumpKey);
+	WRITE(xorstr_("Jump Bug"), jumpBug);
+	WRITE(xorstr_("Jump Bug Key"), jumpBugKey);
+	WRITE(xorstr_("Edge Bug"), edgeBug);
+	WRITE(xorstr_("Edge Bug Key"), edgeBugKey);
+	WRITE(xorstr_("Pred Amnt"), edgeBugPredAmnt);
+	WRITE(xorstr_("Auto pixel surf"), autoPixelSurf);
+	WRITE(xorstr_("Auto pixel surf Pred Amnt"), autoPixelSurfPredAmnt);
+	WRITE(xorstr_("Auto pixel surf Key"), autoPixelSurfKey);
+	WRITE(xorstr_("Velocity"), velocity);
+	WRITE(xorstr_("Keyboard display"), keyBoardDisplay);
+	WRITE(xorstr_("Slowwalk"), slowwalk);
+	WRITE(xorstr_("Slowwalk key"), slowwalkKey);
+	WRITE(xorstr_("Slowwalk Amnt"), slowwalkAmnt);
+	WRITE(xorstr_("Fake duck"), fakeduck);
+	WRITE(xorstr_("Fake duck key"), fakeduckKey);
+	WRITE(xorstr_("Auto peek"), autoPeek);
+	WRITE(xorstr_("Auto peek key"), autoPeekKey);
+	WRITE(xorstr_("Noscope crosshair"), noscopeCrosshair);
+	WRITE(xorstr_("Recoil crosshair"), recoilCrosshair);
+	WRITE(xorstr_("Auto pistol"), autoPistol);
+	WRITE(xorstr_("Auto reload"), autoReload);
+	WRITE(xorstr_("Auto accept"), autoAccept);
+	WRITE(xorstr_("Radar hack"), radarHack);
+	WRITE(xorstr_("Reveal ranks"), revealRanks);
+	WRITE(xorstr_("Reveal money"), revealMoney);
+	WRITE(xorstr_("Reveal suspect"), revealSuspect);
+	WRITE(xorstr_("Reveal votes"), revealVotes);
+	WRITE(xorstr_("Spectator list"), spectatorList);
+	WRITE(xorstr_("Keybind list"), keybindList);
+	WRITE(xorstr_("Player list"), playerList);
+	WRITE(xorstr_("Jump stats"), jumpStats);
+	WRITE(xorstr_("Watermark"), watermark);
+	WRITE(xorstr_("Offscreen Enemies"), offscreenEnemies);
+	WRITE(xorstr_("Disable model occlusion"), disableModelOcclusion);
+	WRITE(xorstr_("Aspect Ratio"), aspectratio);
+	WRITE(xorstr_("Kill message"), killMessage);
+	WRITE(xorstr_("Kill message string"), killMessages);
+	WRITE(xorstr_("Name stealer"), nameStealer);
+	WRITE(xorstr_("Disable HUD blur"), disablePanoramablur);
+	WRITE(xorstr_("Fast plant"), fastPlant);
+	WRITE(xorstr_("Fast Stop"), fastStop);
+	WRITE(xorstr_("Bomb timer"), bombTimer);
+	WRITE(xorstr_("Hurt indicator"), hurtIndicator);
+	WRITE(xorstr_("Yaw indicator"), yawIndicator);
+	WRITE(xorstr_("Prepare revolver"), prepareRevolver);
+	WRITE(xorstr_("Prepare revolver key"), prepareRevolverKey);
+	WRITE(xorstr_("Hit sound"), hitSound);
+	WRITE(xorstr_("Quick healthshot key"), quickHealthshotKey);
+	WRITE(xorstr_("Grenade predict"), nadePredict);
+	WRITE(xorstr_("Grenade predict Damage"), nadeDamagePredict);
+	WRITE(xorstr_("Grenade predict Trail"), nadeTrailPredict);
+	WRITE(xorstr_("Grenade predict Circle"), nadeCirclePredict);
+	WRITE(xorstr_("Max angle delta"), maxAngleDelta);
+	WRITE(xorstr_("Fix tablet signal"), fixTabletSignal);
+	WRITE(xorstr_("Custom Hit Sound"), customHitSound);
+	WRITE(xorstr_("Kill sound"), killSound);
+	WRITE(xorstr_("Custom Kill Sound"), customKillSound);
+	WRITE(xorstr_("Purchase List"), purchaseList);
+	WRITE(xorstr_("Reportbot"), reportbot);
+	WRITE(xorstr_("Opposite Hand Knife"), oppositeHandKnife);
+	WRITE(xorstr_("Preserve Killfeed"), preserveKillfeed);
+	WRITE(xorstr_("Killfeed changer"), killfeedChanger);
+	WRITE(xorstr_("Sv pure bypass"), svPureBypass);
+	WRITE(xorstr_("Inventory Unlocker"), inventoryUnlocker);
+	WRITE(xorstr_("Unlock hidden cvars"), unhideConvars);
+	WRITE(xorstr_("Autobuy"), autoBuy);
+	WRITE(xorstr_("Logger"), logger);
+	WRITE(xorstr_("Logger options"), loggerOptions);
+	WRITE(xorstr_("Custom clantag"), customClanTag);
+	WRITE(xorstr_("Custom name"), customName);
 
 	if (o.clanTag[0])
-		j["Name"] = o.name;
+		j[xorstr_("Name")] = o.name;
 }
 
 static void to_json(json& j, const Config::Visuals& o)
 {
 	const Config::Visuals dummy;
 
-	WRITE("Disable post-processing", disablePostProcessing);
-	WRITE("Inverse ragdoll gravity", inverseRagdollGravity);
-	WRITE("No fog", noFog);
-	WRITE("Fog controller", fog);
-	WRITE("Fog options", fogOptions);
-	WRITE("No 3d sky", no3dSky);
-	WRITE("No aim punch", noAimPunch);
-	WRITE("No view punch", noViewPunch);
-	WRITE("No view bob", noViewBob);
-	WRITE("No hands", noHands);
-	WRITE("No sleeves", noSleeves);
-	WRITE("No weapons", noWeapons);
-	WRITE("No smoke", noSmoke);
-	WRITE("Wireframe smoke", wireframeSmoke);
-	WRITE("No molotov", noMolotov);
-	WRITE("Wireframe molotov", wireframeMolotov);
-	WRITE("No blur", noBlur);
-	WRITE("No scope overlay", noScopeOverlay);
-	WRITE("No grass", noGrass);
-	WRITE("No shadows", noShadows);
-	WRITE("Shadows changer", shadowsChanger);
-	WRITE("Motion Blur", motionBlur);
-	WRITE("Full bright", fullBright);
-	WRITE("Zoom", zoom);
-	WRITE("Zoom key", zoomKey);
-	WRITE("Thirdperson", thirdperson);
-	WRITE("Thirdperson key", thirdpersonKey);
-	WRITE("Thirdperson distance", thirdpersonDistance);
-	WRITE("Freecam", freeCam);
-	WRITE("Freecam key", freeCamKey);
-	WRITE("Freecam speed", freeCamSpeed);
-	WRITE("Keep FOV", keepFov);
-	WRITE("FOV", fov);
-	WRITE("Far Z", farZ);
-	WRITE("Flash reduction", flashReduction);
-	WRITE("Glow thickness", glowOutlineWidth);
-	WRITE("Skybox", skybox);
-	WRITE("World", world);
-	WRITE("Props", props);
-	WRITE("Sky", sky);
-	WRITE("Custom skybox", customSkybox);
-	WRITE("Deagle spinner", deagleSpinner);
-	WRITE("Footstep ESP", footsteps);
-	WRITE("Screen effect", screenEffect);
-	WRITE("Hit effect", hitEffect);
-	WRITE("Hit effect time", hitEffectTime);
-	WRITE("Hit marker", hitMarker);
-	WRITE("Hit marker time", hitMarkerTime);
-	WRITE("Playermodel T", playerModelT);
-	WRITE("Playermodel CT", playerModelCT);
+	WRITE(xorstr_("Disable post-processing"), disablePostProcessing);
+	WRITE(xorstr_("Inverse ragdoll gravity"), inverseRagdollGravity);
+	WRITE(xorstr_("No fog"), noFog);
+	WRITE(xorstr_("Fog controller"), fog);
+	WRITE(xorstr_("Fog options"), fogOptions);
+	WRITE(xorstr_("No 3d sky"), no3dSky);
+	WRITE(xorstr_("No aim punch"), noAimPunch);
+	WRITE(xorstr_("No view punch"), noViewPunch);
+	WRITE(xorstr_("No view bob"), noViewBob);
+	WRITE(xorstr_("No hands"), noHands);
+	WRITE(xorstr_("No sleeves"), noSleeves);
+	WRITE(xorstr_("No weapons"), noWeapons);
+	WRITE(xorstr_("No smoke"), noSmoke);
+	WRITE(xorstr_("Wireframe smoke"), wireframeSmoke);
+	WRITE(xorstr_("No molotov"), noMolotov);
+	WRITE(xorstr_("Wireframe molotov"), wireframeMolotov);
+	WRITE(xorstr_("No blur"), noBlur);
+	WRITE(xorstr_("No scope overlay"), noScopeOverlay);
+	WRITE(xorstr_("No grass"), noGrass);
+	WRITE(xorstr_("No shadows"), noShadows);
+	WRITE(xorstr_("Shadows changer"), shadowsChanger);
+	WRITE(xorstr_("Motion Blur"), motionBlur);
+	WRITE(xorstr_("Full bright"), fullBright);
+	WRITE(xorstr_("Zoom"), zoom);
+	WRITE(xorstr_("Zoom key"), zoomKey);
+	WRITE(xorstr_("Thirdperson"), thirdperson);
+	WRITE(xorstr_("Thirdperson key"), thirdpersonKey);
+	WRITE(xorstr_("Thirdperson distance"), thirdpersonDistance);
+	WRITE(xorstr_("Freecam"), freeCam);
+	WRITE(xorstr_("Freecam key"), freeCamKey);
+	WRITE(xorstr_("Freecam speed"), freeCamSpeed);
+	WRITE(xorstr_("Keep FOV"), keepFov);
+	WRITE(xorstr_("FOV"), fov);
+	WRITE(xorstr_("Far Z"), farZ);
+	WRITE(xorstr_("Flash reduction"), flashReduction);
+	WRITE(xorstr_("Glow thickness"), glowOutlineWidth);
+	WRITE(xorstr_("Skybox"), skybox);
+	WRITE(xorstr_("World"), world);
+	WRITE(xorstr_("Props"), props);
+	WRITE(xorstr_("Sky"), sky);
+	WRITE(xorstr_("Custom skybox"), customSkybox);
+	WRITE(xorstr_("Deagle spinner"), deagleSpinner);
+	WRITE(xorstr_("Footstep ESP"), footsteps);
+	WRITE(xorstr_("Screen effect"), screenEffect);
+	WRITE(xorstr_("Hit effect"), hitEffect);
+	WRITE(xorstr_("Hit effect time"), hitEffectTime);
+	WRITE(xorstr_("Hit marker"), hitMarker);
+	WRITE(xorstr_("Hit marker time"), hitMarkerTime);
+	WRITE(xorstr_("Playermodel T"), playerModelT);
+	WRITE(xorstr_("Playermodel CT"), playerModelCT);
 	if (o.playerModel[0])
-		j["Custom Playermodel"] = o.playerModel;
-	WRITE("Disable jiggle bones", disableJiggleBones);
-	WRITE("Bullet Tracers", bulletTracers);
-	WRITE("Bullet Impacts", bulletImpacts);
-	WRITE("Hitbox on Hit", onHitHitbox);
-	WRITE("Bullet Impacts time", bulletImpactsTime);
-	WRITE("Molotov Hull", molotovHull);
-	WRITE("Smoke Hull", smokeHull);
-	WRITE("Molotov Polygon", molotovPolygon);
-	WRITE("Viewmodel", viewModel);
-	WRITE("Spread circle", spreadCircle);
-	WRITE("Asus walls", asusWalls);
-	WRITE("Asus props", asusProps);
-	WRITE("Smoke timer", smokeTimer);
-	WRITE("Smoke timer BG", smokeTimerBG);
-	WRITE("Smoke timer TIMER", smokeTimerTimer);
-	WRITE("Smoke timer TEXT", smokeTimerText);
-	WRITE("Molotov timer", molotovTimer);
-	WRITE("Molotov timer BG", molotovTimerBG);
-	WRITE("Molotov timer TIMER", molotovTimerTimer);
-	WRITE("Molotov timer TEXT", molotovTimerText);
-	WRITE("Footstep", footsteps);
+		j[xorstr_("Custom Playermodel")] = o.playerModel;
+	WRITE(xorstr_("Disable jiggle bones"), disableJiggleBones);
+	WRITE(xorstr_("Bullet Tracers"), bulletTracers);
+	WRITE(xorstr_("Bullet Impacts"), bulletImpacts);
+	WRITE(xorstr_("Hitbox on Hit"), onHitHitbox);
+	WRITE(xorstr_("Bullet Impacts time"), bulletImpactsTime);
+	WRITE(xorstr_("Molotov Hull"), molotovHull);
+	WRITE(xorstr_("Smoke Hull"), smokeHull);
+	WRITE(xorstr_("Molotov Polygon"), molotovPolygon);
+	WRITE(xorstr_("Viewmodel"), viewModel);
+	WRITE(xorstr_("Spread circle"), spreadCircle);
+	WRITE(xorstr_("Asus walls"), asusWalls);
+	WRITE(xorstr_("Asus props"), asusProps);
+	WRITE(xorstr_("Smoke timer"), smokeTimer);
+	WRITE(xorstr_("Smoke timer BG"), smokeTimerBG);
+	WRITE(xorstr_("Smoke timer TIMER"), smokeTimerTimer);
+	WRITE(xorstr_("Smoke timer TEXT"), smokeTimerText);
+	WRITE(xorstr_("Molotov timer"), molotovTimer);
+	WRITE(xorstr_("Molotov timer BG"), molotovTimerBG);
+	WRITE(xorstr_("Molotov timer TIMER"), molotovTimerTimer);
+	WRITE(xorstr_("Molotov timer TEXT"), molotovTimerText);
+	WRITE(xorstr_("Footstep"), footsteps);
 }
 
 static void to_json(json& j, const ImVec4& o)
@@ -1554,27 +1554,27 @@ static void to_json(json& j, const sticker_setting& o)
 {
 	const sticker_setting dummy;
 
-	WRITE("Kit", kit);
-	WRITE("Wear", wear);
-	WRITE("Scale", scale);
-	WRITE("Rotation", rotation);
+	WRITE(xorstr_("Kit"), kit);
+	WRITE(xorstr_("Wear"), wear);
+	WRITE(xorstr_("Scale"), scale);
+	WRITE(xorstr_("Rotation"), rotation);
 }
 
 static void to_json(json& j, const item_setting& o)
 {
 	const item_setting dummy;
 
-	WRITE("Enabled", enabled);
-	WRITE("Definition index", itemId);
-	WRITE("Quality", quality);
-	WRITE("Paint Kit", paintKit);
-	WRITE("Definition override", definition_override_index);
-	WRITE("Seed", seed);
-	WRITE("StatTrak", stat_trak);
-	WRITE("Wear", wear);
+	WRITE(xorstr_("Enabled"), enabled);
+	WRITE(xorstr_("Definition index"), itemId);
+	WRITE(xorstr_("Quality"), quality);
+	WRITE(xorstr_("Paint Kit"), paintKit);
+	WRITE(xorstr_("Definition override"), definition_override_index);
+	WRITE(xorstr_("Seed"), seed);
+	WRITE(xorstr_("StatTrak"), stat_trak);
+	WRITE(xorstr_("Wear"), wear);
 	if (o.custom_name[0])
-		j["Custom name"] = o.custom_name;
-	WRITE("Stickers", stickers);
+		j[xorstr_("Custom name")] = o.custom_name;
+	WRITE(xorstr_("Stickers"), stickers);
 }
 
 #pragma endregion
@@ -1599,45 +1599,45 @@ void Config::save(size_t id) const noexcept
 	if (std::ofstream out{ path / (const char8_t*)configs[id].c_str() }; out.good()) {
 		json j;
 
-		j["Legitbot"] = legitbot;
-		to_json(j["Legitbot Key"], legitbotKey, KeyBind::NONE);
-		j["Draw legitbot fov"] = legitbotFov;
+		j[xorstr_("Legitbot")] = legitbot;
+		to_json(j[xorstr_("Legitbot Key")], legitbotKey, KeyBind::NONE);
+		j[xorstr_("Draw legitbot fov")] = legitbotFov;
 
-		j["RCS"] = recoilControlSystem;
-		j["Optimizations"] = optimizations;
+		j[xorstr_("RCS")] = recoilControlSystem;
+		j[xorstr_("Optimizations")] = optimizations;
 
-		j["Ragebot"] = ragebot;
-		to_json(j["Ragebot Key"], ragebotKey, KeyBind::NONE);
-		to_json(j["Min damage override Key"], minDamageOverrideKey, KeyBind::NONE);
+		j[xorstr_("Ragebot")] = ragebot;
+		to_json(j[xorstr_("Ragebot Key")], ragebotKey, KeyBind::NONE);
+		to_json(j[xorstr_("Min damage override Key")], minDamageOverrideKey, KeyBind::NONE);
 
-		j["Triggerbot"] = triggerbot;
-		to_json(j["Triggerbot Key"], triggerbotKey, KeyBind::NONE);
+		j[xorstr_("Triggerbot")] = triggerbot;
+		to_json(j[xorstr_("Triggerbot Key")], triggerbotKey, KeyBind::NONE);
 
-		j["Legit Anti aim"] = legitAntiAim;
-		j["Rage Anti aim"] = rageAntiAim;
-		to_json(j["Manual forward Key"], manualForward, KeyBind::NONE);
-		to_json(j["Manual backward Key"], manualBackward, KeyBind::NONE);
-		to_json(j["Manual right Key"], manualRight, KeyBind::NONE);
-		to_json(j["Manual left Key"], manualLeft, KeyBind::NONE);
-		to_json(j["Auto direction Key"], autoDirection, KeyBind::NONE);
-		j["Disable in freezetime"] = disableInFreezetime;
-		j["Fake angle"] = fakeAngle;
-		to_json(j["Invert"], invert, KeyBind::NONE);
-		j["Fakelag"] = fakelag;
-		j["Tickbase"] = tickbase;
-		j["Backtrack"] = backtrack;
+		j[xorstr_("Legit Anti aim")] = legitAntiAim;
+		j[xorstr_("Rage Anti aim")] = rageAntiAim;
+		to_json(j[xorstr_("Manual forward Key")], manualForward, KeyBind::NONE);
+		to_json(j[xorstr_("Manual backward Key")], manualBackward, KeyBind::NONE);
+		to_json(j[xorstr_("Manual right Key")], manualRight, KeyBind::NONE);
+		to_json(j[xorstr_("Manual left Key")], manualLeft, KeyBind::NONE);
+		to_json(j[xorstr_("Auto direction Key")], autoDirection, KeyBind::NONE);
+		j[xorstr_("Disable in freezetime")] = disableInFreezetime;
+		j[xorstr_("Fake angle")] = fakeAngle;
+		to_json(j[xorstr_("Invert")], invert, KeyBind::NONE);
+		j[xorstr_("Fakelag")] = fakelag;
+		j[xorstr_("Tickbase")] = tickbase;
+		j[xorstr_("Backtrack")] = backtrack;
 
-		j["Glow"]["Items"] = glow;
-		j["Glow"]["Players"] = playerGlow;
-		to_json(j["Glow"]["Key"], glowKey, KeyBind::NONE);
+		j[xorstr_("Glow")][xorstr_("Items")] = glow;
+		j[xorstr_("Glow")][xorstr_("Players")] = playerGlow;
+		to_json(j[xorstr_("Glow")][xorstr_("Key")], glowKey, KeyBind::NONE);
 
-		j["Chams"] = chams;
-		to_json(j["Chams"]["Key"], chamsKey, KeyBind::NONE);
-		j["ESP"] = streamProofESP;
-		j["Sound"] = Sound::toJson();
-		j["Visuals"] = visuals;
-		j["Misc"] = misc;
-		j["Skin changer"] = skinChanger;
+		j[xorstr_("Chams")] = chams;
+		to_json(j[xorstr_("Chams")][xorstr_("Key")], chamsKey, KeyBind::NONE);
+		j[xorstr_("ESP")] = streamProofESP;
+		j[xorstr_("Sound")] = Sound::toJson();
+		j[xorstr_("Visuals")] = visuals;
+		j[xorstr_("Misc")] = misc;
+		j[xorstr_("Skin changer")] = skinChanger;
 
 		removeEmptyObjects(j);
 		out << std::setw(2) << j;
@@ -1708,7 +1708,7 @@ void Config::createConfigDir() const noexcept
 void Config::openConfigDir() const noexcept
 {
 	createConfigDir();
-	ShellExecuteW(nullptr, L"open", path.wstring().c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+	ShellExecuteW(nullptr, xorstr_(L"open"), path.wstring().c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 void Config::scheduleFontLoad(const std::string& name) noexcept
@@ -1753,8 +1753,8 @@ bool Config::loadScheduledFonts() noexcept
 	bool result = false;
 
 	for (const auto& fontName : scheduledFonts) {
-		if (fontName == "Default") {
-			if (fonts.find("Default") == fonts.cend()) {
+		if (fontName == xorstr_("Default")) {
+			if (fonts.find(xorstr_("Default")) == fonts.cend()) {
 				ImFontConfig cfg;
 				cfg.OversampleH = cfg.OversampleV = 1;
 				cfg.PixelSnapH = true;

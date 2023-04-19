@@ -26,6 +26,6 @@ public:
 	{
 		if (!materialOverride)
 			return overrideType == OverrideType::DepthWrite || overrideType == OverrideType::SsaoDepthWrite; // see CStudioRenderContext::IsForcedMaterialOverride
-		return std::string_view{ materialOverride->getName() }.starts_with("dev/glow");
+		return std::string_view{ materialOverride->getName() }.starts_with(xorstr_("dev/glow"));
 	}
 };

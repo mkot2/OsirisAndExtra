@@ -8,10 +8,10 @@ void ImGuiCustom::colorPicker(const char* name, float color[3], float* alpha, bo
 {
 	ImGui::PushID(name);
 	if (enable) {
-		ImGui::Checkbox("##check", enable);
+		ImGui::Checkbox(xorstr_("##check"), enable);
 		ImGui::SameLine(0.0f, 5.0f);
 	}
-	bool openPopup = ImGui::ColorButton("##btn", ImVec4{ color[0], color[1], color[2], alpha ? *alpha : 1.0f }, ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_AlphaPreview);
+	bool openPopup = ImGui::ColorButton(xorstr_("##btn"), ImVec4{ color[0], color[1], color[2], alpha ? *alpha : 1.0f }, ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_AlphaPreview);
 	if (ImGui::BeginDragDropTarget()) {
 		if (alpha) {
 			if (const auto payload = ImGui::AcceptDragDropPayload(IMGUI_PAYLOAD_TYPE_COLOR_3F)) {
@@ -32,46 +32,46 @@ void ImGuiCustom::colorPicker(const char* name, float color[3], float* alpha, bo
 	ImGui::TextUnformatted(name);
 
 	if (openPopup)
-		ImGui::OpenPopup("##popup");
+		ImGui::OpenPopup(xorstr_("##popup"));
 
-	if (ImGui::BeginPopup("##popup")) {
+	if (ImGui::BeginPopup(xorstr_("##popup"))) {
 		if (alpha) {
 			float col[]{ color[0], color[1], color[2], *alpha };
-			ImGui::ColorPicker4("##picker", col, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_AlphaPreview | ImGuiColorEditFlags_AlphaBar);
+			ImGui::ColorPicker4(xorstr_("##picker"), col, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_AlphaPreview | ImGuiColorEditFlags_AlphaBar);
 			color[0] = col[0];
 			color[1] = col[1];
 			color[2] = col[2];
 			*alpha = col[3];
 		} else {
-			ImGui::ColorPicker3("##picker", color, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoSidePreview);
+			ImGui::ColorPicker3(xorstr_("##picker"), color, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoSidePreview);
 		}
 
 		ImGui::SameLine();
 
 		if (rainbow || rainbowSpeed || thickness || rounding) {
 			ImGui::SameLine();
-			if (ImGui::BeginChild("##child", { 150.0f, 0.0f })) {
+			if (ImGui::BeginChild(xorstr_("##child"), { 150.0f, 0.0f })) {
 				if (rainbow)
-					ImGui::Checkbox("Rainbow", rainbow);
+					ImGui::Checkbox(xorstr_("Rainbow"), rainbow);
 				ImGui::PushItemWidth(150.0f);
 				if (rainbowSpeed)
-					ImGui::DragFloat("##speed", rainbowSpeed, 0.1f, -100.0f, 100.0f, "Speed %.1f");
+					ImGui::DragFloat(xorstr_("##speed"), rainbowSpeed, 0.1f, -100.0f, 100.0f, xorstr_("Speed %.1f"));
 
 				if (rounding || thickness)
 					ImGui::Separator();
 
 				if (rounding) {
-					ImGui::DragFloat("##rounding", rounding, 0.1f, 0.0f, 100.0f, "Corner %.1f");
+					ImGui::DragFloat(xorstr_("##rounding"), rounding, 0.1f, 0.0f, 100.0f, xorstr_("Corner %.1f"));
 					*rounding = std::max(*rounding, 0.0f);
 				}
 
 				if (thickness) {
-					ImGui::DragFloat("##thickness", thickness, 0.1f, 1.0f, 10.0f, "Thick %.2f");
+					ImGui::DragFloat(xorstr_("##thickness"), thickness, 0.1f, 1.0f, 10.0f, xorstr_("Thick %.2f"));
 					*thickness = std::max(*thickness, 1.0f);
 				}
 
 				if (outline)
-					ImGui::Checkbox("Outline", outline);
+					ImGui::Checkbox(xorstr_("Outline"), outline);
 
 				ImGui::PopItemWidth();
 			}
@@ -317,7 +317,7 @@ void ImGui::hotkey(const char* label, KeyBind& key, float samelineOffset, const 
 
 	if (GetActiveID() == id) {
 		PushStyleColor(ImGuiCol_Button, GetColorU32(ImGuiCol_ButtonActive));
-		Button("...", size);
+		Button(xorstr_("..."), size);
 		PopStyleColor();
 
 		GetCurrentContext()->ActiveIdAllowOverlap = true;
@@ -347,58 +347,58 @@ void ImGui::hotkey2(const char* label, KeyBind& key, float samelineOffset, const
 	} else {
 		if (key.keyMode == Always) {
 			PushStyleColor(ImGuiCol_Text, GetColorU32(ImGuiCol_TextDisabled));
-			ButtonEx("On", {}, ImGuiButtonFlags_Disabled);
+			ButtonEx(xorstr_("On"), {}, ImGuiButtonFlags_Disabled);
 			PopStyleColor();
 		} else if (key.keyMode == Off) {
 			PushStyleColor(ImGuiCol_Text, GetColorU32(ImGuiCol_TextDisabled));
-			ButtonEx("Off", {}, ImGuiButtonFlags_Disabled);
+			ButtonEx(xorstr_("Off"), {}, ImGuiButtonFlags_Disabled);
 			PopStyleColor();
 		} else if (key.isSet()) {
 			if (Button(key.toString(), size))
 				SetActiveID(id, GetCurrentWindow());
 		} else {
-			if (Button("Bind"))
+			if (Button(xorstr_("Bind")))
 				SetActiveID(id, GetCurrentWindow());
 		}
 
-		if (BeginPopup("##mode", ImGuiWindowFlags_AlwaysUseWindowPadding)) {
+		if (BeginPopup(xorstr_("##mode"), ImGuiWindowFlags_AlwaysUseWindowPadding)) {
 			bool selected = key.keyMode == Off;
-			Selectable("Off", &selected);
+			Selectable(xorstr_("Off"), &selected);
 			if (selected)
 				key.keyMode = Off;
 
 			selected = key.keyMode == Always;
-			Selectable("Always", &selected);
+			Selectable(xorstr_("Always"), &selected);
 			if (selected)
 				key.keyMode = Always;
 
 			selected = key.keyMode == Hold;
-			Selectable("Hold", &selected);
+			Selectable(xorstr_("Hold"), &selected);
 			if (selected)
 				key.keyMode = Hold;
 
 			selected = key.keyMode == Toggle;
-			Selectable("Toggle", &selected);
+			Selectable(xorstr_("Toggle"), &selected);
 			if (selected)
 				key.keyMode = Toggle;
 
-			if (Selectable("Unset"))
+			if (Selectable(xorstr_("Unset")))
 				key.reset();
 
 			EndPopup();
 		} else if (IsItemHovered()) {
-			SetTooltip("Right click for options");
+			SetTooltip(xorstr_("Right click for options"));
 
 			if (GetIO().MouseClicked[1])
-				OpenPopup("##mode");
+				OpenPopup(xorstr_("##mode"));
 		}
 	}
 
 	SameLine();
 
 	AlignTextToFramePadding();
-	if (std::strncmp(label, "##", 2))
-		TextUnformatted(label, std::strstr(label, "##"));
+	if (std::strncmp(label, xorstr_("##"), 2))
+		TextUnformatted(label, std::strstr(label, xorstr_("##")));
 	PopID();
 }
 

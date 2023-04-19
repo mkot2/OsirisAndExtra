@@ -247,6 +247,7 @@
     <ClInclude Include="SDK\WeaponId.h" />
     <ClInclude Include="SDK\WeaponData.h" />
     <ClInclude Include="SDK\WeaponSystem.h" />
+    <ClInclude Include="Security\xorstr.hpp" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Threading.h" />
@@ -266,7 +267,8 @@
     <CharacterSet>Unicode</CharacterSet>
     <SpectreMitigation>false</SpectreMitigation>
     <EnableASAN>true</EnableASAN>
-    <EnableFuzzer>true</EnableFuzzer>
+    <EnableFuzzer>
+    </EnableFuzzer>
     <EnableUnitySupport>true</EnableUnitySupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -297,7 +299,8 @@
     <IncludePath>$(ProjectDir)\freetype;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>
+    </LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>$(ProjectDir)\freetype;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
@@ -314,12 +317,11 @@
       <EnableEnhancedInstructionSet>
       </EnableEnhancedInstructionSet>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalOptions>/utf-8 /d2archSSE42 %(AdditionalOptions)</AdditionalOptions>
       <CallingConvention>VectorCall</CallingConvention>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <OpenMPSupport>true</OpenMPSupport>
       <StringPooling>true</StringPooling>
-      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointModel>Strict</FloatingPointModel>
       <IntelJCCErratum>true</IntelJCCErratum>
       <EnableModules>false</EnableModules>
       <FloatingPointExceptions>true</FloatingPointExceptions>
@@ -329,6 +331,8 @@
       <EnableParallelCodeGeneration>false</EnableParallelCodeGeneration>
       <ControlFlowGuard>Guard</ControlFlowGuard>
       <BuildStlModules>false</BuildStlModules>
+      <ForcedIncludeFiles>$(ProjectDir)\Security\xorstr.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalOptions>/utf-8 /d2archSSE42 /wd4172</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -361,7 +365,7 @@
       <EnableEnhancedInstructionSet>
       </EnableEnhancedInstructionSet>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <AdditionalOptions>/Gw /utf-8 /Ob3 /d2archSSE42 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /d2archSSE42 /wd4172 /Gw /Ob3</AdditionalOptions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ControlFlowGuard>false</ControlFlowGuard>
@@ -376,6 +380,8 @@
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <MinimalRebuild>false</MinimalRebuild>
       <BuildStlModules>false</BuildStlModules>
+      <ForcedIncludeFiles>$(ProjectDir)\Security\xorstr.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -384,9 +390,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>shell32.lib;ole32.lib</AdditionalDependencies>
       <EntryPointSymbol>DllEntryPoint</EntryPointSymbol>
-      <LinkStatus>false</LinkStatus>
+      <LinkStatus>
+      </LinkStatus>
       <LargeAddressAware>true</LargeAddressAware>
-      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

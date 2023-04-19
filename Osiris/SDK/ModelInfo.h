@@ -42,25 +42,25 @@ enum class Hitbox {
 
 inline const char* hitbox_text[]
 {
-	"Head",
-	"Neck",
-	"Pelvis",
-	"Belly",
-	"Thorax",
-	"Lower Chest",
-	"Upper Chest",
-	"Right Thigh",
-	"Left Thigh",
-	"Right Calf",
-	"Left Calf",
-	"Right Foot",
-	"Left Foot",
-	"Right Hand",
-	"Left Hand",
-	"Right Upper Arm",
-	"Right Forearm",
-	"Left Upper Arm",
-	"Left Forearm"
+	xorstr_("Head"),
+	xorstr_("Neck"),
+	xorstr_("Pelvis"),
+	xorstr_("Belly"),
+	xorstr_("Thorax"),
+	xorstr_("Lower Chest"),
+	xorstr_("Upper Chest"),
+	xorstr_("Right Thigh"),
+	xorstr_("Left Thigh"),
+	xorstr_("Right Calf"),
+	xorstr_("Left Calf"),
+	xorstr_("Right Foot"),
+	xorstr_("Left Foot"),
+	xorstr_("Right Hand"),
+	xorstr_("Left Hand"),
+	xorstr_("Right Upper Arm"),
+	xorstr_("Right Forearm"),
+	xorstr_("Left Upper Arm"),
+	xorstr_("Left Forearm")
 };
 
 enum Hitboxes {
