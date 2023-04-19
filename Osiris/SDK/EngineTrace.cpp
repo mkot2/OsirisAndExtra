@@ -2,11 +2,11 @@
 
 float HitGroup::getDamageMultiplier(int hitGroup, const WeaponInfo* weaponData, bool hasHeavyArmor, int teamNumber) noexcept
 {
-	static auto mp_damage_scale_ct_head = interfaces->cvar->findVar(xorstr_("mp_damage_scale_ct_head"));
-	static auto mp_damage_scale_t_head = interfaces->cvar->findVar(xorstr_("mp_damage_scale_t_head"));
+	static auto mp_damage_scale_ct_head = interfaces->cvar->findVar("mp_damage_scale_ct_head");
+	static auto mp_damage_scale_t_head = interfaces->cvar->findVar("mp_damage_scale_t_head");
 
-	static auto mp_damage_scale_ct_body = interfaces->cvar->findVar(xorstr_("mp_damage_scale_ct_body"));
-	static auto mp_damage_scale_t_body = interfaces->cvar->findVar(xorstr_("mp_damage_scale_t_body"));
+	static auto mp_damage_scale_ct_body = interfaces->cvar->findVar("mp_damage_scale_ct_body");
+	static auto mp_damage_scale_t_body = interfaces->cvar->findVar("mp_damage_scale_t_body");
 
 	auto headScale = teamNumber == 3 ? mp_damage_scale_ct_head->getFloat() : mp_damage_scale_t_head->getFloat();
 	const auto bodyScale = teamNumber == 3 ? mp_damage_scale_ct_body->getFloat() : mp_damage_scale_t_body->getFloat();

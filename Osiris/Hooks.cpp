@@ -339,10 +339,10 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 
 		// Delta fix
 		// https://github.com/LWSS/Fuzion/blob/8f045699707487d3aa79d16b2439788dafd15551/src/Hacks/aimbot.cpp#L730
-		static auto mouseSensitivity = interfaces->cvar->findVar(xorstr_("sensitivity"));
-		static auto mouseYaw = interfaces->cvar->findVar(xorstr_("m_yaw"));
-		static auto mousePitch = interfaces->cvar->findVar(xorstr_("m_pitch"));
-		static auto zoomModifier = interfaces->cvar->findVar(xorstr_("zoom_sensitivity_ratio_mouse"));
+		static auto mouseSensitivity = interfaces->cvar->findVar("sensitivity");
+		static auto mouseYaw = interfaces->cvar->findVar("m_yaw");
+		static auto mousePitch = interfaces->cvar->findVar("m_pitch");
+		static auto zoomModifier = interfaces->cvar->findVar("zoom_sensitivity_ratio_mouse");
 		cmd->mousedx = static_cast<short>(previousViewAngles.y - viewAnglesDelta.y / (mouseYaw->getFloat() * mouseSensitivity->getFloat() * zoomModifier->getFloat()));
 		cmd->mousedy = static_cast<short>(-(previousViewAngles.x - viewAnglesDelta.x) / (mousePitch->getFloat() * mouseSensitivity->getFloat() * zoomModifier->getFloat()));
 
@@ -437,10 +437,10 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 
 	// Delta fix
 	// https://github.com/LWSS/Fuzion/blob/8f045699707487d3aa79d16b2439788dafd15551/src/Hacks/aimbot.cpp#L730
-	static auto mouseSensitivity = interfaces->cvar->findVar(xorstr_("sensitivity"));
-	static auto mouseYaw = interfaces->cvar->findVar(xorstr_("m_yaw"));
-	static auto mousePitch = interfaces->cvar->findVar(xorstr_("m_pitch"));
-	static auto zoomModifier = interfaces->cvar->findVar(xorstr_("zoom_sensitivity_ratio_mouse"));
+	static auto mouseSensitivity = interfaces->cvar->findVar("sensitivity");
+	static auto mouseYaw = interfaces->cvar->findVar("m_yaw");
+	static auto mousePitch = interfaces->cvar->findVar("m_pitch");
+	static auto zoomModifier = interfaces->cvar->findVar("zoom_sensitivity_ratio_mouse");
 	cmd->mousedx = static_cast<short>(previousViewAngles.y - viewAnglesDelta.y / (mouseYaw->getFloat() * mouseSensitivity->getFloat() * zoomModifier->getFloat()));
 	cmd->mousedy = static_cast<short>(-(previousViewAngles.x - viewAnglesDelta.x) / (mousePitch->getFloat() * mouseSensitivity->getFloat() * zoomModifier->getFloat()));
 
@@ -642,7 +642,7 @@ static void __stdcall setDrawColor(int r, int g, int b, int a) noexcept
 
 static void __stdcall overrideView(ViewSetup* setup) noexcept
 {
-	const auto zoomSensitivity = interfaces->cvar->findVar(xorstr_("zoom_sensitivity_ratio_mouse"));
+	const auto zoomSensitivity = interfaces->cvar->findVar("zoom_sensitivity_ratio_mouse");
 	static auto zoomSensitivityBackUp = zoomSensitivity->getFloat();
 	if (localPlayer) {
 		static bool once = true;
@@ -806,7 +806,7 @@ static bool __fastcall canUnduck(void* thisPointer, void* edx) noexcept
 	if (!entity->groundEntity())
 		return original(thisPointer);
 
-	static auto mp_solid_teammates = interfaces->cvar->findVar(xorstr_("mp_solid_teammates"));
+	static auto mp_solid_teammates = interfaces->cvar->findVar("mp_solid_teammates");
 	if (mp_solid_teammates->getInt() == 1)
 		return original(thisPointer);
 
@@ -908,7 +908,7 @@ static void __fastcall modifyEyePositionHook(void* thisPointer, void* edx, unsig
 	if (!entity || !entity->isAlive() || !entity->isPlayer() || !localPlayer || entity != localPlayer.get())
 		return original(thisPointer, pos);
 
-	const int bone = memory->lookUpBone(entity, xorstr_("head_0"));
+	const int bone = memory->lookUpBone(entity, "head_0");
 	if (bone == -1)
 		return;
 
@@ -1263,7 +1263,7 @@ static void __fastcall getColorModulationHook(void* thisPointer, void* edx, floa
 	if (!mat || mat->isErrorMaterial() || mat->getReferenceCount() < 1)
 		return;
 
-	if (config->visuals.world.enabled && std::strstr(mat->getTextureGroupName(), xorstr_("World"))) {
+	if (config->visuals.world.enabled && std::strstr(mat->getTextureGroupName(), "World")) {
 		if (config->visuals.world.rainbow) {
 			const auto [colorR, colorG, colorB] { rainbowColor(config->visuals.world.rainbowSpeed) };
 			*r *= colorR;
@@ -1274,7 +1274,7 @@ static void __fastcall getColorModulationHook(void* thisPointer, void* edx, floa
 			*g *= config->visuals.world.color.at(1);
 			*b *= config->visuals.world.color.at(2);
 		}
-	} else if (config->visuals.props.enabled && std::strstr(mat->getTextureGroupName(), xorstr_("StaticProp"))) {
+	} else if (config->visuals.props.enabled && std::strstr(mat->getTextureGroupName(), "StaticProp")) {
 		if (config->visuals.props.rainbow) {
 			const auto [colorR, colorG, colorB] { rainbowColor(config->visuals.props.rainbowSpeed) };
 			*r *= colorR;
@@ -1285,7 +1285,7 @@ static void __fastcall getColorModulationHook(void* thisPointer, void* edx, floa
 			*g *= config->visuals.props.color.at(1);
 			*b *= config->visuals.props.color.at(2);
 		}
-	} else if (config->visuals.sky.enabled && std::strstr(mat->getTextureGroupName(), xorstr_("SkyBox"))) {
+	} else if (config->visuals.sky.enabled && std::strstr(mat->getTextureGroupName(), "SkyBox")) {
 		if (config->visuals.sky.rainbow) {
 			const auto [colorR, colorG, colorB] { rainbowColor(config->visuals.sky.rainbowSpeed) };
 			*r *= colorR;
@@ -1439,12 +1439,12 @@ static bool __fastcall postNetworkDataReceivedHook(void* thisPointer, void* edx,
 	if (commandsAcknowledged <= 0)
 		return false;
 
-	static auto cl_showerror = interfaces->cvar->findVar(xorstr_("cl_showerror"));
+	static auto cl_showerror = interfaces->cvar->findVar("cl_showerror");
 
 	bool haderrors = false;
 
 	// Store network data into post networking pristine state slot (slot 64)
-	memory->saveData(thisPointer, xorstr_("PostNetworkDataReceived"), SLOT_ORIGINALDATA, PC_EVERYTHING);
+	memory->saveData(thisPointer, "PostNetworkDataReceived", SLOT_ORIGINALDATA, PC_EVERYTHING);
 
 	// Show any networked fields that are different
 	bool showthis = cl_showerror->getInt() >= 2;
@@ -1513,7 +1513,7 @@ static void __fastcall levelShutDown(void* thisPointer) noexcept
 
 Hooks::Hooks(HMODULE moduleHandle) noexcept
 {
-	while (!GetModuleHandleA(xorstr_("serverbrowser.dll"))) std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	while (!GetModuleHandleA("serverbrowser.dll")) std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
 	_MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
@@ -1525,7 +1525,7 @@ Hooks::Hooks(HMODULE moduleHandle) noexcept
 	memory = std::make_unique<const Memory>();
 	dynamicClassId = std::make_unique<const ClassIdManager>();
 
-	window = FindWindowW(xorstr_(L"Valve001"), nullptr);
+	window = FindWindowW(L"Valve001", nullptr);
 	originalWndProc = WNDPROC(SetWindowLongPtrW(window, GWLP_WNDPROC, LONG_PTR(wndProc)));
 }
 
@@ -1629,7 +1629,7 @@ void Hooks::install() noexcept
 	surface.init(interfaces->surface);
 	surface.hookAt(15, setDrawColor);
 
-	svCheats.init(interfaces->cvar->findVar(xorstr_("sv_cheats")));
+	svCheats.init(interfaces->cvar->findVar("sv_cheats"));
 	svCheats.hookAt(13, svCheatsGetBool);
 
 	viewRender.init(memory->viewRender);

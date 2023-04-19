@@ -37,10 +37,10 @@
 
 void Visuals::shadowChanger() noexcept
 {
-	static auto cl_csm_rot_override = interfaces->cvar->findVar(xorstr_("cl_csm_rot_override"));
-	static auto cl_csm_max_shadow_dist = interfaces->cvar->findVar(xorstr_("cl_csm_max_shadow_dist"));
-	static auto cl_csm_rot_x = interfaces->cvar->findVar(xorstr_("cl_csm_rot_x"));
-	static auto cl_csm_rot_y = interfaces->cvar->findVar(xorstr_("cl_csm_rot_y"));
+	static auto cl_csm_rot_override = interfaces->cvar->findVar("cl_csm_rot_override");
+	static auto cl_csm_max_shadow_dist = interfaces->cvar->findVar("cl_csm_max_shadow_dist");
+	static auto cl_csm_rot_x = interfaces->cvar->findVar("cl_csm_rot_x");
+	static auto cl_csm_rot_y = interfaces->cvar->findVar("cl_csm_rot_y");
 
 	if (config->visuals.noShadows || !config->visuals.shadowsChanger.enabled) {
 		cl_csm_rot_override->setValue(0);
@@ -69,7 +69,7 @@ void Visuals::drawSmokeTimerEvent(GameEvent* event) noexcept
 
 	smokeData data{};
 	const auto time = memory->globalVars->realtime + SMOKEGRENADE_LIFETIME;
-	const auto pos = Vector(event->getFloat(xorstr_("x")), event->getFloat(xorstr_("y")), event->getFloat(xorstr_("z")));
+	const auto pos = Vector(event->getFloat("x"), event->getFloat("y"), event->getFloat("z"));
 	data.destructionTime = time;
 	data.pos = pos;
 	smokes.push_back(data);
@@ -87,7 +87,7 @@ void Visuals::drawSmokeTimer(ImDrawList* drawList) noexcept
 		const auto& smoke = smokes[i];
 
 		const auto time = smoke.destructionTime - memory->globalVars->realtime;
-		std::ostringstream text; text << std::fixed << std::showpoint << std::setprecision(1) << time << xorstr_(" sec.");
+		std::ostringstream text; text << std::fixed << std::showpoint << std::setprecision(1) << time << " sec.";
 		const auto textSize = ImGui::CalcTextSize(text.str().c_str());
 
 		ImVec2 pos;
@@ -131,7 +131,7 @@ void Visuals::drawMolotovTimerEvent(GameEvent* event) noexcept
 
 	molotovData data{};
 	const auto time = memory->globalVars->realtime + MOLOTOV_LIFETIME;
-	const auto pos = Vector(event->getFloat(xorstr_("x")), event->getFloat(xorstr_("y")), event->getFloat(xorstr_("z")));
+	const auto pos = Vector(event->getFloat("x"), event->getFloat("y"), event->getFloat("z"));
 	data.destructionTime = time;
 	data.pos = pos;
 	molotovs.push_back(data);
@@ -161,7 +161,7 @@ void Visuals::drawMolotovTimer(ImDrawList* drawList) noexcept
 		const auto& molotov = molotovs[i];
 
 		const auto time = molotov.destructionTime - memory->globalVars->realtime;
-		std::ostringstream text; text << std::fixed << std::showpoint << std::setprecision(1) << time << xorstr_(" sec.");
+		std::ostringstream text; text << std::fixed << std::showpoint << std::setprecision(1) << time << " sec.";
 		const auto textSize = ImGui::CalcTextSize(text.str().c_str());
 
 		ImVec2 pos;
@@ -263,7 +263,7 @@ void Visuals::drawAimbotFov(ImDrawList* drawList) noexcept
 
 void Visuals::fullBright() noexcept
 {
-	static auto bright = interfaces->cvar->findVar(xorstr_("mat_fullbright"));
+	static auto bright = interfaces->cvar->findVar("mat_fullbright");
 	bright->setValue(config->visuals.fullBright);
 }
 
@@ -279,74 +279,74 @@ void Visuals::playerModel(FrameStage stage) noexcept
 		return;
 	}
 
-	const auto getModel = [](Team team) noexcept -> const char* {
-		const std::array models{
-			xorstr_("models/player/custom_player/legacy/ctm_fbi_variantb.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_fbi_variantf.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_fbi_variantg.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_fbi_varianth.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_sas_variantf.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_st6_variante.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_st6_variantg.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_st6_varianti.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_st6_variantk.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_st6_variantm.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_balkan_variantf.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_balkan_variantg.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_balkan_varianth.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_balkan_varianti.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_balkan_variantj.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_leet_variantf.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_leet_variantg.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_leet_varianth.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_leet_varianti.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_phoenix_variantf.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_phoenix_variantg.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_phoenix_varianth.mdl"),
+	constexpr auto getModel = [](Team team) constexpr noexcept -> const char* {
+		constexpr std::array models{
+			"models/player/custom_player/legacy/ctm_fbi_variantb.mdl",
+				"models/player/custom_player/legacy/ctm_fbi_variantf.mdl",
+				"models/player/custom_player/legacy/ctm_fbi_variantg.mdl",
+				"models/player/custom_player/legacy/ctm_fbi_varianth.mdl",
+				"models/player/custom_player/legacy/ctm_sas_variantf.mdl",
+				"models/player/custom_player/legacy/ctm_st6_variante.mdl",
+				"models/player/custom_player/legacy/ctm_st6_variantg.mdl",
+				"models/player/custom_player/legacy/ctm_st6_varianti.mdl",
+				"models/player/custom_player/legacy/ctm_st6_variantk.mdl",
+				"models/player/custom_player/legacy/ctm_st6_variantm.mdl",
+				"models/player/custom_player/legacy/tm_balkan_variantf.mdl",
+				"models/player/custom_player/legacy/tm_balkan_variantg.mdl",
+				"models/player/custom_player/legacy/tm_balkan_varianth.mdl",
+				"models/player/custom_player/legacy/tm_balkan_varianti.mdl",
+				"models/player/custom_player/legacy/tm_balkan_variantj.mdl",
+				"models/player/custom_player/legacy/tm_leet_variantf.mdl",
+				"models/player/custom_player/legacy/tm_leet_variantg.mdl",
+				"models/player/custom_player/legacy/tm_leet_varianth.mdl",
+				"models/player/custom_player/legacy/tm_leet_varianti.mdl",
+				"models/player/custom_player/legacy/tm_phoenix_variantf.mdl",
+				"models/player/custom_player/legacy/tm_phoenix_variantg.mdl",
+				"models/player/custom_player/legacy/tm_phoenix_varianth.mdl",
 
-				xorstr_("models/player/custom_player/legacy/tm_pirate.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_pirate_varianta.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_pirate_variantb.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_pirate_variantc.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_pirate_variantd.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_anarchist.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_anarchist_varianta.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_anarchist_variantb.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_anarchist_variantc.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_anarchist_variantd.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_balkan_varianta.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_balkan_variantb.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_balkan_variantc.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_balkan_variantd.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_balkan_variante.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_jumpsuit_varianta.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_jumpsuit_variantb.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_jumpsuit_variantc.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_gign.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_gign_varianta.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_gign_variantb.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_gign_variantc.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_gign_variantd.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_phoenix_varianti.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_st6_variantj.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_st6_variantl.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_balkan_variantk.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_balkan_variantl.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_swat_variante.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_swat_variantf.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_swat_variantg.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_swat_varianth.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_swat_varianti.mdl"),
-				xorstr_("models/player/custom_player/legacy/ctm_swat_variantj.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_professional_varf.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_professional_varf1.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_professional_varf2.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_professional_varf3.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_professional_varf4.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_professional_varg.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_professional_varh.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_professional_vari.mdl"),
-				xorstr_("models/player/custom_player/legacy/tm_professional_varj.mdl")
+				"models/player/custom_player/legacy/tm_pirate.mdl",
+				"models/player/custom_player/legacy/tm_pirate_varianta.mdl",
+				"models/player/custom_player/legacy/tm_pirate_variantb.mdl",
+				"models/player/custom_player/legacy/tm_pirate_variantc.mdl",
+				"models/player/custom_player/legacy/tm_pirate_variantd.mdl",
+				"models/player/custom_player/legacy/tm_anarchist.mdl",
+				"models/player/custom_player/legacy/tm_anarchist_varianta.mdl",
+				"models/player/custom_player/legacy/tm_anarchist_variantb.mdl",
+				"models/player/custom_player/legacy/tm_anarchist_variantc.mdl",
+				"models/player/custom_player/legacy/tm_anarchist_variantd.mdl",
+				"models/player/custom_player/legacy/tm_balkan_varianta.mdl",
+				"models/player/custom_player/legacy/tm_balkan_variantb.mdl",
+				"models/player/custom_player/legacy/tm_balkan_variantc.mdl",
+				"models/player/custom_player/legacy/tm_balkan_variantd.mdl",
+				"models/player/custom_player/legacy/tm_balkan_variante.mdl",
+				"models/player/custom_player/legacy/tm_jumpsuit_varianta.mdl",
+				"models/player/custom_player/legacy/tm_jumpsuit_variantb.mdl",
+				"models/player/custom_player/legacy/tm_jumpsuit_variantc.mdl",
+				"models/player/custom_player/legacy/ctm_gign.mdl",
+				"models/player/custom_player/legacy/ctm_gign_varianta.mdl",
+				"models/player/custom_player/legacy/ctm_gign_variantb.mdl",
+				"models/player/custom_player/legacy/ctm_gign_variantc.mdl",
+				"models/player/custom_player/legacy/ctm_gign_variantd.mdl",
+				"models/player/custom_player/legacy/tm_phoenix_varianti.mdl",
+				"models/player/custom_player/legacy/ctm_st6_variantj.mdl",
+				"models/player/custom_player/legacy/ctm_st6_variantl.mdl",
+				"models/player/custom_player/legacy/tm_balkan_variantk.mdl",
+				"models/player/custom_player/legacy/tm_balkan_variantl.mdl",
+				"models/player/custom_player/legacy/ctm_swat_variante.mdl",
+				"models/player/custom_player/legacy/ctm_swat_variantf.mdl",
+				"models/player/custom_player/legacy/ctm_swat_variantg.mdl",
+				"models/player/custom_player/legacy/ctm_swat_varianth.mdl",
+				"models/player/custom_player/legacy/ctm_swat_varianti.mdl",
+				"models/player/custom_player/legacy/ctm_swat_variantj.mdl",
+				"models/player/custom_player/legacy/tm_professional_varf.mdl",
+				"models/player/custom_player/legacy/tm_professional_varf1.mdl",
+				"models/player/custom_player/legacy/tm_professional_varf2.mdl",
+				"models/player/custom_player/legacy/tm_professional_varf3.mdl",
+				"models/player/custom_player/legacy/tm_professional_varf4.mdl",
+				"models/player/custom_player/legacy/tm_professional_varg.mdl",
+				"models/player/custom_player/legacy/tm_professional_varh.mdl",
+				"models/player/custom_player/legacy/tm_professional_vari.mdl",
+				"models/player/custom_player/legacy/tm_professional_varj.mdl"
 		};
 
 		switch (team) {
@@ -357,16 +357,16 @@ void Visuals::playerModel(FrameStage stage) noexcept
 	};
 
 	auto isValidModel = [](std::string name) noexcept -> bool {
-		if (name.empty() || name.front() == ' ' || name.back() == ' ' || !name.ends_with(xorstr_(".mdl")))
+		if (name.empty() || name.front() == ' ' || name.back() == ' ' || !name.ends_with(".mdl"))
 			return false;
 
-		if (!name.starts_with(xorstr_("models")) && !name.starts_with(xorstr_("/models")) && !name.starts_with(xorstr_("\\models")))
+		if (!name.starts_with("models") && !name.starts_with("/models") && !name.starts_with("\\models"))
 			return false;
 
 		//Check if file exists within directory
 		std::string path = interfaces->engine->getGameDirectory();
 		if (config->visuals.playerModel[0] != '\\' && config->visuals.playerModel[0] != '/')
-			path += xorstr_("/");
+			path += "/";
 		path += config->visuals.playerModel;
 
 		struct stat buf;
@@ -381,7 +381,7 @@ void Visuals::playerModel(FrameStage stage) noexcept
 	if (const auto model = custom ? config->visuals.playerModel : getModel(localPlayer->getTeamNumber())) {
 		if (stage == FrameStage::NET_UPDATE_POSTDATAUPDATE_START) {
 			originalIdx = localPlayer->modelIndex();
-			if (const auto modelprecache = interfaces->networkStringTableContainer->findTable(xorstr_("modelprecache"))) {
+			if (const auto modelprecache = interfaces->networkStringTableContainer->findTable("modelprecache")) {
 				const auto index = modelprecache->addString(false, model);
 				if (index == -1)
 					return;
@@ -406,11 +406,11 @@ void Visuals::modifySmoke(FrameStage stage) noexcept
 	if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
 		return;
 
-	const std::array smokeMaterials{
-		xorstr_("particle/vistasmokev1/vistasmokev1_emods"),
-			xorstr_("particle/vistasmokev1/vistasmokev1_emods_impactdust"),
-			xorstr_("particle/vistasmokev1/vistasmokev1_fire"),
-			xorstr_("particle/vistasmokev1/vistasmokev1_smokegrenade")
+	constexpr std::array smokeMaterials{
+		"particle/vistasmokev1/vistasmokev1_emods",
+			"particle/vistasmokev1/vistasmokev1_emods_impactdust",
+			"particle/vistasmokev1/vistasmokev1_fire",
+			"particle/vistasmokev1/vistasmokev1_smokegrenade"
 	};
 
 	for (const auto mat : smokeMaterials) {
@@ -422,19 +422,19 @@ void Visuals::modifySmoke(FrameStage stage) noexcept
 
 void Visuals::modifyMolotov(FrameStage stage) noexcept
 {
-	const std::array fireMaterials{
-		xorstr_("decals/molotovscorch.vmt"),
-			xorstr_("particle/fire_burning_character/fire_env_fire.vmt"),
-			xorstr_("particle/fire_burning_character/fire_env_fire_depthblend.vmt"),
-			xorstr_("particle/particle_flares/particle_flare_001.vmt"),
-			xorstr_("particle/particle_flares/particle_flare_004.vmt"),
-			xorstr_("particle/particle_flares/particle_flare_004b_mod_ob.vmt"),
-			xorstr_("particle/particle_flares/particle_flare_004b_mod_z.vmt"),
-			xorstr_("particle/fire_explosion_1/fire_explosion_1_bright.vmt"),
-			xorstr_("particle/fire_explosion_1/fire_explosion_1b.vmt"),
-			xorstr_("particle/fire_particle_4/fire_particle_4.vmt"),
-			xorstr_("particle/fire_explosion_1/fire_explosion_1_oriented.vmt"),
-			xorstr_("particle/vistasmokev1/vistasmokev1_nearcull_nodepth.vmt")
+	constexpr std::array fireMaterials{
+		"decals/molotovscorch.vmt",
+			"particle/fire_burning_character/fire_env_fire.vmt",
+			"particle/fire_burning_character/fire_env_fire_depthblend.vmt",
+			"particle/particle_flares/particle_flare_001.vmt",
+			"particle/particle_flares/particle_flare_004.vmt",
+			"particle/particle_flares/particle_flare_004b_mod_ob.vmt",
+			"particle/particle_flares/particle_flare_004b_mod_z.vmt",
+			"particle/fire_explosion_1/fire_explosion_1_bright.vmt",
+			"particle/fire_explosion_1/fire_explosion_1b.vmt",
+			"particle/fire_particle_4/fire_particle_4.vmt",
+			"particle/fire_explosion_1/fire_explosion_1_oriented.vmt",
+			"particle/vistasmokev1/vistasmokev1_nearcull_nodepth.vmt"
 	};
 
 	for (const auto mat : fireMaterials) {
@@ -452,7 +452,7 @@ void Visuals::thirdperson() noexcept
 	const bool freeCamming = config->visuals.freeCam && config->visuals.freeCamKey.isActive() && localPlayer && localPlayer->isAlive();
 	const bool thirdPerson = config->visuals.thirdperson && config->visuals.thirdpersonKey.isActive() && localPlayer && localPlayer->isAlive();
 
-	static auto distVar = interfaces->cvar->findVar(xorstr_("cam_idealdist"));
+	static auto distVar = interfaces->cvar->findVar("cam_idealdist");
 	static auto curDist = 0.0f;
 
 	memory->input->isCameraInThirdPerson = freeCamming || thirdPerson;
@@ -493,7 +493,7 @@ void Visuals::removeBlur(FrameStage stage) noexcept
 	if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
 		return;
 
-	static auto blur = interfaces->materialSystem->findMaterial(xorstr_("dev/scope_bluroverlay"));
+	static auto blur = interfaces->materialSystem->findMaterial("dev/scope_bluroverlay");
 	blur->setMaterialVarFlag(MaterialVarFlag::NO_DRAW, stage == FrameStage::RENDER_START && config->visuals.noBlur);
 }
 
@@ -504,10 +504,10 @@ void Visuals::removeGrass(FrameStage stage) noexcept
 
 	constexpr auto getGrassMaterialName = []() noexcept -> const char* {
 		switch (fnv::hashRuntime(interfaces->engine->getLevelName())) {
-		case fnv::hash("dz_blacksite"): return xorstr_("detail/detailsprites_survival");
-		case fnv::hash("dz_sirocco"): return xorstr_("detail/dust_massive_detail_sprites");
-		case fnv::hash("coop_autumn"): return xorstr_("detail/autumn_detail_sprites");
-		case fnv::hash("dz_frostbite"): return xorstr_("ski/detail/detailsprites_overgrown_ski");
+		case fnv::hash("dz_blacksite"): return "detail/detailsprites_survival";
+		case fnv::hash("dz_sirocco"): return "detail/dust_massive_detail_sprites";
+		case fnv::hash("coop_autumn"): return "detail/autumn_detail_sprites";
+		case fnv::hash("dz_frostbite"): return "ski/detail/detailsprites_overgrown_ski";
 			// dz_junglety has been removed in 7/23/2020 patch
 			// case fnv::hash("dz_junglety"): return "detail/tropical_grass";
 		default: return nullptr;
@@ -520,13 +520,13 @@ void Visuals::removeGrass(FrameStage stage) noexcept
 
 void Visuals::remove3dSky() noexcept
 {
-	static auto sky = interfaces->cvar->findVar(xorstr_("r_3dsky"));
+	static auto sky = interfaces->cvar->findVar("r_3dsky");
 	sky->setValue(!config->visuals.no3dSky);
 }
 
 void Visuals::removeShadows() noexcept
 {
-	static auto shadows = interfaces->cvar->findVar(xorstr_("cl_csm_enabled"));
+	static auto shadows = interfaces->cvar->findVar("cl_csm_enabled");
 	shadows->setValue(!config->visuals.noShadows);
 }
 
@@ -565,11 +565,11 @@ void Visuals::applyScreenEffects() noexcept
 		return;
 
 	const auto material = interfaces->materialSystem->findMaterial([] {
-		const std::array effects{
-			xorstr_("effects/dronecam"),
-				xorstr_("effects/underwater_overlay"),
-				xorstr_("effects/healthboost"),
-				xorstr_("effects/dangerzone_screen")
+		constexpr std::array effects{
+			"effects/dronecam",
+				"effects/underwater_overlay",
+				"effects/healthboost",
+				"effects/dangerzone_screen"
 		};
 
 		if (config->visuals.screenEffect <= 2 || static_cast<std::size_t>(config->visuals.screenEffect - 2) >= effects.size())
@@ -578,11 +578,11 @@ void Visuals::applyScreenEffects() noexcept
 		}());
 
 	if (config->visuals.screenEffect == 1)
-		material->findVar(xorstr_("$c0_x"))->setValue(0.0f);
+		material->findVar("$c0_x")->setValue(0.0f);
 	else if (config->visuals.screenEffect == 2)
-		material->findVar(xorstr_("$c0_x"))->setValue(0.1f);
+		material->findVar("$c0_x")->setValue(0.1f);
 	else if (config->visuals.screenEffect >= 4)
-		material->findVar(xorstr_("$c0_x"))->setValue(1.0f);
+		material->findVar("$c0_x")->setValue(1.0f);
 
 	DRAW_SCREEN_EFFECT(material)
 }
@@ -592,18 +592,18 @@ void Visuals::hitEffect(GameEvent* event) noexcept
 	if (config->visuals.hitEffect && localPlayer) {
 		static float lastHitTime = 0.0f;
 
-		if (event && interfaces->engine->getPlayerForUserID(event->getInt(xorstr_("attacker"))) == localPlayer->index()) {
+		if (event && interfaces->engine->getPlayerForUserID(event->getInt("attacker")) == localPlayer->index()) {
 			lastHitTime = memory->globalVars->realtime;
 			return;
 		}
 
 		if (lastHitTime + config->visuals.hitEffectTime >= memory->globalVars->realtime) {
 			constexpr auto getEffectMaterial = [] {
-				static const char* effects[]{
-				xorstr_("effects/dronecam"),
-				xorstr_("effects/underwater_overlay"),
-				xorstr_("effects/healthboost"),
-				xorstr_("effects/dangerzone_screen")
+				static constexpr const char* effects[]{
+				"effects/dronecam",
+				"effects/underwater_overlay",
+				"effects/healthboost",
+				"effects/dangerzone_screen"
 				};
 
 				if (config->visuals.hitEffect <= 2)
@@ -614,11 +614,11 @@ void Visuals::hitEffect(GameEvent* event) noexcept
 
 			auto material = interfaces->materialSystem->findMaterial(getEffectMaterial());
 			if (config->visuals.hitEffect == 1)
-				material->findVar(xorstr_("$c0_x"))->setValue(0.0f);
+				material->findVar("$c0_x")->setValue(0.0f);
 			else if (config->visuals.hitEffect == 2)
-				material->findVar(xorstr_("$c0_x"))->setValue(0.1f);
+				material->findVar("$c0_x")->setValue(0.1f);
 			else if (config->visuals.hitEffect >= 4)
-				material->findVar(xorstr_("$c0_x"))->setValue(1.0f);
+				material->findVar("$c0_x")->setValue(1.0f);
 
 			DRAW_SCREEN_EFFECT(material)
 		}
@@ -643,18 +643,18 @@ void Visuals::transparentWorld(int resetType) noexcept
 		const std::string_view textureGroup = mat->getTextureGroupName();
 
 		if (resetType == 1) {
-			if (textureGroup.starts_with(xorstr_("World")))
+			if (textureGroup.starts_with("World"))
 				mat->alphaModulate(1.0f);
 
-			if (textureGroup.starts_with(xorstr_("StaticProp")))
+			if (textureGroup.starts_with("StaticProp"))
 				mat->alphaModulate(1.0f);
 			continue;
 		}
 
-		if (asus[0] != config->visuals.asusWalls && textureGroup.starts_with(xorstr_("World")))
+		if (asus[0] != config->visuals.asusWalls && textureGroup.starts_with("World"))
 			mat->alphaModulate(static_cast<float>(config->visuals.asusWalls) / 100.0f);
 
-		if (asus[1] != config->visuals.asusProps && textureGroup.starts_with(xorstr_("StaticProp")))
+		if (asus[1] != config->visuals.asusProps && textureGroup.starts_with("StaticProp"))
 			mat->alphaModulate(static_cast<float>(config->visuals.asusProps) / 100.0f);
 	}
 	asus[0] = config->visuals.asusWalls;
@@ -669,7 +669,7 @@ void Visuals::hitMarker(GameEvent* event, ImDrawList* drawList) noexcept
 	static float lastHitTime = 0.0f;
 
 	if (event) {
-		if (localPlayer && event->getInt(xorstr_("attacker")) == localPlayer->getUserId())
+		if (localPlayer && event->getInt("attacker") == localPlayer->getUserId())
 			lastHitTime = memory->globalVars->realtime;
 		return;
 	}
@@ -813,18 +813,18 @@ void Visuals::motionBlur(ViewSetup* setup) noexcept
 		return;
 	}
 
-	const auto material = interfaces->materialSystem->findMaterial(xorstr_("dev/motion_blur"), xorstr_("RenderTargets"), false);
+	const auto material = interfaces->materialSystem->findMaterial("dev/motion_blur", "RenderTargets", false);
 	if (!material)
 		return;
 
-	const auto MotionBlurInternal = material->findVar(xorstr_("$MotionBlurInternal"), nullptr, false);
+	const auto MotionBlurInternal = material->findVar("$MotionBlurInternal", nullptr, false);
 
 	MotionBlurInternal->setVecComponentValue(motionBlurValues[0], 0);
 	MotionBlurInternal->setVecComponentValue(motionBlurValues[1], 1);
 	MotionBlurInternal->setVecComponentValue(motionBlurValues[2], 2);
 	MotionBlurInternal->setVecComponentValue(motionBlurValues[3], 3);
 
-	const auto MotionBlurViewPortInternal = material->findVar(xorstr_("$MotionBlurViewportInternal"), nullptr, false);
+	const auto MotionBlurViewPortInternal = material->findVar("$MotionBlurViewportInternal", nullptr, false);
 
 	MotionBlurViewPortInternal->setVecComponentValue(0.0f, 0);
 	MotionBlurViewPortInternal->setVecComponentValue(0.0f, 1);
@@ -844,25 +844,25 @@ void Visuals::disablePostProcessing(FrameStage stage) noexcept
 
 void Visuals::changeGlowThickness() noexcept
 {
-	const auto glowWidth = interfaces->cvar->findVar(xorstr_("glow_outline_width"));
+	const auto glowWidth = interfaces->cvar->findVar("glow_outline_width");
 	glowWidth->setValue(config->visuals.glowOutlineWidth);
 }
 
 bool Visuals::removeHands(const char* modelName) noexcept
 {
-	return config->visuals.noHands && std::strstr(modelName, xorstr_("arms")) && !std::strstr(modelName, xorstr_("sleeve"));
+	return config->visuals.noHands && std::strstr(modelName, "arms") && !std::strstr(modelName, "sleeve");
 }
 
 bool Visuals::removeSleeves(const char* modelName) noexcept
 {
-	return config->visuals.noSleeves && std::strstr(modelName, xorstr_("sleeve"));
+	return config->visuals.noSleeves && std::strstr(modelName, "sleeve");
 }
 
 bool Visuals::removeWeapons(const char* modelName) noexcept
 {
-	return config->visuals.noWeapons && std::strstr(modelName, xorstr_("models/weapons/v_"))
-		&& !std::strstr(modelName, xorstr_("arms")) && !std::strstr(modelName, xorstr_("tablet"))
-		&& !std::strstr(modelName, xorstr_("parachute")) && !std::strstr(modelName, xorstr_("fists"));
+	return config->visuals.noWeapons && std::strstr(modelName, "models/weapons/v_")
+		&& !std::strstr(modelName, "arms") && !std::strstr(modelName, "tablet")
+		&& !std::strstr(modelName, "parachute") && !std::strstr(modelName, "fists");
 }
 
 void Visuals::skybox(FrameStage stage) noexcept
@@ -875,7 +875,7 @@ void Visuals::skybox(FrameStage stage) noexcept
 	} else if (config->visuals.skybox == 26 && stage == FrameStage::RENDER_START) {
 		memory->loadSky(config->visuals.customSkybox.c_str());
 	} else {
-		static const auto sv_skyname = interfaces->cvar->findVar(xorstr_("sv_skyname"));
+		static const auto sv_skyname = interfaces->cvar->findVar("sv_skyname");
 		memory->loadSky(sv_skyname->string);
 	}
 }
@@ -935,7 +935,7 @@ void Visuals::footstepESP(GameEvent* event) noexcept
 	if (!config->visuals.footsteps.footstepBeams.enabled)
 		return;
 
-	const auto entity = interfaces->entityList->getEntity(interfaces->engine->getPlayerForUserID(event->getInt(xorstr_("userid"))));
+	const auto entity = interfaces->entityList->getEntity(interfaces->engine->getPlayerForUserID(event->getInt("userid")));
 
 	if (!entity || !localPlayer.get() || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive() || !entity->isOtherEnemy(localPlayer.get()))
 		return;
@@ -950,12 +950,12 @@ void Visuals::footstepESP(GameEvent* event) noexcept
 	"sprites/white.vmt", <-- draws behind the wall
 	*/
 
-	const auto modelIndex = interfaces->modelInfo->getModelIndex(xorstr_("sprites/purplelaser1.vmt"));
+	const auto modelIndex = interfaces->modelInfo->getModelIndex("sprites/purplelaser1.vmt");
 
 	BeamInfo info;
 
 	info.type = TE_BEAMRINGPOINT;
-	info.modelName = xorstr_("sprites/purplelaser1.vmt");
+	info.modelName = "sprites/purplelaser1.vmt";
 	info.modelIndex = modelIndex;
 	info.haloIndex = -1;
 	info.haloScale = 0.0f;
@@ -998,7 +998,7 @@ void Visuals::bulletTracer(GameEvent& event) noexcept
 		shotRecord.clear();
 		break;
 	case fnv::hash("weapon_fire"):
-		if (event.getInt(xorstr_("userid")) != localPlayer->getUserId())
+		if (event.getInt("userid") != localPlayer->getUserId())
 			return;
 
 		if (shotRecord.front().gotImpact)
@@ -1009,7 +1009,7 @@ void Visuals::bulletTracer(GameEvent& event) noexcept
 		if (shotRecord.front().gotImpact)
 			return;
 
-		if (event.getInt(xorstr_("userid")) != localPlayer->getUserId())
+		if (event.getInt("userid") != localPlayer->getUserId())
 			return;
 
 		if (shotRecord.front().eyePosition.null()) {
@@ -1017,7 +1017,7 @@ void Visuals::bulletTracer(GameEvent& event) noexcept
 			return;
 		}
 
-		const auto bulletImpact = Vector{ event.getFloat(xorstr_("x")),  event.getFloat(xorstr_("y")),  event.getFloat(xorstr_("z")) };
+		const auto bulletImpact = Vector{ event.getFloat("x"),  event.getFloat("y"),  event.getFloat("z") };
 		const auto angle = AimbotFunction::calculateRelativeAngle(shotRecord.front().eyePosition, bulletImpact, Vector{ });
 		const auto end = bulletImpact + Vector::fromAngle(angle) * 2000.f;
 
@@ -1038,7 +1038,7 @@ void Visuals::bulletTracer(GameEvent& event) noexcept
 		"sprites/white",
 		*/
 
-		beamInfo.modelName = xorstr_("sprites/purplelaser1.vmt");
+		beamInfo.modelName = "sprites/purplelaser1.vmt";
 		beamInfo.modelIndex = -1;
 		beamInfo.haloName = nullptr;
 		beamInfo.haloIndex = -1;
@@ -1107,10 +1107,10 @@ void Visuals::bulletImpact(GameEvent& event) noexcept
 	if (!localPlayer)
 		return;
 
-	if (event.getInt(xorstr_("userid")) != localPlayer->getUserId())
+	if (event.getInt("userid") != localPlayer->getUserId())
 		return;
 
-	const Vector endPos = Vector{ event.getFloat(xorstr_("x")), event.getFloat(xorstr_("y")), event.getFloat(xorstr_("z")) };
+	const Vector endPos = Vector{ event.getFloat("x"), event.getFloat("y"), event.getFloat("z") };
 	positions.push_front(endPos);
 }
 
@@ -1366,7 +1366,7 @@ void Visuals::updateEventListeners(bool forceRemove) noexcept
 	static bool impactListenerRegistered = false;
 
 	if ((config->visuals.bulletImpacts.enabled || config->visuals.bulletTracers.enabled) && !impactListenerRegistered) {
-		interfaces->gameEventManager->addListener(&impactListener, xorstr_("bullet_impact"));
+		interfaces->gameEventManager->addListener(&impactListener, "bullet_impact");
 		impactListenerRegistered = true;
 	} else if (((!config->visuals.bulletImpacts.enabled && !config->visuals.bulletTracers.enabled) || forceRemove) && impactListenerRegistered) {
 		interfaces->gameEventManager->removeListener(&impactListener);
@@ -1377,7 +1377,7 @@ void Visuals::updateEventListeners(bool forceRemove) noexcept
 	static bool footstepListenerRegistered = false;
 
 	if (config->visuals.footsteps.footstepBeams.enabled && !footstepListenerRegistered) {
-		interfaces->gameEventManager->addListener(&footstepListener, xorstr_("player_footstep"));
+		interfaces->gameEventManager->addListener(&footstepListener, "player_footstep");
 		footstepListenerRegistered = true;
 	} else if (((!config->visuals.footsteps.footstepBeams.enabled) || forceRemove) && footstepListenerRegistered) {
 		interfaces->gameEventManager->removeListener(&footstepListener);
@@ -1398,10 +1398,10 @@ void Visuals::reset(int resetType) noexcept
 	transparentWorld(resetType);
 	if (resetType == 1) {
 		//Reset convars
-		static auto bright = interfaces->cvar->findVar(xorstr_("mat_fullbright"));
-		static auto sky = interfaces->cvar->findVar(xorstr_("r_3dsky"));
-		static auto shadows = interfaces->cvar->findVar(xorstr_("cl_csm_enabled"));
-		static auto cl_csm_rot_override = interfaces->cvar->findVar(xorstr_("cl_csm_rot_override"));
+		static auto bright = interfaces->cvar->findVar("mat_fullbright");
+		static auto sky = interfaces->cvar->findVar("r_3dsky");
+		static auto shadows = interfaces->cvar->findVar("cl_csm_enabled");
+		static auto cl_csm_rot_override = interfaces->cvar->findVar("cl_csm_rot_override");
 		bright->setValue(0);
 		sky->setValue(1);
 		shadows->setValue(1);

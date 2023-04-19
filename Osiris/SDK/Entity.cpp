@@ -14,7 +14,7 @@ bool Entity::isOtherEnemy(Entity* other) noexcept
 void Entity::getPlayerName(char(&out)[128]) noexcept
 {
 	if (!*memory->playerResource) {
-		strcpy(out, xorstr_("unknown"));
+		strcpy(out, "unknown");
 		return;
 	}
 

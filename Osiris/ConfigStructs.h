@@ -228,18 +228,18 @@ static void to_json(json& j, const Color4& o, const Color4& dummy = {})
 	if (o.color != dummy.color) {
 		std::ostringstream s;
 		s << '#' << std::hex << std::setfill('0') << std::setw(2) << static_cast<int>(o.color[0] * 255) << std::setw(2) << static_cast<int>(o.color[1] * 255) << std::setw(2) << static_cast<int>(o.color[2] * 255);
-		j[xorstr_("Color")] = s.str();
-		j[xorstr_("Alpha")] = o.color[3];
+		j["Color"] = s.str();
+		j["Alpha"] = o.color[3];
 	}
-	WRITE(xorstr_("Rainbow"), rainbow);
-	WRITE(xorstr_("Rainbow Speed"), rainbowSpeed);
+	WRITE("Rainbow", rainbow);
+	WRITE("Rainbow Speed", rainbowSpeed);
 }
 
 static void to_json(json& j, const KeyBind& o, const KeyBind& dummy)
 {
 	if (o != dummy) {
-		j[xorstr_("Key")] = o.toString();
-		j[xorstr_("Key mode")] = o.keyMode;
+		j["Key"] = o.toString();
+		j["Key mode"] = o.keyMode;
 	}
 }
 
@@ -309,15 +309,15 @@ static void read(const json& j, const char* key, std::vector<std::string>& o) no
 
 static void read(const json& j, const char* key, KeyBind& o) noexcept
 {
-	if (!j.contains(key) || !j[key].contains(xorstr_("Key")))
+	if (!j.contains(key) || !j[key].contains("Key"))
 		return;
 
 	const auto backupName = o.activeName;
 
-	if (const auto& val = j[key][xorstr_("Key")]; val.is_string())
+	if (const auto& val = j[key]["Key"]; val.is_string())
 		o = val.get<std::string>().c_str();
 
-	if (const auto& val = j[key][xorstr_("Key mode")]; val.is_number_integer())
+	if (const auto& val = j[key]["Key mode"]; val.is_number_integer())
 		val.get_to(o.keyMode);
 
 	o.activeName = backupName;
@@ -378,8 +378,8 @@ static void read(const json& j, const char* key, std::unordered_map<std::string,
 
 static void from_json(const json& j, Color4& c)
 {
-	if (j.contains(xorstr_("Color"))) {
-		const auto& val = j[xorstr_("Color")];
+	if (j.contains("Color")) {
+		const auto& val = j["Color"];
 		// old format -> [1.0f, 0.0f, 0.0f, 1.0f]
 		// new format -> #ff0000 + alpha as float
 		if (val.type() == value_t::array && val.size() == c.color.size()) {
@@ -395,10 +395,10 @@ static void from_json(const json& j, Color4& c)
 				c.color[1] = ((color >> 8) & 0xFF) / 255.0f;
 				c.color[2] = (color & 0xFF) / 255.0f;
 			}
-			read(j, xorstr_("Alpha"), c.color[3]);
+			read(j, "Alpha", c.color[3]);
 		}
 	}
 
-	read(j, xorstr_("Rainbow"), c.rainbow);
-	read(j, xorstr_("Rainbow Speed"), c.rainbowSpeed);
+	read(j, "Rainbow", c.rainbow);
+	read(j, "Rainbow Speed", c.rainbowSpeed);
 }

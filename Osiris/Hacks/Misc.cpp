@@ -50,7 +50,7 @@ bool Misc::isInChat() noexcept
 	if (!localPlayer)
 		return false;
 
-	const auto hudChat = memory->findHudElement(memory->hud, xorstr_("CCSGO_HudChat"));
+	const auto hudChat = memory->findHudElement(memory->hud, "CCSGO_HudChat");
 	if (!hudChat)
 		return false;
 
@@ -59,10 +59,10 @@ bool Misc::isInChat() noexcept
 	return isInChat;
 }
 
-std::string currentForwardKey = xorstr_("");
-std::string currentBackKey = xorstr_("");
-std::string currentRightKey = xorstr_("");
-std::string currentLeftKey = xorstr_("");
+std::string currentForwardKey = "";
+std::string currentBackKey = "";
+std::string currentRightKey = "";
+std::string currentLeftKey = "";
 int currentButtons = 0;
 
 void Misc::gatherDataOnTick(UserCmd* cmd) noexcept
@@ -111,17 +111,17 @@ void Misc::drawKeyDisplay(ImDrawList* drawList) noexcept
 	if (config->misc.keyBoardDisplay.showKeyTiles) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 2; j++) {
-				keys[i][j] = xorstr_("_");
+				keys[i][j] = "_";
 			}
 		}
 	}
 
 	if (currentButtons & UserCmd::IN_DUCK)
-		keys[0][0] = xorstr_("C");
+		keys[0][0] = "C";
 	if (currentButtons & UserCmd::IN_FORWARD)
 		keys[1][0] = currentForwardKey;
 	if (currentButtons & UserCmd::IN_JUMP)
-		keys[2][0] = xorstr_("J");
+		keys[2][0] = "J";
 	if (currentButtons & UserCmd::IN_MOVELEFT)
 		keys[0][1] = currentLeftKey;
 	if (currentButtons & UserCmd::IN_BACK)
@@ -137,7 +137,7 @@ void Misc::drawKeyDisplay(ImDrawList* drawList) noexcept
 	ImGui::PushFont(gui->getTahoma28Font());
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 2; j++) {
-			if (keys[i][j] == xorstr_(""))
+			if (keys[i][j] == "")
 				continue;
 
 			const auto size = ImGui::CalcTextSize(keys[i][j].c_str());
@@ -192,7 +192,7 @@ void Misc::drawVelocity(ImDrawList* drawList) noexcept
 	drawList->AddText(ImVec2{ static_cast<float>(screenSizeX) / 2 - size.x / 2, Ypos }, Helpers::calculateColor(trueColor), finalText.c_str());
 
 	if (shouldDrawTakeOff) {
-		const std::string bottomText = xorstr_("(") + std::to_string(takeOffVelocity) + xorstr_(")");
+		const std::string bottomText = "(" + std::to_string(takeOffVelocity) + ")";
 		const Color4 bottomTrueColor = config->misc.velocity.color.enabled ? Color4{ config->misc.velocity.color.color[0], config->misc.velocity.color.color[1], config->misc.velocity.color.color[2], config->misc.velocity.alpha, config->misc.velocity.color.rainbowSpeed, config->misc.velocity.color.rainbow }
 		: (takeOffVelocity <= 250.0f ? Color4{ 0.75f, 0.75f, 0.75f, config->misc.velocity.alpha } : Color4{ 0.11f, 1.0f, 0.42f, config->misc.velocity.alpha });
 		const auto bottomSize = ImGui::CalcTextSize(bottomText.c_str());
@@ -245,7 +245,7 @@ public:
 		const bool fail = z >= (isLadderJump ? 32.0f : (jumps > 0 ? (jumps > 1 ? 46.0f : 2.0f) : 46.0f));
 		const bool simplifyNames = config->misc.jumpStats.simplifyNaming;
 
-		std::string jump = xorstr_("null");
+		std::string jump = "null";
 
 		//Values taken from
 		//https://github.com/KZGlobalTeam/gokz/blob/33a3a49bc7a0e336e71c7f59c14d26de4db62957/cfg/sourcemod/gokz/gokz-jumpstats-tiers.cfg
@@ -253,7 +253,7 @@ public:
 		switch (jumps) {
 		case 1:
 			if (!isJumpbug) {
-				jump = simplifyNames ? xorstr_("LJ") : xorstr_("Long jump");
+				jump = simplifyNames ? "LJ" : "Long jump";
 				if (units < 230.0f)
 					color = white;
 				else if (units >= 230.0f && units < 235.0f)
@@ -265,7 +265,7 @@ public:
 				else if (units >= 240.0f)
 					color = golden;
 			} else {
-				jump = simplifyNames ? xorstr_("JB") : xorstr_("Jump bug");
+				jump = simplifyNames ? "JB" : "Jump bug";
 				if (units < 250.0f)
 					color = white;
 				else if (units >= 250.0f && units < 260.0f)
@@ -279,7 +279,7 @@ public:
 			}
 			break;
 		case 2:
-			jump = simplifyNames ? xorstr_("BH") : xorstr_("Bunnyhop");
+			jump = simplifyNames ? "BH" : "Bunnyhop";
 			if (units < 230.0f)
 				color = white;
 			else if (units >= 230.0f && units < 233.0f)
@@ -293,7 +293,7 @@ public:
 			break;
 		default:
 			if (jumps >= 3) {
-				jump = simplifyNames ? xorstr_("MBH") : xorstr_("Multi Bunnyhop");
+				jump = simplifyNames ? "MBH" : "Multi Bunnyhop";
 				if (units < 230.0f)
 					color = white;
 				else if (units >= 230.0f && units < 233.0f)
@@ -309,7 +309,7 @@ public:
 		}
 
 		if (isLadderJump) {
-			jump = simplifyNames ? xorstr_("LAJ") : xorstr_("Ladder jump");
+			jump = simplifyNames ? "LAJ" : "Ladder jump";
 			if (units < 80.0f)
 				color = white;
 			else if (units >= 80.0f && units < 90.0f)
@@ -326,19 +326,19 @@ public:
 			color = white;
 
 		if (fail)
-			jump += simplifyNames ? xorstr_("-F") : xorstr_(" Failed");
+			jump += simplifyNames ? "-F" : " Failed";
 
 		const bool show = (isLadderJump ? units >= 50.0f : units >= 186.0f) && (!(!config->misc.jumpStats.showFails && fail) || (config->misc.jumpStats.showFails));
 		if (show && config->misc.jumpStats.enabled) {
 			//Certain characters are censured on printf
 			if (jumps > 2)
 				memory->clientMode->getHudChat()->printf(0,
-				xorstr_(" \x0C\u2022Osiris\u2022\x01 %c%s: %.2f units \x01[\x05%d\x01 Strafes | \x05%.0f\x01 Pre | \x05%.0f\x01 Max | \x05%.1f\x01 Height | \x05%d\x01 Bhops | \x05%.0f\x01 Sync]"),
+				" \x0C\u2022Osiris\u2022\x01 %c%s: %.2f units \x01[\x05%d\x01 Strafes | \x05%.0f\x01 Pre | \x05%.0f\x01 Max | \x05%.1f\x01 Height | \x05%d\x01 Bhops | \x05%.0f\x01 Sync]",
 				color, jump.c_str(),
 				units, strafes, pre, maxVelocity, maxHeight, jumps, sync);
 			else
 				memory->clientMode->getHudChat()->printf(0,
-				xorstr_(" \x0C\u2022Osiris\u2022\x01 %c%s: %.2f units \x01[\x05%d\x01 Strafes | \x05%.0f\x01 Pre | \x05%.0f\x01 Max | \x05%.1f\x01 Height | \x05%.0f\x01 Sync]"),
+				" \x0C\u2022Osiris\u2022\x01 %c%s: %.2f units \x01[\x05%d\x01 Strafes | \x05%.0f\x01 Pre | \x05%.0f\x01 Max | \x05%.1f\x01 Height | \x05%.0f\x01 Sync]",
 				color, jump.c_str(),
 				units, strafes, pre, maxVelocity, maxHeight, sync);
 		}
@@ -710,7 +710,7 @@ void Misc::prePrediction(UserCmd* cmd) noexcept
 	if (shouldEdgebug)
 		cmd->buttons = edgebugButtons;
 
-	static auto gravity = interfaces->cvar->findVar(xorstr_("sv_gravity"));
+	static auto gravity = interfaces->cvar->findVar("sv_gravity");
 	bugSpeed = (gravity->getFloat() * 0.5f * memory->globalVars->intervalPerTick);
 
 	shouldEdgebug = zVelBackup < -bugSpeed && round(localPlayer->velocity().z) == -round(bugSpeed) && localPlayer->moveType() != MoveType::LADDER;
@@ -727,9 +727,9 @@ void Misc::drawPlayerList() noexcept
 	}
 
 	static bool changedName = true;
-	static std::string nameToChange = xorstr_("");
+	static std::string nameToChange = "";
 
-	if (!changedName && nameToChange != xorstr_(""))
+	if (!changedName && nameToChange != "")
 		changedName = changeName(false, (nameToChange + '\x1').c_str(), 1.0f);
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
@@ -744,17 +744,17 @@ void Misc::drawPlayerList() noexcept
 
 	ImGui::SetNextWindowSize(ImVec2(300.0f, 300.0f), ImGuiCond_Once);
 
-	if (ImGui::Begin(xorstr_("Player List"), nullptr, windowFlags)) {
-		if (ImGui::beginTable(xorstr_(""), 9, ImGuiTableFlags_Borders | ImGuiTableFlags_Hideable | ImGuiTableFlags_ScrollY | ImGuiTableFlags_Resizable)) {
-			ImGui::TableSetupColumn(xorstr_("Index"), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHide);
-			ImGui::TableSetupColumn(xorstr_("Name"), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHide, 120.0f);
-			ImGui::TableSetupColumn(xorstr_("Steam ID"), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
-			ImGui::TableSetupColumn(xorstr_("Rank"), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
-			ImGui::TableSetupColumn(xorstr_("Wins"), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
-			ImGui::TableSetupColumn(xorstr_("Health"), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
-			ImGui::TableSetupColumn(xorstr_("Armor"), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
-			ImGui::TableSetupColumn(xorstr_("Money"), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
-			ImGui::TableSetupColumn(xorstr_("Actions"), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+	if (ImGui::Begin("Player List", nullptr, windowFlags)) {
+		if (ImGui::beginTable("", 9, ImGuiTableFlags_Borders | ImGuiTableFlags_Hideable | ImGuiTableFlags_ScrollY | ImGuiTableFlags_Resizable)) {
+			ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHide);
+			ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHide, 120.0f);
+			ImGui::TableSetupColumn("Steam ID", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("Rank", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("Wins", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("Health", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("Armor", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("Money", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+			ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
 			ImGui::TableSetupScrollFreeze(0, 1);
 			ImGui::TableSetColumnEnabled(2, config->misc.playerList.steamID);
 			ImGui::TableSetColumnEnabled(3, config->misc.playerList.rank);
@@ -781,7 +781,7 @@ void Misc::drawPlayerList() noexcept
 				ImGui::PushID(ImGui::TableGetRowIndex());
 
 				if (ImGui::TableNextColumn())
-					ImGui::Text(xorstr_("%d"), player.userId);
+					ImGui::Text("%d", player.userId);
 
 				if (ImGui::TableNextColumn()) {
 					ImGui::Image(player.getAvatarTexture(), { ImGui::GetTextLineHeight(), ImGui::GetTextLineHeight() });
@@ -789,7 +789,7 @@ void Misc::drawPlayerList() noexcept
 					ImGui::textEllipsisInTableCell(player.name.c_str());
 				}
 
-				if (ImGui::TableNextColumn() && ImGui::smallButtonFullWidth(xorstr_("Copy"), player.steamID == 0))
+				if (ImGui::TableNextColumn() && ImGui::smallButtonFullWidth("Copy", player.steamID == 0))
 					ImGui::SetClipboardText(std::to_string(player.steamID).c_str());
 
 				if (ImGui::TableNextColumn()) {
@@ -805,41 +805,41 @@ void Misc::drawPlayerList() noexcept
 				}
 
 				if (ImGui::TableNextColumn())
-					ImGui::Text(xorstr_("%d"), player.competitiveWins);
+					ImGui::Text("%d", player.competitiveWins);
 
 				if (ImGui::TableNextColumn()) {
 					if (!player.alive)
-						ImGui::TextColored({ 1.0f, 0.0f, 0.0f, 1.0f }, xorstr_("%s"), xorstr_("Dead"));
+						ImGui::TextColored({ 1.0f, 0.0f, 0.0f, 1.0f }, "%s", "Dead");
 					else
-						ImGui::Text(xorstr_("%d HP"), player.health);
+						ImGui::Text("%d HP", player.health);
 				}
 
 				if (ImGui::TableNextColumn())
-					ImGui::Text(xorstr_("%d"), player.armor);
+					ImGui::Text("%d", player.armor);
 
 				if (ImGui::TableNextColumn())
-					ImGui::TextColored({ 0.0f, 1.0f, 0.0f, 1.0f }, xorstr_("$%d"), player.money);
+					ImGui::TextColored({ 0.0f, 1.0f, 0.0f, 1.0f }, "$%d", player.money);
 
 				if (ImGui::TableNextColumn()) {
-					if (ImGui::smallButtonFullWidth(xorstr_("..."), false))
-						ImGui::OpenPopup(xorstr_(""));
+					if (ImGui::smallButtonFullWidth("...", false))
+						ImGui::OpenPopup("");
 
-					if (ImGui::BeginPopup(xorstr_(""))) {
-						if (ImGui::Button(xorstr_("Steal name"))) {
+					if (ImGui::BeginPopup("")) {
+						if (ImGui::Button("Steal name")) {
 							changedName = changeName(false, (std::string{ player.name } + '\x1').c_str(), 1.0f);
 							nameToChange = player.name;
 
 							if (PlayerInfo playerInfo; interfaces->engine->isInGame() && localPlayer
-								&& interfaces->engine->getPlayerInfo(localPlayer->index(), playerInfo) && (playerInfo.name == std::string{ xorstr_("?empty") } || playerInfo.name == std::string{ xorstr_("\n\xAD\xAD\xAD") }))
+								&& interfaces->engine->getPlayerInfo(localPlayer->index(), playerInfo) && (playerInfo.name == std::string{ "?empty" } || playerInfo.name == std::string{ "\n\xAD\xAD\xAD" }))
 								changedName = false;
 						}
 
-						if (ImGui::Button(xorstr_("Steal clantag")))
+						if (ImGui::Button("Steal clantag"))
 							memory->setClanTag(player.clanTag.c_str(), player.clanTag.c_str());
 
 						if (GameData::local().exists && player.team == GameData::local().team && player.steamID != 0) {
-							if (ImGui::Button(xorstr_("Kick"))) {
-								const std::string cmd = xorstr_("callvote kick ") + std::to_string(player.userId);
+							if (ImGui::Button("Kick")) {
+								const std::string cmd = "callvote kick " + std::to_string(player.userId);
 								interfaces->engine->clientCmdUnrestricted(cmd.c_str());
 							}
 						}
@@ -1135,9 +1135,9 @@ void Misc::autoPeek(UserCmd* cmd, Vector currentViewAngles) noexcept
 
 void Misc::forceRelayCluster() noexcept
 {
-	const std::string dataCentersList[] = { xorstr_(""), xorstr_("syd"), xorstr_("vie"), xorstr_("gru"), xorstr_("scl"), xorstr_("dxb"), xorstr_("par"), xorstr_("fra"), xorstr_("hkg"),
-	xorstr_("maa"), xorstr_("bom"), xorstr_("tyo"), xorstr_("lux"), xorstr_("ams"), xorstr_("limc"), xorstr_("man"), xorstr_("waw"), xorstr_("sgp"), xorstr_("jnb"),
-	xorstr_("mad"), xorstr_("sto"), xorstr_("lhr"), xorstr_("atl"), xorstr_("eat"), xorstr_("ord"), xorstr_("lax"), xorstr_("mwh"), xorstr_("okc"), xorstr_("sea"), xorstr_("iad") };
+	const std::string dataCentersList[] = { "", "syd", "vie", "gru", "scl", "dxb", "par", "fra", "hkg",
+	"maa", "bom", "tyo", "lux", "ams", "limc", "man", "waw", "sgp", "jnb",
+	"mad", "sto", "lhr", "atl", "eat", "ord", "lax", "mwh", "okc", "sea", "iad" };
 
 	*memory->relayCluster = dataCentersList[config->misc.forceRelayCluster];
 }
@@ -1295,7 +1295,7 @@ void Misc::slowwalk(UserCmd* cmd) noexcept
 
 void Misc::inverseRagdollGravity() noexcept
 {
-	static auto ragdollGravity = interfaces->cvar->findVar(xorstr_("cl_ragdoll_gravity"));
+	static auto ragdollGravity = interfaces->cvar->findVar("cl_ragdoll_gravity");
 	ragdollGravity->setValue(config->visuals.inverseRagdollGravity ? -600 : 600);
 }
 
@@ -1376,7 +1376,7 @@ void Misc::updateClanTag(bool tagChanged) noexcept
 
 			char s[11];
 			s[0] = '\0';
-			snprintf(s, sizeof(s), xorstr_("[%02d:%02d:%02d]"), localTime->tm_hour, localTime->tm_min, localTime->tm_sec);
+			snprintf(s, sizeof(s), "[%02d:%02d:%02d]", localTime->tm_hour, localTime->tm_min, localTime->tm_sec);
 			lastTime = memory->globalVars->realtime;
 			memory->setClanTag(s, s);
 			return;
@@ -1385,7 +1385,7 @@ void Misc::updateClanTag(bool tagChanged) noexcept
 		lastTime = memory->globalVars->realtime;
 		memory->setClanTag(clanTag.c_str(), clanTag.c_str());
 	} else {
-		memory->setClanTag(xorstr_(""), xorstr_(""));
+		memory->setClanTag("", "");
 	}
 }
 
@@ -1453,7 +1453,7 @@ void Misc::showKeybinds() noexcept
 		windowFlags |= ImGuiWindowFlags_NoTitleBar;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, { 0.5f, 0.5f });
-	ImGui::Begin(xorstr_("Keybind list"), nullptr, windowFlags);
+	ImGui::Begin("Keybind list", nullptr, windowFlags);
 	ImGui::PopStyleVar();
 
 	config->ragebotKey.showKeybind();
@@ -1539,7 +1539,7 @@ void Misc::spectatorList() noexcept
 		windowFlags |= ImGuiWindowFlags_NoTitleBar;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, { 0.5f, 0.5f });
-	ImGui::Begin(xorstr_("Spectator list"), nullptr, windowFlags);
+	ImGui::Begin("Spectator list", nullptr, windowFlags);
 	ImGui::PopStyleVar();
 
 	for (const auto& observer : observers) {
@@ -1548,17 +1548,17 @@ void Misc::spectatorList() noexcept
 
 		if (const auto it = std::ranges::find(GameData::players(), observer.playerHandle, &PlayerData::handle); it != GameData::players().cend()) {
 
-			auto obsMode{ xorstr_("") };
+			auto obsMode{ "" };
 
 			switch (it->observerMode) {
 			case ObsMode::InEye:
-				obsMode = xorstr_("1st");
+				obsMode = "1st";
 				break;
 			case ObsMode::Chase:
-				obsMode = xorstr_("3rd");
+				obsMode = "3rd";
 				break;
 			case ObsMode::Roaming:
-				obsMode = xorstr_("Freecam");
+				obsMode = "Freecam";
 				break;
 			default:
 				continue;
@@ -1568,7 +1568,7 @@ void Misc::spectatorList() noexcept
 				const auto textSize = ImGui::CalcTextSize(it->name.c_str());
 				ImGui::Image(texture, ImVec2(textSize.y, textSize.y), ImVec2(0, 0), ImVec2(1, 1), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 0.3f));
 				ImGui::SameLine();
-				ImGui::TextWrapped(xorstr_("%s - %s"), it->name.c_str(), obsMode);
+				ImGui::TextWrapped("%s - %s", it->name.c_str(), obsMode);
 			}
 		}
 	}
@@ -1578,7 +1578,7 @@ void Misc::spectatorList() noexcept
 
 void Misc::noscopeCrosshair() noexcept
 {
-	static auto nozoom_crosshair = interfaces->cvar->findVar(xorstr_("weapon_debug_spread_show"));
+	static auto nozoom_crosshair = interfaces->cvar->findVar("weapon_debug_spread_show");
 
 	GameData::Lock lock;
 	if (const auto& local = GameData::local(); !config->misc.noscopeCrosshair || !local.exists || !local.alive || !local.noScope)
@@ -1589,7 +1589,7 @@ void Misc::noscopeCrosshair() noexcept
 
 void Misc::recoilCrosshair() noexcept
 {
-	static auto recoilCrosshair = interfaces->cvar->findVar(xorstr_("cl_crosshair_recoil"));
+	static auto recoilCrosshair = interfaces->cvar->findVar("cl_crosshair_recoil");
 	recoilCrosshair->setValue(config->misc.recoilCrosshair ? 1 : 0);
 }
 
@@ -1608,23 +1608,23 @@ void Misc::watermark() noexcept
 		windowFlags |= ImGuiWindowFlags_NoInputs;
 
 	ImGui::SetNextWindowBgAlpha(0.3f);
-	ImGui::Begin(xorstr_("Watermark"), nullptr, windowFlags);
+	ImGui::Begin("Watermark", nullptr, windowFlags);
 
 	static auto frame_rate = 1.0f;
 	frame_rate = 0.9f * frame_rate + 0.1f * memory->globalVars->absoluteFrameTime;
 	GameData::Lock lock;
 	const auto& [exists, alive, inReload, shooting, noScope, nextWeaponAttack, fov, handle, flashDuration, aimPunch, origin, inaccuracy, team, velocityModifier] { GameData::local() };
-	ImGui::Text(xorstr_("Osiris [%s] | %d FPS | %d MS | %s%s%s"),
+	ImGui::Text("Osiris [%s] | %d FPS | %d MS | %s%s%s",
 #ifdef DEBUG
-		xorstr_("DEBUG"),
+		"DEBUG",
 #else
-		xorstr_("RELEASE"),
+		"RELEASE",
 #endif
 		frame_rate != 0.0f ? static_cast<int>(1 / frame_rate) : 0,
 		GameData::getNetOutgoingLatency(),
-		team == Team::Spectators ? xorstr_("SPEC") : team == Team::TT ? xorstr_("T") : team == Team::CT ? xorstr_("CT") : xorstr_("NONE"),
-		inReload ? xorstr_(" | RELOADING") : xorstr_(""),
-		noScope ? xorstr_(" | NO SCOPE") : xorstr_(""));
+		team == Team::Spectators ? "SPEC" : team == Team::TT ? "T" : team == Team::CT ? "CT" : "NONE",
+		inReload ? " | RELOADING" : "",
+		noScope ? " | NO SCOPE" : "");
 	//static int damage{};
 	//static int hit_chance{};
 	//static int min_damage{};
@@ -1703,7 +1703,7 @@ void Misc::fastPlant(UserCmd* cmd) noexcept
 	if (!config->misc.fastPlant)
 		return;
 
-	static auto plantAnywhere = interfaces->cvar->findVar(xorstr_("mp_plant_c4_anywhere"));
+	static auto plantAnywhere = interfaces->cvar->findVar("mp_plant_c4_anywhere");
 
 	if (plantAnywhere->getInt())
 		return;
@@ -1780,9 +1780,9 @@ void Misc::drawBombTimer() noexcept
 		ImGui::SetNextWindowSize({ windowWidth, 0 });
 
 	ImGui::SetNextWindowSizeConstraints({ 0, -1 }, { FLT_MAX, -1 });
-	ImGui::Begin(xorstr_("Bomb Timer"), nullptr, ImGuiWindowFlags_NoTitleBar | (gui->isOpen() ? 0 : ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration));
+	ImGui::Begin("Bomb Timer", nullptr, ImGuiWindowFlags_NoTitleBar | (gui->isOpen() ? 0 : ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration));
 
-	std::ostringstream ss; ss << xorstr_("Bomb on ") << (!plantedC4.bombsite ? 'A' : 'B') << xorstr_(" : ") << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currenttime, 0.0f) << xorstr_(" s");
+	std::ostringstream ss; ss << "Bomb on " << (!plantedC4.bombsite ? 'A' : 'B') << " : " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currenttime, 0.0f) << " s";
 
 	ImGui::textUnformattedCentered(ss.str().c_str());
 
@@ -1829,10 +1829,10 @@ void Misc::drawBombTimer() noexcept
 
 		if (health <= (truncf(finalBombDamage * 10) / 10)) {
 			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
-			ImGui::textUnformattedCentered(xorstr_("Lethal"));
+			ImGui::textUnformattedCentered("Lethal");
 			ImGui::PopStyleColor();
 		} else {
-			std::ostringstream text; text << xorstr_("Damage: ") << std::clamp(displayBombDamage, 0, health - 1);
+			std::ostringstream text; text << "Damage: " << std::clamp(displayBombDamage, 0, health - 1);
 			const auto color = Helpers::healthColor(std::clamp(1.f - (finalBombDamage / static_cast<float>(health)), 0.0f, 1.0f));
 			ImGui::PushStyleColor(ImGuiCol_Text, color);
 			ImGui::textUnformattedCentered(text.str().c_str());
@@ -1850,14 +1850,14 @@ void Misc::drawBombTimer() noexcept
 		if (plantedC4.defuserHandle == GameData::local().handle) {
 			if (canDefuse) {
 				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-				ImGui::textUnformattedCentered(xorstr_("You can defuse!"));
+				ImGui::textUnformattedCentered("You can defuse!");
 			} else {
 				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
-				ImGui::textUnformattedCentered(xorstr_("You can not defuse!"));
+				ImGui::textUnformattedCentered("You can not defuse!");
 			}
 			ImGui::PopStyleColor();
 		} else if (const auto defusingPlayer = GameData::playerByHandle(plantedC4.defuserHandle)) {
-			std::ostringstream ss; ss << defusingPlayer->name << xorstr_(" is defusing: ") << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << xorstr_(" s");
+			std::ostringstream ss; ss << defusingPlayer->name << " is defusing: " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
 
 			ImGui::textUnformattedCentered(ss.str().c_str());
 
@@ -1898,9 +1898,9 @@ void Misc::hurtIndicator() noexcept
 		ImGui::SetNextWindowSize({ windowWidth, 0 });
 
 	ImGui::SetNextWindowSizeConstraints({ 0, -1 }, { FLT_MAX, -1 });
-	ImGui::Begin(xorstr_("Hurt Indicator"), nullptr, ImGuiWindowFlags_NoTitleBar | (gui->isOpen() ? 0 : ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration));
+	ImGui::Begin("Hurt Indicator", nullptr, ImGuiWindowFlags_NoTitleBar | (gui->isOpen() ? 0 : ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration));
 
-	std::ostringstream ss; ss << xorstr_("Slowed down ") << static_cast<int>(local.velocityModifier * 100.f) << xorstr_("%");
+	std::ostringstream ss; ss << "Slowed down " << static_cast<int>(local.velocityModifier * 100.f) << "%";
 	ImGui::textUnformattedCentered(ss.str().c_str());
 
 	ImGui::PushStyleColor(ImGuiCol_PlotHistogram, Helpers::calculateColor(config->misc.hurtIndicator));
@@ -1967,7 +1967,7 @@ void Misc::stealNames() noexcept
 
 void Misc::disablePanoramablur() noexcept
 {
-	static auto blur = interfaces->cvar->findVar(xorstr_("@panorama_disable_blur"));
+	static auto blur = interfaces->cvar->findVar("@panorama_disable_blur");
 	blur->setValue(config->misc.disablePanoramablur);
 }
 
@@ -1975,7 +1975,7 @@ bool Misc::changeName(bool reconnect, const char* newName, float delay) noexcept
 {
 	static auto exploitInitialized{ false };
 
-	static auto name{ interfaces->cvar->findVar(xorstr_("name")) };
+	static auto name{ interfaces->cvar->findVar("name") };
 
 	if (reconnect) {
 		exploitInitialized = false;
@@ -1983,11 +1983,11 @@ bool Misc::changeName(bool reconnect, const char* newName, float delay) noexcept
 	}
 
 	if (!exploitInitialized && interfaces->engine->isInGame()) {
-		if (PlayerInfo playerInfo; localPlayer && interfaces->engine->getPlayerInfo(localPlayer->index(), playerInfo) && (!strcmp(playerInfo.name, xorstr_("?empty")) || !strcmp(playerInfo.name, xorstr_("\n\xAD\xAD\xAD")))) {
+		if (PlayerInfo playerInfo; localPlayer && interfaces->engine->getPlayerInfo(localPlayer->index(), playerInfo) && (!strcmp(playerInfo.name, "?empty") || !strcmp(playerInfo.name, "\n\xAD\xAD\xAD"))) {
 			exploitInitialized = true;
 		} else {
 			name->onChangeCallbacks.size = 0;
-			name->setValue(xorstr_("\n\xAD\xAD\xAD"));
+			name->setValue("\n\xAD\xAD\xAD");
 			return false;
 		}
 	}
@@ -2051,29 +2051,29 @@ void Misc::killfeedChanger(GameEvent& event) noexcept
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
-	if (const auto localUserId = localPlayer->getUserId(); event.getInt(xorstr_("attacker")) != localUserId || event.getInt(xorstr_("userid")) == localUserId)
+	if (const auto localUserId = localPlayer->getUserId(); event.getInt("attacker") != localUserId || event.getInt("userid") == localUserId)
 		return;
 
 	if (config->misc.killfeedChanger.headshot)
-		event.setInt(xorstr_("headshot"), 1);
+		event.setInt("headshot", 1);
 
 	if (config->misc.killfeedChanger.dominated)
-		event.setInt(xorstr_("Dominated"), 1);
+		event.setInt("Dominated", 1);
 
 	if (config->misc.killfeedChanger.revenge)
-		event.setInt(xorstr_("Revenge"), 1);
+		event.setInt("Revenge", 1);
 
 	if (config->misc.killfeedChanger.penetrated)
-		event.setInt(xorstr_("penetrated"), 1);
+		event.setInt("penetrated", 1);
 
 	if (config->misc.killfeedChanger.noscope)
-		event.setInt(xorstr_("noscope"), 1);
+		event.setInt("noscope", 1);
 
 	if (config->misc.killfeedChanger.thrusmoke)
-		event.setInt(xorstr_("thrusmoke"), 1);
+		event.setInt("thrusmoke", 1);
 
 	if (config->misc.killfeedChanger.attackerblind)
-		event.setInt(xorstr_("attackerblind"), 1);
+		event.setInt("attackerblind", 1);
 }
 
 void Misc::killMessage(GameEvent& event) noexcept
@@ -2084,10 +2084,10 @@ void Misc::killMessage(GameEvent& event) noexcept
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
-	if (const auto localUserId = localPlayer->getUserId(); event.getInt(xorstr_("attacker")) != localUserId || event.getInt(xorstr_("userid")) == localUserId)
+	if (const auto localUserId = localPlayer->getUserId(); event.getInt("attacker") != localUserId || event.getInt("userid") == localUserId)
 		return;
 
-	std::string cmd = xorstr_("say \"");
+	std::string cmd = "say \"";
 	cmd += config->misc.killMessages[std::uniform_int_distribution<int>(0, config->misc.killMessages.size() - 1)(PCG::generator)];
 	cmd += '"';
 	interfaces->engine->clientCmdUnrestricted(cmd.c_str());
@@ -2245,20 +2245,20 @@ void Misc::playHitSound(GameEvent& event) noexcept
 	if (!localPlayer)
 		return;
 
-	if (const auto localUserId = localPlayer->getUserId(); event.getInt(xorstr_("attacker")) != localUserId || event.getInt(xorstr_("userid")) == localUserId)
+	if (const auto localUserId = localPlayer->getUserId(); event.getInt("attacker") != localUserId || event.getInt("userid") == localUserId)
 		return;
 
-	const std::array hitSounds{
-		xorstr_("play physics/metal/metal_solid_impact_bullet2"),
-			xorstr_("play buttons/arena_switch_press_02"),
-			xorstr_("play training/timer_bell"),
-			xorstr_("play physics/glass/glass_impact_bullet1")
+	constexpr std::array hitSounds{
+		"play physics/metal/metal_solid_impact_bullet2",
+			"play buttons/arena_switch_press_02",
+			"play training/timer_bell",
+			"play physics/glass/glass_impact_bullet1"
 	};
 
 	if (static_cast<std::size_t>(config->misc.hitSound - 1) < hitSounds.size())
 		interfaces->engine->clientCmdUnrestricted(hitSounds[config->misc.hitSound - 1]);
 	else if (config->misc.hitSound == 5)
-		interfaces->engine->clientCmdUnrestricted((xorstr_("play ") + config->misc.customHitSound).c_str());
+		interfaces->engine->clientCmdUnrestricted(("play " + config->misc.customHitSound).c_str());
 }
 
 void Misc::killSound(GameEvent& event) noexcept
@@ -2269,89 +2269,89 @@ void Misc::killSound(GameEvent& event) noexcept
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
-	if (const auto localUserId = localPlayer->getUserId(); event.getInt(xorstr_("attacker")) != localUserId || event.getInt(xorstr_("userid")) == localUserId)
+	if (const auto localUserId = localPlayer->getUserId(); event.getInt("attacker") != localUserId || event.getInt("userid") == localUserId)
 		return;
 
-	const std::array killSounds{
-		xorstr_("play physics/metal/metal_solid_impact_bullet2"),
-			xorstr_("play buttons/arena_switch_press_02"),
-			xorstr_("play training/timer_bell"),
-			xorstr_("play physics/glass/glass_impact_bullet1")
+	constexpr std::array killSounds{
+		"play physics/metal/metal_solid_impact_bullet2",
+			"play buttons/arena_switch_press_02",
+			"play training/timer_bell",
+			"play physics/glass/glass_impact_bullet1"
 	};
 
 	if (static_cast<std::size_t>(config->misc.killSound - 1) < killSounds.size())
 		interfaces->engine->clientCmdUnrestricted(killSounds[config->misc.killSound - 1]);
 	else if (config->misc.killSound == 5)
-		interfaces->engine->clientCmdUnrestricted((xorstr_("play ") + config->misc.customKillSound).c_str());
+		interfaces->engine->clientCmdUnrestricted(("play " + config->misc.customKillSound).c_str());
 }
 
 void Misc::autoBuy(GameEvent* event) noexcept
 {
 	static const std::array<std::string, 17> primary = {
-	xorstr_(""),
-	xorstr_("mac10;buy mp9;"),
-	xorstr_("mp7;"),
-	xorstr_("ump45;"),
-	xorstr_("p90;"),
-	xorstr_("bizon;"),
-	xorstr_("galilar;buy famas;"),
-	xorstr_("ak47;buy m4a1;"),
-	xorstr_("ssg08;"),
-	xorstr_("sg556;buy aug;"),
-	xorstr_("awp;"),
-	xorstr_("g3sg1; buy scar20;"),
-	xorstr_("nova;"),
-	xorstr_("xm1014;"),
-	xorstr_("sawedoff;buy mag7;"),
-	xorstr_("m249; "),
-	xorstr_("negev;")
+	"",
+	"mac10;buy mp9;",
+	"mp7;",
+	"ump45;",
+	"p90;",
+	"bizon;",
+	"galilar;buy famas;",
+	"ak47;buy m4a1;",
+	"ssg08;",
+	"sg556;buy aug;",
+	"awp;",
+	"g3sg1; buy scar20;",
+	"nova;",
+	"xm1014;",
+	"sawedoff;buy mag7;",
+	"m249; ",
+	"negev;"
 	};
 	static const std::array<std::string, 6> secondary = {
-		xorstr_(""),
-		xorstr_("glock;buy hkp2000;"),
-		xorstr_("elite;"),
-		xorstr_("p250;"),
-		xorstr_("tec9;buy fiveseven;"),
-		xorstr_("deagle;buy revolver;")
+		"",
+		"glock;buy hkp2000;",
+		"elite;",
+		"p250;",
+		"tec9;buy fiveseven;",
+		"deagle;buy revolver;"
 	};
 	static const std::array<std::string, 3> armor = {
-		xorstr_(""),
-		xorstr_("vest;"),
-		xorstr_("vesthelm;"),
+		"",
+		"vest;",
+		"vesthelm;",
 	};
 	static const std::array<std::string, 2> utility = {
-		xorstr_("defuser;"),
-		xorstr_("taser;")
+		"defuser;",
+		"taser;"
 	};
 	static const std::array<std::string, 5> nades = {
-		xorstr_("hegrenade;"),
-		xorstr_("smokegrenade;"),
-		xorstr_("molotov;buy incgrenade;"),
-		xorstr_("flashbang;buy flashbang;"),
-		xorstr_("decoy;")
+		"hegrenade;",
+		"smokegrenade;",
+		"molotov;buy incgrenade;",
+		"flashbang;buy flashbang;",
+		"decoy;"
 	};
 
 	if (!config->misc.autoBuy.enabled)
 		return;
 
-	std::string cmd = xorstr_("");
+	std::string cmd = "";
 
 	if (event) {
 		if (config->misc.autoBuy.primaryWeapon)
-			cmd += xorstr_("buy ") + primary[config->misc.autoBuy.primaryWeapon];
+			cmd += "buy " + primary[config->misc.autoBuy.primaryWeapon];
 		if (config->misc.autoBuy.secondaryWeapon)
-			cmd += xorstr_("buy ") + secondary[config->misc.autoBuy.secondaryWeapon];
+			cmd += "buy " + secondary[config->misc.autoBuy.secondaryWeapon];
 		if (config->misc.autoBuy.armor)
-			cmd += xorstr_("buy ") + armor[config->misc.autoBuy.armor];
+			cmd += "buy " + armor[config->misc.autoBuy.armor];
 
 		for (size_t i = 0; i < utility.size(); i++) {
 			if ((config->misc.autoBuy.utility & 1 << i) == 1 << i)
-				cmd += xorstr_("buy ") + utility[i];
+				cmd += "buy " + utility[i];
 		}
 
 		for (size_t i = 0; i < nades.size(); i++) {
 			if ((config->misc.autoBuy.grenades & 1 << i) == 1 << i)
-				cmd += xorstr_("buy ") + nades[i];
+				cmd += "buy " + nades[i];
 		}
 
 		interfaces->engine->clientCmdUnrestricted(cmd.c_str());
@@ -2378,10 +2378,10 @@ void Misc::purchaseList(GameEvent* event) noexcept
 		switch (fnv::hashRuntime(event->getName())) {
 		case fnv::hash("item_purchase"):
 		{
-			const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerForUserID(event->getInt(xorstr_("userid"))));
+			const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerForUserID(event->getInt("userid")));
 
 			if (player && localPlayer && memory->isOtherEnemy(player, localPlayer.get())) {
-				if (const auto definition = memory->itemSystem()->getItemSchema()->getItemDefinitionByName(event->getString(xorstr_("weapon")))) {
+				if (const auto definition = memory->itemSystem()->getItemSchema()->getItemDefinitionByName(event->getString("weapon"))) {
 					auto& purchase = playerPurchases[player->handle()];
 					if (const auto weaponInfo = memory->weaponSystem->getWeaponInfo(definition->getWeaponId())) {
 						purchase.totalCost += weaponInfo->price;
@@ -2408,7 +2408,7 @@ void Misc::purchaseList(GameEvent* event) noexcept
 		if (!config->misc.purchaseList.enabled)
 			return;
 
-		static const auto mp_buytime = interfaces->cvar->findVar(xorstr_("mp_buytime"));
+		static const auto mp_buytime = interfaces->cvar->findVar("mp_buytime");
 
 		if ((!interfaces->engine->isInGame() || freezeEnd != 0.0f && memory->globalVars->realtime > freezeEnd + (!config->misc.purchaseList.onlyDuringFreezeTime ? mp_buytime->getFloat() : 0.0f) || playerPurchases.empty() || purchaseTotal.empty()) && !gui->isOpen())
 			return;
@@ -2427,7 +2427,7 @@ void Misc::purchaseList(GameEvent* event) noexcept
 			windowFlags |= ImGuiWindowFlags_NoTitleBar;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, { 0.5f, 0.5f });
-		ImGui::Begin(xorstr_("Purchases"), nullptr, windowFlags);
+		ImGui::Begin("Purchases", nullptr, windowFlags);
 		ImGui::PopStyleVar();
 
 		if (config->misc.purchaseList.mode == PurchaseList::Details) {
@@ -2438,8 +2438,8 @@ void Misc::purchaseList(GameEvent* event) noexcept
 				s.reserve(std::accumulate(purchases.items.begin(), purchases.items.end(), 0, [](int length, const auto& p) { return length + p.first.length() + 2; }));
 				for (const auto& purchasedItem : purchases.items) {
 					if (purchasedItem.second > 1)
-						s += std::to_string(purchasedItem.second) + xorstr_("x ");
-					s += purchasedItem.first + xorstr_(", ");
+						s += std::to_string(purchasedItem.second) + "x ";
+					s += purchasedItem.first + ", ";
 				}
 
 				if (s.length() >= 2)
@@ -2447,18 +2447,18 @@ void Misc::purchaseList(GameEvent* event) noexcept
 
 				if (const auto player = GameData::playerByHandle(handle)) {
 					if (config->misc.purchaseList.showPrices)
-						ImGui::TextWrapped(xorstr_("%s $%d: %s"), player->name.c_str(), purchases.totalCost, s.c_str());
+						ImGui::TextWrapped("%s $%d: %s", player->name.c_str(), purchases.totalCost, s.c_str());
 					else
-						ImGui::TextWrapped(xorstr_("%s: %s"), player->name.c_str(), s.c_str());
+						ImGui::TextWrapped("%s: %s", player->name.c_str(), s.c_str());
 				}
 			}
 		} else if (config->misc.purchaseList.mode == PurchaseList::Summary) {
 			for (const auto& purchase : purchaseTotal)
-				ImGui::TextWrapped(xorstr_("%d x %s"), purchase.second, purchase.first.c_str());
+				ImGui::TextWrapped("%d x %s", purchase.second, purchase.first.c_str());
 
 			if (config->misc.purchaseList.showPrices && totalCost > 0) {
 				ImGui::Separator();
-				ImGui::TextWrapped(xorstr_("Total: $%d"), totalCost);
+				ImGui::TextWrapped("Total: $%d", totalCost);
 			}
 		}
 		ImGui::End();
@@ -2476,7 +2476,7 @@ void Misc::oppositeHandKnife(FrameStage stage) noexcept
 	if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
 		return;
 
-	static const auto cl_righthand = interfaces->cvar->findVar(xorstr_("cl_righthand"));
+	static const auto cl_righthand = interfaces->cvar->findVar("cl_righthand");
 	static bool original;
 
 	if (stage == FrameStage::RENDER_START) {
@@ -2529,15 +2529,15 @@ void Misc::runReportbot() noexcept
 		std::string report;
 
 		if (config->misc.reportbot.textAbuse)
-			report += xorstr_("textabuse,");
+			report += "textabuse,";
 		if (config->misc.reportbot.griefing)
-			report += xorstr_("grief,");
+			report += "grief,";
 		if (config->misc.reportbot.wallhack)
-			report += xorstr_("wallhack,");
+			report += "wallhack,";
 		if (config->misc.reportbot.aimbot)
-			report += xorstr_("aimbot,");
+			report += "aimbot,";
 		if (config->misc.reportbot.other)
-			report += xorstr_("speedhack,");
+			report += "speedhack,";
 
 		if (!report.empty()) {
 			memory->submitReport(std::to_string(playerInfo.xuid).c_str(), report.c_str());
@@ -2574,7 +2574,7 @@ void Misc::preserveKillfeed(bool roundStart) noexcept
 
 	nextUpdate = memory->globalVars->realtime + 2.0f;
 
-	const auto deathNotice = std::uintptr_t(memory->findHudElement(memory->hud, xorstr_("CCSGO_HudDeathNotice")));
+	const auto deathNotice = std::uintptr_t(memory->findHudElement(memory->hud, "CCSGO_HudDeathNotice"));
 	if (!deathNotice)
 		return;
 
@@ -2587,8 +2587,8 @@ void Misc::preserveKillfeed(bool roundStart) noexcept
 		if (!child)
 			continue;
 
-		if (child->hasClass(xorstr_("DeathNotice_Killer")) && (!config->misc.preserveKillfeed.onlyHeadshots || child->hasClass(xorstr_("DeathNoticeHeadShot"))))
-			child->setAttributeFloat(xorstr_("SpawnTime"), memory->globalVars->currenttime);
+		if (child->hasClass("DeathNotice_Killer") && (!config->misc.preserveKillfeed.onlyHeadshots || child->hasClass("DeathNoticeHeadShot")))
+			child->setAttributeFloat("SpawnTime", memory->globalVars->currenttime);
 	}
 }
 
@@ -2597,15 +2597,15 @@ void Misc::voteRevealer(GameEvent& event) noexcept
 	if (!config->misc.revealVotes)
 		return;
 
-	const auto entity = interfaces->entityList->getEntity(event.getInt(xorstr_("entityid")));
+	const auto entity = interfaces->entityList->getEntity(event.getInt("entityid"));
 	if (!entity || !entity->isPlayer())
 		return;
 
-	const auto votedYes = event.getInt(xorstr_("vote_option")) == 0;
+	const auto votedYes = event.getInt("vote_option") == 0;
 	const auto isLocal = localPlayer && entity == localPlayer.get();
 	const char color = votedYes ? '\x06' : '\x07';
 
-	memory->clientMode->getHudChat()->printf(0, xorstr_(" \x0C\u2022Osiris\u2022 %c%s\x01 voted %c%s\x01"), isLocal ? '\x01' : color, isLocal ? xorstr_("You") : entity->getPlayerName().c_str(), color, votedYes ? xorstr_("Yes") : xorstr_("No"));
+	memory->clientMode->getHudChat()->printf(0, " \x0C\u2022Osiris\u2022 %c%s\x01 voted %c%s\x01", isLocal ? '\x01' : color, isLocal ? "You" : entity->getPlayerName().c_str(), color, votedYes ? "Yes" : "No");
 }
 
 // ImGui::ShadeVertsLinearColorGradientKeepAlpha() modified to do interpolation in HSV
@@ -2720,15 +2720,15 @@ void Misc::autoAccept(const char* soundEntry) noexcept
 	if (!config->misc.autoAccept)
 		return;
 
-	if (std::strcmp(soundEntry, xorstr_("UIPanorama.popup_accept_match_beep")))
+	if (std::strcmp(soundEntry, "UIPanorama.popup_accept_match_beep"))
 		return;
 
-	if (const auto idx = memory->registeredPanoramaEvents->find(memory->makePanoramaSymbol(xorstr_("MatchAssistedAccept"))); idx != -1) {
+	if (const auto idx = memory->registeredPanoramaEvents->find(memory->makePanoramaSymbol("MatchAssistedAccept")); idx != -1) {
 		if (const auto eventPtr = memory->registeredPanoramaEvents->memory[idx].value.makeEvent(nullptr))
 			interfaces->panoramaUIEngine->accessUIEngine()->dispatchEvent(eventPtr);
 	}
 
-	auto window = FindWindowW(xorstr_(L"Valve001"), NULL);
+	auto window = FindWindowW(L"Valve001", NULL);
 	FLASHWINFO flash{ sizeof(FLASHWINFO), window, FLASHW_TRAY | FLASHW_TIMERNOFG, 0, 0 };
 	FlashWindowEx(&flash);
 	ShowWindow(window, SW_RESTORE);
@@ -2745,7 +2745,7 @@ void Misc::updateEventListeners(bool forceRemove) noexcept
 	static bool listenerRegistered = false;
 
 	if (config->misc.purchaseList.enabled && !listenerRegistered) {
-		interfaces->gameEventManager->addListener(&listener, xorstr_("item_purchase"));
+		interfaces->gameEventManager->addListener(&listener, "item_purchase");
 		listenerRegistered = true;
 	} else if ((!config->misc.purchaseList.enabled || forceRemove) && listenerRegistered) {
 		interfaces->gameEventManager->removeListener(&listener);
@@ -2770,8 +2770,8 @@ void Misc::updateInput() noexcept
 void Misc::reset(int resetType) noexcept
 {
 	if (resetType == 1) {
-		static auto ragdollGravity = interfaces->cvar->findVar(xorstr_("cl_ragdoll_gravity"));
-		static auto blur = interfaces->cvar->findVar(xorstr_("@panorama_disable_blur"));
+		static auto ragdollGravity = interfaces->cvar->findVar("cl_ragdoll_gravity");
+		static auto blur = interfaces->cvar->findVar("@panorama_disable_blur");
 		ragdollGravity->setValue(600);
 		blur->setValue(0);
 	}

@@ -93,7 +93,7 @@ void Helpers::logConsole(std::string_view msg, const std::array<std::uint8_t, 4>
 {
 	static constexpr int LS_MESSAGE = 0;
 
-	static const auto channelId = memory->findLoggingChannel(xorstr_("Console"));
+	static const auto channelId = memory->findLoggingChannel("Console");
 
 	memory->logDirect(channelId, LS_MESSAGE, color, msg.data());
 }
@@ -394,7 +394,7 @@ ImWchar* Helpers::getFontGlyphRanges() noexcept
 		builder.AddRanges(baseRanges);
 		builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 		builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
-		builder.AddText(xorstr_("\u9F8D\u738B\u58F1\u5F10\u2122"));
+		builder.AddText("\u9F8D\u738B\u58F1\u5F10\u2122");
 		builder.BuildRanges(&ranges);
 	}
 	return ranges.Data;
@@ -424,7 +424,7 @@ std::wstring Helpers::toUpper(std::wstring str) noexcept
 
 bool Helpers::decodeVFONT(std::vector<char>& buffer) noexcept
 {
-	const std::string_view tag = xorstr_("VFONT1");
+	constexpr std::string_view tag = "VFONT1";
 	unsigned char magic = 0xA7;
 
 	if (buffer.size() <= tag.length())

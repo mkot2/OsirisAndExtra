@@ -150,13 +150,13 @@ bool Backtrack::valid(float simtime) noexcept
 
 void Backtrack::init() noexcept
 {
-	cvars.updateRate = interfaces->cvar->findVar(xorstr_("cl_updaterate"));
-	cvars.maxUpdateRate = interfaces->cvar->findVar(xorstr_("sv_maxupdaterate"));
-	cvars.interp = interfaces->cvar->findVar((xorstr_("cl_interp")));
-	cvars.interpRatio = interfaces->cvar->findVar(xorstr_("cl_interp_ratio"));
-	cvars.minInterpRatio = interfaces->cvar->findVar(xorstr_("sv_client_min_interp_ratio"));
-	cvars.maxInterpRatio = interfaces->cvar->findVar(xorstr_("sv_client_max_interp_ratio"));
-	cvars.maxUnlag = interfaces->cvar->findVar(xorstr_("sv_maxunlag"));
+	cvars.updateRate = interfaces->cvar->findVar("cl_updaterate");
+	cvars.maxUpdateRate = interfaces->cvar->findVar("sv_maxupdaterate");
+	cvars.interp = interfaces->cvar->findVar("cl_interp");
+	cvars.interpRatio = interfaces->cvar->findVar("cl_interp_ratio");
+	cvars.minInterpRatio = interfaces->cvar->findVar("sv_client_min_interp_ratio");
+	cvars.maxInterpRatio = interfaces->cvar->findVar("sv_client_max_interp_ratio");
+	cvars.maxUnlag = interfaces->cvar->findVar("sv_maxunlag");
 }
 
 float Backtrack::getMaxUnlag() noexcept

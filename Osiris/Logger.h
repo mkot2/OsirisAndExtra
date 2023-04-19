@@ -30,7 +30,7 @@ namespace Logger
 	struct Log {
 		float time{ 0.0f };
 		float alpha{ 255.0f };
-		std::string text{ xorstr_("") };
+		std::string text{ "" };
 	};
 
 	void reset() noexcept;

@@ -264,11 +264,11 @@ void AnimState::setupMovement() noexcept
 	}
 
 	char weaponMoveSequenceString[MAX_ANIMSTATE_ANIMNAME_CHARS];
-	sprintf(weaponMoveSequenceString, xorstr_("move_%s"), memory->getWeaponPrefix(this));
+	sprintf(weaponMoveSequenceString, "move_%s", memory->getWeaponPrefix(this));
 
 	int weaponMoveSeq = entity->lookupSequence(weaponMoveSequenceString);
 	if (weaponMoveSeq == -1)
-		weaponMoveSeq = entity->lookupSequence(xorstr_("move"));
+		weaponMoveSeq = entity->lookupSequence("move");
 
 	if (entity->moveState() != previousMoveState)
 		stutterStep += 10.f;
@@ -361,7 +361,7 @@ void AnimState::setupMovement() noexcept
 		if (durationStrafing > 0.08f)
 			strafeChangeWeight = Helpers::approach(0.f, strafeChangeWeight, lastUpdateIncrement * 5.f);
 
-		strafeSequence = entity->lookupSequence(xorstr_("strafe"));
+		strafeSequence = entity->lookupSequence("strafe");
 		float rate = entity->getSequenceCycleRate(strafeSequence);
 		strafeChangeCycle = std::clamp(strafeChangeCycle + lastUpdateIncrement * rate, 0.f, 1.f);
 	}
@@ -1067,11 +1067,11 @@ float AnimState::calculatePlaybackRate(Vector velocity) noexcept
 	}
 
 	char weaponMoveSequenceString[MAX_ANIMSTATE_ANIMNAME_CHARS];
-	sprintf(weaponMoveSequenceString, xorstr_("move_%s"), memory->getWeaponPrefix(this));
+	sprintf(weaponMoveSequenceString, "move_%s", memory->getWeaponPrefix(this));
 
 	int weaponMoveSeq = entity->lookupSequence(weaponMoveSequenceString);
 	if (weaponMoveSeq == -1)
-		weaponMoveSeq = entity->lookupSequence(xorstr_("move"));
+		weaponMoveSeq = entity->lookupSequence("move");
 
 	float moveCycleRate = 0.f;
 	if (velocityLengthXY > 0.f) {

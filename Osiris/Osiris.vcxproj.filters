@@ -36,9 +36,6 @@
     <Filter Include="SDK">
       <UniqueIdentifier>{6cc612f0-86fb-4bf6-b64a-74e10f5b498a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Security">
-      <UniqueIdentifier>{b3b393af-ad52-471e-a709-4b05a95cfc94}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUI.cpp">
@@ -681,9 +678,6 @@
     </ClInclude>
     <ClInclude Include="imgui\imstb_sprintf.h">
       <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Security\xorstr.hpp">
-      <Filter>Security</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

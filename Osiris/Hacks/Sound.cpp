@@ -55,17 +55,17 @@ void Sound::drawGUI() noexcept
 {
 	ImGui::Columns(2, nullptr, false);
 	ImGui::SetColumnOffset(1, 300.f);
-	ImGui::PushID(xorstr_("Sound"));
-	ImGui::SliderInt(xorstr_("Chicken volume"), &soundConfig.chickenVolume, 0, 200, xorstr_("%d%%"));
+	ImGui::PushID("Sound");
+	ImGui::SliderInt("Chicken volume", &soundConfig.chickenVolume, 0, 200, "%d%%");
 
 	static int currentCategory{ 0 };
 	ImGui::PushItemWidth(110.0f);
-	ImGui::Combo(xorstr_(""), &currentCategory, xorstr_("Local player\0Allies\0Enemies\0"));
+	ImGui::Combo("", &currentCategory, "Local player\0Allies\0Enemies\0");
 	ImGui::PopItemWidth();
-	ImGui::SliderInt(xorstr_("Master volume"), &soundConfig.players[currentCategory].masterVolume, 0, 200, xorstr_("%d%%"));
-	ImGui::SliderInt(xorstr_("Headshot volume"), &soundConfig.players[currentCategory].headshotVolume, 0, 200, xorstr_("%d%%"));
-	ImGui::SliderInt(xorstr_("Weapon volume"), &soundConfig.players[currentCategory].weaponVolume, 0, 200, xorstr_("%d%%"));
-	ImGui::SliderInt(xorstr_("Footstep volume"), &soundConfig.players[currentCategory].footstepVolume, 0, 200, xorstr_("%d%%"));
+	ImGui::SliderInt("Master volume", &soundConfig.players[currentCategory].masterVolume, 0, 200, "%d%%");
+	ImGui::SliderInt("Headshot volume", &soundConfig.players[currentCategory].headshotVolume, 0, 200, "%d%%");
+	ImGui::SliderInt("Weapon volume", &soundConfig.players[currentCategory].weaponVolume, 0, 200, "%d%%");
+	ImGui::SliderInt("Footstep volume", &soundConfig.players[currentCategory].footstepVolume, 0, 200, "%d%%");
 	ImGui::PopID();
 	ImGui::NextColumn();
 	ImGui::Columns(1);
@@ -80,10 +80,10 @@ static void to_json(json& j, const SoundConfig::Player& o)
 {
 	const SoundConfig::Player dummy;
 
-	WRITE(xorstr_("Master volume"), masterVolume);
-	WRITE(xorstr_("Headshot volume"), headshotVolume);
-	WRITE(xorstr_("Weapon volume"), weaponVolume);
-	WRITE(xorstr_("Footstep volume"), footstepVolume);
+	WRITE("Master volume", masterVolume);
+	WRITE("Headshot volume", headshotVolume);
+	WRITE("Weapon volume", weaponVolume);
+	WRITE("Footstep volume", footstepVolume);
 }
 
 json Sound::toJson() noexcept
@@ -91,23 +91,23 @@ json Sound::toJson() noexcept
 	const SoundConfig dummy;
 
 	json j;
-	to_json(j[xorstr_("Chicken volume")], soundConfig.chickenVolume, dummy.chickenVolume);
-	j[xorstr_("Players")] = soundConfig.players;
+	to_json(j["Chicken volume"], soundConfig.chickenVolume, dummy.chickenVolume);
+	j["Players"] = soundConfig.players;
 	return j;
 }
 
 static void from_json(const json& j, SoundConfig::Player& p)
 {
-	read(j, xorstr_("Master volume"), p.masterVolume);
-	read(j, xorstr_("Headshot volume"), p.headshotVolume);
-	read(j, xorstr_("Weapon volume"), p.weaponVolume);
-	read(j, xorstr_("Footstep volume"), p.footstepVolume);
+	read(j, "Master volume", p.masterVolume);
+	read(j, "Headshot volume", p.headshotVolume);
+	read(j, "Weapon volume", p.weaponVolume);
+	read(j, "Footstep volume", p.footstepVolume);
 }
 
 void Sound::fromJson(const json& j) noexcept
 {
-	read(j, xorstr_("Chicken volume"), soundConfig.chickenVolume);
-	read(j, xorstr_("Players"), soundConfig.players);
+	read(j, "Chicken volume", soundConfig.chickenVolume);
+	read(j, "Players", soundConfig.players);
 }
 
 #else

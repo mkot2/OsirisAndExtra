@@ -269,20 +269,20 @@ public:
 
 	Vector& getAbsVelocity() noexcept
 	{
-		static unsigned int m_vecAbsVelocity = DataMap::findInDataMap(getPredDescMap(), xorstr_("m_vecAbsVelocity"));
+		static unsigned int m_vecAbsVelocity = DataMap::findInDataMap(getPredDescMap(), "m_vecAbsVelocity");
 		return *reinterpret_cast<Vector*>(reinterpret_cast<uintptr_t>(this) + m_vecAbsVelocity);
 	}
 
 	Vector& callGetAbsVelocity() noexcept
 	{
-		static unsigned int m_vecAbsVelocity = DataMap::findInDataMap(getPredDescMap(), xorstr_("m_vecAbsVelocity"));
+		static unsigned int m_vecAbsVelocity = DataMap::findInDataMap(getPredDescMap(), "m_vecAbsVelocity");
 		memory->calcAbsoluteVelocity(this);
 		return *reinterpret_cast<Vector*>(reinterpret_cast<uintptr_t>(this) + m_vecAbsVelocity);
 	}
 
 	Entity* groundEntity() noexcept
 	{
-		static unsigned int m_hGroundEntity = DataMap::findInDataMap(getPredDescMap(), xorstr_("m_hGroundEntity"));
+		static unsigned int m_hGroundEntity = DataMap::findInDataMap(getPredDescMap(), "m_hGroundEntity");
 		const auto handle = *reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(this) + m_hGroundEntity);
 		if (handle == -1)
 			return nullptr;
@@ -394,13 +394,13 @@ public:
 
 	uint32_t& getEffects() noexcept
 	{
-		static unsigned int m_fEffects = DataMap::findInDataMap(getPredDescMap(), xorstr_("m_fEffects"));
+		static unsigned int m_fEffects = DataMap::findInDataMap(getPredDescMap(), "m_fEffects");
 		return *reinterpret_cast<uint32_t*>(reinterpret_cast<uintptr_t>(this) + m_fEffects);
 	}
 
 	uint32_t& getEFlags() noexcept
 	{
-		static unsigned int m_iEFlags = DataMap::findInDataMap(getPredDescMap(), xorstr_("m_iEFlags"));
+		static unsigned int m_iEFlags = DataMap::findInDataMap(getPredDescMap(), "m_iEFlags");
 		return *reinterpret_cast<uint32_t*>(reinterpret_cast<uintptr_t>(this) + m_iEFlags);
 	}
 
@@ -573,25 +573,25 @@ public:
 
 	int& getButtons() noexcept
 	{
-		static auto buttons = DataMap::findInDataMap(getPredDescMap(), xorstr_("m_nButtons"));
+		static auto buttons = DataMap::findInDataMap(getPredDescMap(), "m_nButtons");
 		return *reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(this) + buttons);
 	}
 
 	int& getButtonLast() noexcept
 	{
-		static auto buttonLast = DataMap::findInDataMap(getPredDescMap(), xorstr_("m_afButtonLast"));
+		static auto buttonLast = DataMap::findInDataMap(getPredDescMap(), "m_afButtonLast");
 		return *reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(this) + buttonLast);
 	}
 
 	int& getButtonPressed() noexcept
 	{
-		static auto buttonPressed = DataMap::findInDataMap(getPredDescMap(), xorstr_("m_afButtonPressed"));
+		static auto buttonPressed = DataMap::findInDataMap(getPredDescMap(), "m_afButtonPressed");
 		return *reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(this) + buttonPressed);
 	}
 
 	int& getButtonReleased() noexcept
 	{
-		static auto buttonReleased = DataMap::findInDataMap(getPredDescMap(), xorstr_("m_afButtonReleased"));
+		static auto buttonReleased = DataMap::findInDataMap(getPredDescMap(), "m_afButtonReleased");
 		return *reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(this) + buttonReleased);
 	}
 

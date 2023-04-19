@@ -34,8 +34,8 @@ int getMaxUserCmdProcessTicks() noexcept
 
 GameMode getGameMode() noexcept
 {
-	static auto gameType{ interfaces->cvar->findVar(xorstr_("game_type")) };
-	static auto gameMode{ interfaces->cvar->findVar(xorstr_("game_mode")) };
+	static auto gameType{ interfaces->cvar->findVar("game_type") };
+	static auto gameMode{ interfaces->cvar->findVar("game_mode") };
 	switch (gameType->getInt()) {
 	case 0:
 		switch (gameMode->getInt()) {

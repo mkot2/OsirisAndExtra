@@ -278,8 +278,8 @@ float calculateArmor(float damage, int armorValue) noexcept
 
 void drawDamage(Vector position) noexcept
 {
-	static auto mp_friendlyfire = interfaces->cvar->findVar(xorstr_("mp_friendlyfire"));
-	static auto ff_damage_reduction_grenade = interfaces->cvar->findVar(xorstr_("ff_damage_reduction_grenade"));
+	static auto mp_friendlyfire = interfaces->cvar->findVar("mp_friendlyfire");
+	static auto ff_damage_reduction_grenade = interfaces->cvar->findVar("ff_damage_reduction_grenade");
 
 	ImVec2 pos{};
 
@@ -313,7 +313,7 @@ void drawDamage(Vector position) noexcept
 		if (dmg < 1)
 			continue;
 
-		std::string dmg2text = player.health - dmg > 0 ? std::to_string(static_cast<int>(dmg)) : xorstr_("Kill");
+		std::string dmg2text = player.health - dmg > 0 ? std::to_string(static_cast<int>(dmg)) : "Kill";
 		if (Helpers::worldToScreen(player.origin, pos))
 			dmgPoints.emplace_back(std::pair<ImVec2, std::string>{ pos, dmg2text });
 	}

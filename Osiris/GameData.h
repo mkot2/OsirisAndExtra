@@ -184,8 +184,8 @@ struct WeaponData : BaseData {
 
 	int clip;
 	int reserveAmmo;
-	const char* group = xorstr_("All");
-	const char* name = xorstr_("All");
+	const char* group = "All";
+	const char* name = "All";
 	std::string displayName;
 };
 

@@ -50,10 +50,10 @@ static Vector anglesToAnimate;
 
 void Animations::init() noexcept
 {
-	static auto threadedBoneSetup = interfaces->cvar->findVar(xorstr_("cl_threaded_bone_setup"));
+	static auto threadedBoneSetup = interfaces->cvar->findVar("cl_threaded_bone_setup");
 	threadedBoneSetup->setValue(1);
 
-	static auto extrapolate = interfaces->cvar->findVar(xorstr_("cl_extrapolate"));
+	static auto extrapolate = interfaces->cvar->findVar("cl_extrapolate");
 	extrapolate->setValue(0);
 }
 
@@ -275,7 +275,7 @@ float getExtraTicks() noexcept
 
 void Animations::handlePlayers(FrameStage stage) noexcept
 {
-	static auto gravity = interfaces->cvar->findVar(xorstr_("sv_gravity"));
+	static auto gravity = interfaces->cvar->findVar("sv_gravity");
 	const float timeLimit = static_cast<float>(config->backtrack.timeLimit) / 1000.f + getExtraTicks();
 	if (stage != FrameStage::NET_UPDATE_END)
 		return;

@@ -65,8 +65,8 @@ static void walkTable(const char* networkName, RecvTable* recvTable, const std::
 			&& prop.dataTable
 			&& prop.dataTable->netTableName[0] == 'D')
 			walkTable(networkName, prop.dataTable, prop.offset + offset);
-		
-		const auto hash{ fnv::hashRuntime((networkName + std::string{ xorstr_("->") } + prop.name).c_str()) };
+
+		const auto hash{ fnv::hashRuntime((networkName + std::string{ "->" } + prop.name).c_str()) };
 
 		constexpr auto getHook{ [](std::uint32_t hash) noexcept -> recvProxy {
 			 switch (hash) {

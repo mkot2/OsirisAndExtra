@@ -14,23 +14,23 @@ std::string getStringFromHitgroup(int hitgroup) noexcept
 {
 	switch (hitgroup) {
 	case HitGroup::Generic:
-		return xorstr_("generic");
+		return "generic";
 	case HitGroup::Head:
-		return xorstr_("head");
+		return "head";
 	case HitGroup::Chest:
-		return xorstr_("chest");
+		return "chest";
 	case HitGroup::Stomach:
-		return xorstr_("stomach");
+		return "stomach";
 	case HitGroup::LeftArm:
-		return xorstr_("left arm");
+		return "left arm";
 	case HitGroup::RightArm:
-		return xorstr_("right arm");
+		return "right arm";
 	case HitGroup::LeftLeg:
-		return xorstr_("left leg");
+		return "left leg";
 	case HitGroup::RightLeg:
-		return xorstr_("right leg");
+		return "right leg";
 	default:
-		return xorstr_("unknown");
+		return "unknown";
 	}
 }
 
@@ -51,7 +51,7 @@ void Logger::getEvent(GameEvent* event) noexcept
 	if (!event || !localPlayer || interfaces->engine->isHLTV())
 		return;
 
-	static auto c4Timer = interfaces->cvar->findVar(xorstr_("mp_c4timer"));
+	static auto c4Timer = interfaces->cvar->findVar("mp_c4timer");
 
 	Log log;
 	log.time = memory->globalVars->realtime;
@@ -59,10 +59,10 @@ void Logger::getEvent(GameEvent* event) noexcept
 	switch (fnv::hashRuntime(event->getName())) {
 	case fnv::hash("player_hurt"): {
 
-		const int hurt = interfaces->engine->getPlayerForUserID(event->getInt(xorstr_("userid")));
-		const int attack = interfaces->engine->getPlayerForUserID(event->getInt(xorstr_("attacker")));
-		const auto damage = std::to_string(event->getInt(xorstr_("dmg_health")));
-		const auto hitgroup = getStringFromHitgroup(event->getInt(xorstr_("hitgroup")));
+		const int hurt = interfaces->engine->getPlayerForUserID(event->getInt("userid"));
+		const int attack = interfaces->engine->getPlayerForUserID(event->getInt("attacker"));
+		const auto damage = std::to_string(event->getInt("dmg_health"));
+		const auto hitgroup = getStringFromHitgroup(event->getInt("hitgroup"));
 
 		if (hurt != localPlayer->index() && attack == localPlayer->index()) {
 			if ((config->misc.loggerOptions.events & 1 << DamageDealt) != 1 << DamageDealt)
@@ -72,7 +72,7 @@ void Logger::getEvent(GameEvent* event) noexcept
 			if (!player)
 				break;
 
-			log.text = xorstr_("Hurt ") + player->getPlayerName() + xorstr_(" for ") + damage + xorstr_(" in ") + hitgroup;
+			log.text = "Hurt " + player->getPlayerName() + " for " + damage + " in " + hitgroup;
 		} else if (hurt == localPlayer->index() && attack != localPlayer->index()) {
 			if ((config->misc.loggerOptions.events & 1 << DamageReceived) != 1 << DamageReceived)
 				break;
@@ -81,7 +81,7 @@ void Logger::getEvent(GameEvent* event) noexcept
 			if (!player)
 				break;
 
-			log.text = xorstr_("Harmed by ") + player->getPlayerName() + xorstr_(" for ") + damage + xorstr_(" in ") + hitgroup;
+			log.text = "Harmed by " + player->getPlayerName() + " for " + damage + " in " + hitgroup;
 		}
 		break;
 	}
@@ -89,7 +89,7 @@ void Logger::getEvent(GameEvent* event) noexcept
 		if ((config->misc.loggerOptions.events & 1 << BombPlants) != 1 << BombPlants)
 			break;
 
-		const int idx = interfaces->engine->getPlayerForUserID(event->getInt(xorstr_("userid")));
+		const int idx = interfaces->engine->getPlayerForUserID(event->getInt("userid"));
 		if (idx == localPlayer->index())
 			break;
 
@@ -97,16 +97,16 @@ void Logger::getEvent(GameEvent* event) noexcept
 		if (!player)
 			break;
 
-		const std::string site = event->getInt(xorstr_("site")) ? xorstr_("a") : xorstr_("b");
+		const std::string site = event->getInt("site") ? "a" : "b";
 
-		log.text = xorstr_("Bomb planted at bombsite ") + site + xorstr_(" by ") + player->getPlayerName() + xorstr_(", detonation in ") + std::to_string(c4Timer->getFloat()) + xorstr_(" seconds");
+		log.text = "Bomb planted at bombsite " + site + " by " + player->getPlayerName() + ", detonation in " + std::to_string(c4Timer->getFloat()) + " seconds";
 		break;
 	}
 	case fnv::hash("hostage_follows"): {
 		if ((config->misc.loggerOptions.events & 1 << HostageTaken) != 1 << HostageTaken)
 			break;
 
-		const int idx = interfaces->engine->getPlayerForUserID(event->getInt(xorstr_("userid")));
+		const int idx = interfaces->engine->getPlayerForUserID(event->getInt("userid"));
 		if (idx == localPlayer->index())
 			break;
 
@@ -114,7 +114,7 @@ void Logger::getEvent(GameEvent* event) noexcept
 		if (!player)
 			break;
 
-		log.text = xorstr_("Hostage taken by ") + player->getPlayerName();
+		log.text = "Hostage taken by " + player->getPlayerName();
 		break;
 	}
 	default:
@@ -164,7 +164,7 @@ void Logger::console() noexcept
 	color.at(3) = static_cast<uint8_t>(255.0f);
 
 	for (auto log : logs)
-		Helpers::logConsole(log.text + xorstr_("\n"), color);
+		Helpers::logConsole(log.text + "\n", color);
 
 	logs.clear();
 }
@@ -210,5 +210,5 @@ void Logger::addLog(std::string logText) noexcept
 
 	logs.push_front(log);
 	renderLogs.push_front(log);
-	if (config->misc.logger.enabled) memory->clientMode->getHudChat()->printf(0, xorstr_(" \x0C\u2022Osiris\u2022\x01 %s"), logText);
+	if (config->misc.logger.enabled) memory->clientMode->getHudChat()->printf(0, " \x0C\u2022Osiris\u2022\x01 %s", logText);
 }

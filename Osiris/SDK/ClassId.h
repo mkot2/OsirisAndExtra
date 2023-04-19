@@ -66,7 +66,7 @@ private:
 public:
 	ClassIdManager() noexcept
 	{
-		fogController = getClassID(xorstr_("CFogController"));
+		fogController = getClassID("CFogController");
 	}
 
 	int fogController;
