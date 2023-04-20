@@ -679,5 +679,8 @@
     <ClInclude Include="imgui\imstb_sprintf.h">
       <Filter>imgui</Filter>
     </ClInclude>
+    <ClInclude Include="memory_signature.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

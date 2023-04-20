@@ -515,7 +515,7 @@ void GUI::renderRagebotWindow() noexcept
 
 void GUI::renderTriggerbotWindow() noexcept
 {
-	static const char* hitboxes[]{ "Head","Chest","Stomach","Arms","Legs","Feet"};
+	static constexpr const char* hitboxes[]{ "Head","Chest","Stomach","Arms","Legs","Feet" };
 	static bool hitbox[ARRAYSIZE(hitboxes)] = { false, false, false, false, false, false };
 	static std::string previewvalue = "";
 
@@ -650,8 +650,8 @@ void GUI::renderTriggerbotWindow() noexcept
 	ImGui::PushItemWidth(220.0f);
 	ImGui::SliderInt("Hitchance", &config->triggerbot[currentWeapon].hitChance, 0, 100, "%d");
 	ImGui::PushItemWidth(220.0f);
-	ImGui::SliderInt("Shot delay", &config->triggerbot[currentWeapon].shotDelay, 0, 250, "%d ms");
-	ImGui::SliderInt("Min damage", &config->triggerbot[currentWeapon].minDamage, 0, 101, "%d");
+	ImGui::SliderInt("Shot delay", &config->triggerbot[currentWeapon].shotDelay, 0, 300, "%d ms");
+	ImGui::SliderInt("Min damage", &config->triggerbot[currentWeapon].minDamage, 0, 100, "%d");
 	config->triggerbot[currentWeapon].minDamage = std::clamp(config->triggerbot[currentWeapon].minDamage, 0, 250);
 	ImGui::Checkbox("Killshot", &config->triggerbot[currentWeapon].killshot);
 	ImGui::NextColumn();
@@ -665,7 +665,7 @@ void GUI::renderFakelagWindow() noexcept
 	static int current_category{};
 	ImGui::Combo("", &current_category, "Freestanding\0Moving\0Jumping\0Ducking\0Duck-jumping\0Slow-walking\0Fake-ducking\0");
 	ImGui::Checkbox("Enabled", &config->fakelag[current_category].enabled);
-	ImGui::Combo("Mode", &config->fakelag[current_category].mode, "Static\0Adaptive\0Random\0rand() Random\0");
+	ImGui::Combo("Mode", &config->fakelag[current_category].mode, "Static\0Adaptive\0Random\0");
 	ImGui::PushItemWidth(220.0f);
 	ImGui::SliderInt("Limit", &config->fakelag[current_category].limit, 1, 21, "%d");
 	ImGui::SliderInt("Random min limit", &config->fakelag[current_category].randomMinLimit, 1, 21, "%d");
@@ -678,7 +678,7 @@ void GUI::renderLegitAntiAimWindow() noexcept
 {
 	ImGui::Columns(2, nullptr, false);
 	ImGui::SetColumnOffset(1, 300.f);
-	ImGui::hotkey2("Invert Key", config->legitAntiAim.invert, 80.0f);
+	ImGui::hotkey2("Invert key", config->legitAntiAim.invert, 80.0f);
 	ImGui::Checkbox("Enabled", &config->legitAntiAim.enabled);
 	ImGui::Checkbox("Disable in freeze time", &config->disableInFreezetime);
 	ImGui::Checkbox("Extend", &config->legitAntiAim.extend);
@@ -733,7 +733,7 @@ void GUI::renderFakeAngleWindow() noexcept
 	ImGui::SetColumnOffset(1, 300.f);
 	static int current_category{};
 	ImGui::Combo("", &current_category, "Freestanding\0Moving\0Jumping\0Ducking\0Duck-jumping\0Slow-walking\0Fake-ducking\0");
-	ImGui::hotkey2("Invert Key", config->invert, 80.0f);
+	ImGui::hotkey2("Invert key", config->invert, 80.0f);
 	ImGui::Checkbox("Enabled", &config->fakeAngle[current_category].enabled);
 
 	ImGui::PushItemWidth(220.0f);
@@ -745,7 +745,7 @@ void GUI::renderFakeAngleWindow() noexcept
 	ImGui::PopItemWidth();
 
 	ImGui::Combo("Mode", &config->fakeAngle[current_category].peekMode, "Off\0Peek real\0Peek fake\0Jitter\0Switch\0");
-	ImGui::Combo("Lby mode", &config->fakeAngle[current_category].lbyMode, "Normal\0Opposite\0Sway\0");
+	ImGui::Combo("LBY mode", &config->fakeAngle[current_category].lbyMode, "Normal\0Opposite\0Sway\0");
 	ImGui::Checkbox("Roll", &config->rageAntiAim[current_category].roll);
 	if (config->rageAntiAim[current_category].roll) {
 		ImGui::SliderInt("Roll add", &config->rageAntiAim[current_category].rollAdd, -90, 90, "%d");
@@ -1359,10 +1359,10 @@ void GUI::renderVisualsWindow() noexcept
 	}
 	ImGui::PopID();
 
-	ImGui::Checkbox("Motion Blur", &config->visuals.motionBlur.enabled);
+	ImGui::Checkbox("Motion blur", &config->visuals.motionBlur.enabled);
 	ImGui::SameLine();
 
-	ImGui::PushID("Motion Blur");
+	ImGui::PushID("Motion blur");
 	if (ImGui::Button("..."))
 		ImGui::OpenPopup("");
 
@@ -1453,14 +1453,14 @@ void GUI::renderVisualsWindow() noexcept
 	ImGui::SliderFloat("Hit effect time", &config->visuals.hitEffectTime, 0.1f, 1.5f, "%.2fs");
 	ImGui::Combo("Hit marker", &config->visuals.hitMarker, "None\0Default (Cross)\0");
 	ImGui::SliderFloat("Hit marker time", &config->visuals.hitMarkerTime, 0.1f, 1.5f, "%.2fs");
-	ImGuiCustom::colorPicker("Bullet Tracers", config->visuals.bulletTracers.color.data(), &config->visuals.bulletTracers.color[3], nullptr, nullptr, &config->visuals.bulletTracers.enabled);
-	ImGuiCustom::colorPicker("Bullet Impacts", config->visuals.bulletImpacts.color.data(), &config->visuals.bulletImpacts.color[3], nullptr, nullptr, &config->visuals.bulletImpacts.enabled);
-	ImGui::SliderFloat("Bullet Impacts time", &config->visuals.bulletImpactsTime, 0.1f, 5.0f, "Bullet Impacts time: %.2fs");
-	ImGuiCustom::colorPicker("On Hit Hitbox", config->visuals.onHitHitbox.color.color.data(), &config->visuals.onHitHitbox.color.color[3], nullptr, nullptr, &config->visuals.onHitHitbox.color.enabled);
-	ImGui::SliderFloat("On Hit Hitbox Time", &config->visuals.onHitHitbox.duration, 0.1f, 60.0f, "On Hit Hitbox time: % .2fs");
-	ImGuiCustom::colorPicker("Molotov Hull", config->visuals.molotovHull);
-	ImGuiCustom::colorPicker("Smoke Hull", config->visuals.smokeHull);
-	ImGui::Checkbox("Molotov Polygon", &config->visuals.molotovPolygon.enabled);
+	ImGuiCustom::colorPicker("Bullet tracers", config->visuals.bulletTracers.color.data(), &config->visuals.bulletTracers.color[3], nullptr, nullptr, &config->visuals.bulletTracers.enabled);
+	ImGuiCustom::colorPicker("Bullet impacts", config->visuals.bulletImpacts.color.data(), &config->visuals.bulletImpacts.color[3], nullptr, nullptr, &config->visuals.bulletImpacts.enabled);
+	ImGui::SliderFloat("Bullet impacts time", &config->visuals.bulletImpactsTime, 0.1f, 5.0f, "Bullet Impacts time: %.2fs");
+	ImGuiCustom::colorPicker("On hit hitbox", config->visuals.onHitHitbox.color.color.data(), &config->visuals.onHitHitbox.color.color[3], nullptr, nullptr, &config->visuals.onHitHitbox.color.enabled);
+	ImGui::SliderFloat("On hit hitbox time", &config->visuals.onHitHitbox.duration, 0.1f, 60.0f, "On Hit Hitbox time: % .2fs");
+	ImGuiCustom::colorPicker("Molotov hull", config->visuals.molotovHull);
+	ImGuiCustom::colorPicker("Smoke hull", config->visuals.smokeHull);
+	ImGui::Checkbox("Molotov polygon", &config->visuals.molotovPolygon.enabled);
 	ImGui::SameLine();
 	if (ImGui::Button("...##molotov_polygon"))
 		ImGui::OpenPopup("popup_molotovPolygon");
@@ -1472,24 +1472,24 @@ void GUI::renderVisualsWindow() noexcept
 		ImGui::EndPopup();
 	}
 
-	ImGui::Checkbox("Smoke Timer", &config->visuals.smokeTimer);
+	ImGui::Checkbox("Smoke timer", &config->visuals.smokeTimer);
 	ImGui::SameLine();
 	if (ImGui::Button("...##smoke_timer"))
 		ImGui::OpenPopup("popup_smokeTimer");
 
 	if (ImGui::BeginPopup("popup_smokeTimer")) {
-		ImGuiCustom::colorPicker("BackGround color", config->visuals.smokeTimerBG);
+		ImGuiCustom::colorPicker("Background color", config->visuals.smokeTimerBG);
 		ImGuiCustom::colorPicker("Text color", config->visuals.smokeTimerText);
 		ImGuiCustom::colorPicker("Timer color", config->visuals.smokeTimerTimer);
 		ImGui::EndPopup();
 	}
-	ImGui::Checkbox("Molotov Timer", &config->visuals.molotovTimer);
+	ImGui::Checkbox("Molotov timer", &config->visuals.molotovTimer);
 	ImGui::SameLine();
 	if (ImGui::Button("...##molotov_timer"))
 		ImGui::OpenPopup("popup_molotovTimer");
 
 	if (ImGui::BeginPopup("popup_molotovTimer")) {
-		ImGuiCustom::colorPicker("BackGround color", config->visuals.molotovTimerBG);
+		ImGuiCustom::colorPicker("Background color", config->visuals.molotovTimerBG);
 		ImGuiCustom::colorPicker("Text color", config->visuals.molotovTimerText);
 		ImGuiCustom::colorPicker("Timer color", config->visuals.molotovTimerTimer);
 		ImGui::EndPopup();
