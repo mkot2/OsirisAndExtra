@@ -11,6 +11,7 @@
 
 #include "Interfaces.h"
 #include "Memory.h"
+#include "memory_signature.h"
 
 
 template <typename T>
@@ -28,49 +29,17 @@ static std::pair<void*, std::size_t> getModuleInformation(const char* name) noex
 	return {};
 }
 
-[[nodiscard]] static auto generateBadCharTable(std::string_view pattern) noexcept
-{
-	assert(!pattern.empty());
-
-	std::array<std::size_t, (std::numeric_limits<std::uint8_t>::max)() + 1> table;
-
-	auto lastWildcard = pattern.rfind('?');
-	if (lastWildcard == std::string_view::npos)
-		lastWildcard = 0;
-
-	const auto defaultShift = (std::max)(std::size_t(1), pattern.length() - 1 - lastWildcard);
-	table.fill(defaultShift);
-
-	for (auto i = lastWildcard; i < pattern.length() - 1; ++i)
-		table[static_cast<std::uint8_t>(pattern[i])] = pattern.length() - 1 - i;
-
-	return table;
-}
-
 static std::uintptr_t findPattern(const char* moduleName, std::string_view pattern, bool reportNotFound = true) noexcept
 {
 	static auto id = 0;
 	++id;
 
-	const auto [moduleBase, moduleSize] = getModuleInformation(moduleName);
+	if (const auto [moduleBase, moduleSize] = getModuleInformation(moduleName); moduleBase && moduleSize) {
+		const char* start = static_cast<const char*>(moduleBase);
+		const char* end = start + moduleSize;
 
-	if (moduleBase && moduleSize) {
-		const auto lastIdx = pattern.length() - 1;
-		const auto badCharTable = generateBadCharTable(pattern);
-
-		auto start = static_cast<const char*>(moduleBase);
-		const auto end = start + moduleSize - pattern.length();
-
-		while (start <= end) {
-			int i = lastIdx;
-			while (i >= 0 && (pattern[i] == '?' || start[i] == pattern[i]))
-				--i;
-
-			if (i < 0)
-				return reinterpret_cast<std::uintptr_t>(start);
-
-			start += badCharTable[static_cast<std::uint8_t>(start[lastIdx])];
-		}
+		if (const char* address = jm::memory_signature(std::string{pattern}).find(start, end); address != end)
+			return reinterpret_cast<std::uintptr_t>(address);
 	}
 
 	if (reportNotFound)
@@ -80,160 +49,160 @@ static std::uintptr_t findPattern(const char* moduleName, std::string_view patte
 
 Memory::Memory() noexcept
 {
-	present = findPattern("gameoverlayrenderer", "\xFF\x15????\x8B\xF0\x85\xFF") + 2;
-	reset = findPattern("gameoverlayrenderer", "\xC7\x45?????\xFF\x15????\x8B\xD8") + 9;
+	present = findPattern("gameoverlayrenderer", "FF 15 ? ? ? ? 8B F0 85 FF") + 2;
+	reset = findPattern("gameoverlayrenderer", "C7 45 ? ? ? ? ? FF 15 ? ? ? ? 8B D8") + 9;
 
 	clientMode = **reinterpret_cast<ClientMode***>((*reinterpret_cast<uintptr_t**>(interfaces->client))[10] + 5);
 	input = *reinterpret_cast<Input**>((*reinterpret_cast<uintptr_t**>(interfaces->client))[16] + 1);
 	globalVars = **reinterpret_cast<GlobalVars***>((*reinterpret_cast<uintptr_t**>(interfaces->client))[11] + 10);
-	glowObjectManager = *reinterpret_cast<GlowObjectManager**>(findPattern(CLIENT_DLL, "\x0F\x11\x05????\x83\xC8\x01") + 3);
-	disablePostProcessing = *reinterpret_cast<bool**>(findPattern(CLIENT_DLL, "\x83\xEC\x4C\x80\x3D") + 5);
-	loadSky = relativeToAbsolute<decltype(loadSky)>(findPattern(ENGINE_DLL, "\xE8????\x84\xC0\x74\x2D\xA1") + 1);
-	setClanTag = reinterpret_cast<decltype(setClanTag)>(findPattern(ENGINE_DLL, "\x53\x56\x57\x8B\xDA\x8B\xF9\xFF\x15"));
-	lineGoesThroughSmoke = relativeToAbsolute<decltype(lineGoesThroughSmoke)>(findPattern(CLIENT_DLL, "\xE8????\x8B\x4C\x24\x30\x33\xD2") + 1);
-	cameraThink = findPattern(CLIENT_DLL, "\x85\xC0\x75\x30\x38\x87");
-	getSequenceActivity = reinterpret_cast<decltype(getSequenceActivity)>(findPattern(CLIENT_DLL, "\x55\x8B\xEC\x53\x8B\x5D\x08\x56\x8B\xF1\x83"));
-	isOtherEnemy = relativeToAbsolute<decltype(isOtherEnemy)>(findPattern(CLIENT_DLL, "\x8B\xCE\xE8????\x02\xC0") + 3);
-	auto temp = reinterpret_cast<std::uintptr_t*>(findPattern(CLIENT_DLL, "\xB9????\xE8????\x8B\x5D\x08") + 1);
+	glowObjectManager = *reinterpret_cast<GlowObjectManager**>(findPattern(CLIENT_DLL, "0F 11 05 ? ? ? ? 83 C8 01") + 3);
+	disablePostProcessing = *reinterpret_cast<bool**>(findPattern(CLIENT_DLL, "83 EC 4C 80 3D") + 5);
+	loadSky = relativeToAbsolute<decltype(loadSky)>(findPattern(ENGINE_DLL, "E8 ? ? ? ? 84 C0 74 2D A1") + 1);
+	setClanTag = reinterpret_cast<decltype(setClanTag)>(findPattern(ENGINE_DLL, "53 56 57 8B DA 8B F9 FF 15"));
+	lineGoesThroughSmoke = relativeToAbsolute<decltype(lineGoesThroughSmoke)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 8B 4C 24 30 33 D2") + 1);
+	cameraThink = findPattern(CLIENT_DLL, "85 C0 75 30 38 87");
+	getSequenceActivity = reinterpret_cast<decltype(getSequenceActivity)>(findPattern(CLIENT_DLL, "55 8B EC 53 8B 5D 08 56 8B F1 83"));
+	isOtherEnemy = relativeToAbsolute<decltype(isOtherEnemy)>(findPattern(CLIENT_DLL, "8B CE E8 ? ? ? ? 02 C0") + 3);
+	auto temp = reinterpret_cast<std::uintptr_t*>(findPattern(CLIENT_DLL, "B9 ? ? ? ? E8 ? ? ? ? 8B 5D 08") + 1);
 	hud = *temp;
 	findHudElement = relativeToAbsolute<decltype(findHudElement)>(reinterpret_cast<uintptr_t>(temp) + 5);
-	clearHudWeapon = relativeToAbsolute<decltype(clearHudWeapon)>(findPattern(CLIENT_DLL, "\xE8????\x8B\xF0\xC6\x44\x24??\xC6\x44\x24") + 1);
-	itemSystem = relativeToAbsolute<decltype(itemSystem)>(findPattern(CLIENT_DLL, "\xE8????\x0F\xB7\x0F") + 1);
-	setAbsOrigin = relativeToAbsolute<decltype(setAbsOrigin)>(findPattern(CLIENT_DLL, "\xE8????\xEB\x19\x8B\x07") + 1);
-	insertIntoTree = findPattern(CLIENT_DLL, "\x56\x52\xFF\x50\x18") + 5;
-	dispatchSound = reinterpret_cast<int*>(findPattern(ENGINE_DLL, "\x74\x0B\xE8????\x8B\x3D") + 3);
-	traceToExit = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xEC\x4C\xF3\x0F\x10\x75");
-	viewRender = **reinterpret_cast<ViewRender***>(findPattern(CLIENT_DLL, "\x8B\x0D????\xFF\x75\x0C\x8B\x45\x08") + 2);
-	viewRenderBeams = *reinterpret_cast<ViewRenderBeams**>(findPattern(CLIENT_DLL, "\xB9????\x0F\x11\x44\x24?\xC7\x44\x24?????\xF3\x0F\x10\x84\x24") + 1);
-	drawScreenEffectMaterial = relativeToAbsolute<uintptr_t>(findPattern(CLIENT_DLL, "\xE8????\x83\xC4\x0C\x8D\x4D\xF8") + 1);
-	submitReportFunction = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x28\x8B\x4D\x08");
+	clearHudWeapon = relativeToAbsolute<decltype(clearHudWeapon)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 8B F0 C6 44 24 ? ? C6 44 24") + 1);
+	itemSystem = relativeToAbsolute<decltype(itemSystem)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 0F B7 0F") + 1);
+	setAbsOrigin = relativeToAbsolute<decltype(setAbsOrigin)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? EB 19 8B 07") + 1);
+	insertIntoTree = findPattern(CLIENT_DLL, "56 52 FF 50 18") + 5;
+	dispatchSound = reinterpret_cast<int*>(findPattern(ENGINE_DLL, "74 0B E8 ? ? ? ? 8B 3D") + 3);
+	traceToExit = findPattern(CLIENT_DLL, "55 8B EC 83 EC 4C F3 0F 10 75");
+	viewRender = **reinterpret_cast<ViewRender***>(findPattern(CLIENT_DLL, "8B 0D ? ? ? ? FF 75 0C 8B 45 08") + 2);
+	viewRenderBeams = *reinterpret_cast<ViewRenderBeams**>(findPattern(CLIENT_DLL, "B9 ? ? ? ? 0F 11 44 24 ? C7 44 24 ? ? ? ? ? F3 0F 10 84 24") + 1);
+	drawScreenEffectMaterial = relativeToAbsolute<uintptr_t>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 83 C4 0C 8D 4D F8") + 1);
+	submitReportFunction = findPattern(CLIENT_DLL, "55 8B EC 83 E4 F8 83 EC 28 8B 4D 08");
 	const auto tier0 = GetModuleHandleW(L"tier0");
 	debugMsg = reinterpret_cast<decltype(debugMsg)>(GetProcAddress(tier0, "Msg"));
 	conColorMsg = reinterpret_cast<decltype(conColorMsg)>(GetProcAddress(tier0, "?ConColorMsg@@YAXABVColor@@PBDZZ"));
-	vignette = *reinterpret_cast<float**>(findPattern(CLIENT_DLL, "\x0F\x11\x05????\xF3\x0F\x7E\x87") + 3) + 1;
-	equipWearable = reinterpret_cast<decltype(equipWearable)>(findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xEC\x10\x53\x8B\x5D\x08\x57\x8B\xF9"));
-	predictionRandomSeed = *reinterpret_cast<int**>(findPattern(CLIENT_DLL, "\x8B\x0D????\xBA????\xE8????\x83\xC4\x04") + 2);
-	moveData = **reinterpret_cast<MoveData***>(findPattern(CLIENT_DLL, "\xA1????\xF3\x0F\x59\xCD") + 1);
-	moveHelper = **reinterpret_cast<MoveHelper***>(findPattern(CLIENT_DLL, "\x8B\x0D????\x8B\x45?\x51\x8B\xD4\x89\x02\x8B\x01") + 2);
-	keyValuesFromString = relativeToAbsolute<decltype(keyValuesFromString)>(findPattern(CLIENT_DLL, "\xE8????\x83\xC4\x04\x89\x45\xD8") + 1);
-	keyValuesFindKey = relativeToAbsolute<decltype(keyValuesFindKey)>(findPattern(CLIENT_DLL, "\xE8????\xF7\x45") + 1);
-	keyValuesSetString = relativeToAbsolute<decltype(keyValuesSetString)>(findPattern(CLIENT_DLL, "\xE8????\x89\x77\x38") + 1);
-	weaponSystem = *reinterpret_cast<WeaponSystem**>(findPattern(CLIENT_DLL, "\x8B\x35????\xFF\x10\x0F\xB7\xC0") + 2);
-	getPlayerViewmodelArmConfigForPlayerModel = relativeToAbsolute<decltype(getPlayerViewmodelArmConfigForPlayerModel)>(findPattern(CLIENT_DLL, "\xE8????\x89\x87????\x6A") + 1);
-	getEventDescriptor = relativeToAbsolute<decltype(getEventDescriptor)>(findPattern(ENGINE_DLL, "\xE8????\x8B\xD8\x85\xDB\x75\x27") + 1);
-	activeChannels = *reinterpret_cast<ActiveChannels**>(findPattern(ENGINE_DLL, "\x8B\x1D????\x89\x5C\x24\x48") + 2);
-	channels = *reinterpret_cast<Channel**>(findPattern(ENGINE_DLL, "\x81\xC2????\x8B\x72\x54") + 2);
-	playerResource = *reinterpret_cast<PlayerResource***>(findPattern(CLIENT_DLL, "\x74\x30\x8B\x35????\x85\xF6") + 4);
-	getDecoratedPlayerName = relativeToAbsolute<decltype(getDecoratedPlayerName)>(findPattern(CLIENT_DLL, "\xE8????\x66\x83\x3E") + 1);
-	scopeDust = findPattern(CLIENT_DLL, "\xFF\x50\x3C\x8B\x4C\x24\x20") + 3;
-	scopeArc = findPattern(CLIENT_DLL, "\x8B\x0D????\xFF\xB7????\x8B\x01\xFF\x90????\x8B\x7C\x24\x1C");
-	demoOrHLTV = findPattern(CLIENT_DLL, "\x84\xC0\x75\x09\x38\x05");
-	money = findPattern(CLIENT_DLL, "\x84\xC0\x75\x0C\x5B");
-	demoFileEndReached = findPattern(CLIENT_DLL, "\x8B\xC8\x85\xC9\x74\x1F\x80\x79\x10");
-	plantedC4s = *reinterpret_cast<decltype(plantedC4s)*>(findPattern(CLIENT_DLL, "\x7E\x2C\x8B\x15") + 4);
-	gameRules = *reinterpret_cast<Entity***>(findPattern(CLIENT_DLL, "\x8B\xEC\x8B\x0D????\x85\xC9\x74\x07") + 4);
-	setOrAddAttributeValueByNameFunction = relativeToAbsolute<decltype(setOrAddAttributeValueByNameFunction)>(findPattern(CLIENT_DLL, "\xE8????\x8B\x8D????\x85\xC9\x74\x10") + 1);
-	registeredPanoramaEvents = reinterpret_cast<decltype(registeredPanoramaEvents)>(*reinterpret_cast<std::uintptr_t*>(findPattern(CLIENT_DLL, "\xE8????\xA1????\xA8\x01\x75\x21") + 6) - 36);
-	makePanoramaSymbolFn = relativeToAbsolute<decltype(makePanoramaSymbolFn)>(findPattern(CLIENT_DLL, "\xE8????\x0F\xB7\x45\x0E\x8D\x4D\x0E") + 1);
+	vignette = *reinterpret_cast<float**>(findPattern(CLIENT_DLL, "0F 11 05 ? ? ? ? F3 0F 7E 87") + 3) + 1;
+	equipWearable = reinterpret_cast<decltype(equipWearable)>(findPattern(CLIENT_DLL, "55 8B EC 83 EC 10 53 8B 5D 08 57 8B F9"));
+	predictionRandomSeed = *reinterpret_cast<int**>(findPattern(CLIENT_DLL, "8B 0D ? ? ? ? BA ? ? ? ? E8 ? ? ? ? 83 C4 04") + 2);
+	moveData = **reinterpret_cast<MoveData***>(findPattern(CLIENT_DLL, "A1 ? ? ? ? F3 0F 59 CD") + 1);
+	moveHelper = **reinterpret_cast<MoveHelper***>(findPattern(CLIENT_DLL, "8B 0D ? ? ? ? 8B 45 ? 51 8B D4 89 02 8B 01") + 2);
+	keyValuesFromString = relativeToAbsolute<decltype(keyValuesFromString)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 83 C4 04 89 45 D8") + 1);
+	keyValuesFindKey = relativeToAbsolute<decltype(keyValuesFindKey)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? F7 45") + 1);
+	keyValuesSetString = relativeToAbsolute<decltype(keyValuesSetString)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 89 77 38") + 1);
+	weaponSystem = *reinterpret_cast<WeaponSystem**>(findPattern(CLIENT_DLL, "8B 35 ? ? ? ? FF 10 0F B7 C0") + 2);
+	getPlayerViewmodelArmConfigForPlayerModel = relativeToAbsolute<decltype(getPlayerViewmodelArmConfigForPlayerModel)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 89 87 ? ? ? ? 6A") + 1);
+	getEventDescriptor = relativeToAbsolute<decltype(getEventDescriptor)>(findPattern(ENGINE_DLL, "E8 ? ? ? ? 8B D8 85 DB 75 27") + 1);
+	activeChannels = *reinterpret_cast<ActiveChannels**>(findPattern(ENGINE_DLL, "8B 1D ? ? ? ? 89 5C 24 48") + 2);
+	channels = *reinterpret_cast<Channel**>(findPattern(ENGINE_DLL, "81 C2 ? ? ? ? 8B 72 54") + 2);
+	playerResource = *reinterpret_cast<PlayerResource***>(findPattern(CLIENT_DLL, "74 30 8B 35 ? ? ? ? 85 F6") + 4);
+	getDecoratedPlayerName = relativeToAbsolute<decltype(getDecoratedPlayerName)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 66 83 3E") + 1);
+	scopeDust = findPattern(CLIENT_DLL, "FF 50 3C 8B 4C 24 20") + 3;
+	scopeArc = findPattern(CLIENT_DLL, "8B 0D ? ? ? ? FF B7 ? ? ? ? 8B 01 FF 90 ? ? ? ? 8B 7C 24 1C");
+	demoOrHLTV = findPattern(CLIENT_DLL, "84 C0 75 09 38 05");
+	money = findPattern(CLIENT_DLL, "84 C0 75 0C 5B");
+	demoFileEndReached = findPattern(CLIENT_DLL, "8B C8 85 C9 74 1F 80 79 10");
+	plantedC4s = *reinterpret_cast<decltype(plantedC4s)*>(findPattern(CLIENT_DLL, "7E 2C 8B 15") + 4);
+	gameRules = *reinterpret_cast<Entity***>(findPattern(CLIENT_DLL, "8B EC 8B 0D ? ? ? ? 85 C9 74 07") + 4);
+	setOrAddAttributeValueByNameFunction = relativeToAbsolute<decltype(setOrAddAttributeValueByNameFunction)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 8B 8D ? ? ? ? 85 C9 74 10") + 1);
+	registeredPanoramaEvents = reinterpret_cast<decltype(registeredPanoramaEvents)>(*reinterpret_cast<std::uintptr_t*>(findPattern(CLIENT_DLL, "E8 ? ? ? ? A1 ? ? ? ? A8 01 75 21") + 6) - 36);
+	makePanoramaSymbolFn = relativeToAbsolute<decltype(makePanoramaSymbolFn)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 0F B7 45 0E 8D 4D 0E") + 1);
 
-	localPlayer.init(*reinterpret_cast<Entity***>(findPattern(CLIENT_DLL, "\xA1????\x89\x45\xBC\x85\xC0") + 1));
+	localPlayer.init(*reinterpret_cast<Entity***>(findPattern(CLIENT_DLL, "A1 ? ? ? ? 89 45 BC 85 C0") + 1));
 
-	shouldDrawFogReturnAddress = relativeToAbsolute<std::uintptr_t>(findPattern(CLIENT_DLL, "\xE8????\x8B\x0D????\x0F\xB6\xD0") + 1) + 82;
+	shouldDrawFogReturnAddress = relativeToAbsolute<std::uintptr_t>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 8B 0D ? ? ? ? 0F B6 D0") + 1) + 82;
 
 	// Custom
-	clientState = **reinterpret_cast<ClientState***>(findPattern(ENGINE_DLL, "\xA1????\x8B\x80????\xC3") + 1); //52
-	memalloc = *reinterpret_cast<MemAlloc**>(GetProcAddress(GetModuleHandleA("tier0.dll"), "g_pMemAlloc"));
-	setAbsAngle = reinterpret_cast<decltype(setAbsAngle)>(reinterpret_cast<DWORD*>(findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x64\x53\x56\x57\x8B\xF1")));
-	createState = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x56\x8B\xF1\xB9????\xC7");
-	updateState = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x18\x56\x57\x8B\xF9\xF3");
-	resetState = findPattern(CLIENT_DLL, "\x56\x6A\x01\x68????\x8B\xF1");
-	invalidateBoneCache = findPattern(CLIENT_DLL, "\x80\x3D?????\x74\x16\xA1????\x48\xC7\x81");
+	clientState = **reinterpret_cast<ClientState***>(findPattern(ENGINE_DLL, "A1 ? ? ? ? 8B 80 ? ? ? ? C3") + 1); //52
+	memalloc = *reinterpret_cast<MemAlloc**>(GetProcAddress(tier0, "g_pMemAlloc"));
+	setAbsAngle = reinterpret_cast<decltype(setAbsAngle)>(reinterpret_cast<DWORD*>(findPattern(CLIENT_DLL, "55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1")));
+	createState = findPattern(CLIENT_DLL, "55 8B EC 56 8B F1 B9 ? ? ? ? C7");
+	updateState = findPattern(CLIENT_DLL, "55 8B EC 83 E4 F8 83 EC 18 56 57 8B F9 F3");
+	resetState = findPattern(CLIENT_DLL, "56 6A 01 68 ? ? ? ? 8B F1");
+	invalidateBoneCache = findPattern(CLIENT_DLL, "80 3D ? ? ? ? ? 74 16 A1 ? ? ? ? 48 C7 81");
 
-	setupVelocityAddress = *(reinterpret_cast<void**>(findPattern(CLIENT_DLL, "\x84\xC0\x75\x38\x8B\x0D????\x8B\x01\x8B\x80")));
-	accumulateLayersAddress = *(reinterpret_cast<void**>(findPattern(CLIENT_DLL, "\x84\xC0\x75\x0D\xF6\x87")));
-	standardBlendingRules = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xE4\xF0\xB8\xF8\x10");
+	setupVelocityAddress = *(reinterpret_cast<void**>(findPattern(CLIENT_DLL, "84 C0 75 38 8B 0D ? ? ? ? 8B 01 8B 80")));
+	accumulateLayersAddress = *(reinterpret_cast<void**>(findPattern(CLIENT_DLL, "84 C0 75 0D F6 87")));
+	standardBlendingRules = findPattern(CLIENT_DLL, "55 8B EC 83 E4 F0 B8 F8 10");
 
-	buildTransformations = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xE4\xF0\x81\xEC????\x56\x57\x8B\xF9\x8B\x0D????\x89\x7C\x24\x28\x8B");
-	doExtraBoneProcessing = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xE4\xF8\x81\xEC????\x53\x56\x8B\xF1\x57\x89\x74\x24\x1C\x80");
-	shouldSkipAnimationFrame = findPattern(CLIENT_DLL, "\x57\x8B\xF9\x8B\x07\x8B\x80????\xFF\xD0\x84\xC0\x75\x02");
-	updateClientSideAnimation = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x51\x56\x8B\xF1\x80\xBE?????\x74\x36");
+	buildTransformations = findPattern(CLIENT_DLL, "55 8B EC 83 E4 F0 81 EC ? ? ? ? 56 57 8B F9 8B 0D ? ? ? ? 89 7C 24 28 8B");
+	doExtraBoneProcessing = findPattern(CLIENT_DLL, "55 8B EC 83 E4 F8 81 EC ? ? ? ? 53 56 8B F1 57 89 74 24 1C 80");
+	shouldSkipAnimationFrame = findPattern(CLIENT_DLL, "57 8B F9 8B 07 8B 80 ? ? ? ? FF D0 84 C0 75 02");
+	updateClientSideAnimation = findPattern(CLIENT_DLL, "55 8B EC 51 56 8B F1 80 BE ? ? ? ? ? 74 36");
 
-	checkForSequenceChange = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x51\x53\x8B\x5D\x08\x56\x8B\xF1\x57\x85");
+	checkForSequenceChange = findPattern(CLIENT_DLL, "55 8B EC 51 53 8B 5D 08 56 8B F1 57 85");
 
-	sendDatagram = findPattern(ENGINE_DLL, "\x55\x8B\xEC\x83\xE4\xF0\xB8????\xE8????\x56\x57\x8B\xF9\x89\x7C\x24\x14");
+	sendDatagram = findPattern(ENGINE_DLL, "55 8B EC 83 E4 F0 B8 ? ? ? ? E8 ? ? ? ? 56 57 8B F9 89 7C 24 14");
 
-	modifyEyePosition = relativeToAbsolute<decltype(modifyEyePosition)>(findPattern(CLIENT_DLL, "\xE8????\x8B\x06\x8B\xCE\xFF\x90????\x85\xC0\x74\x50") + 1);
+	modifyEyePosition = relativeToAbsolute<decltype(modifyEyePosition)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 8B 06 8B CE FF 90 ? ? ? ? 85 C0 74 50") + 1);
 
-	lookUpBone = reinterpret_cast<decltype(lookUpBone)>(findPattern(CLIENT_DLL, "\x55\x8B\xEC\x53\x56\x8B\xF1\x57\x83\xBE?????\x75\x14"));
-	getBonePos = relativeToAbsolute<decltype(getBonePos)>(findPattern(CLIENT_DLL, "\xE8????\x8D\x14\x24") + 1);
+	lookUpBone = reinterpret_cast<decltype(lookUpBone)>(findPattern(CLIENT_DLL, "55 8B EC 53 56 8B F1 57 83 BE ? ? ? ? ? 75 14"));
+	getBonePos = relativeToAbsolute<decltype(getBonePos)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 8D 14 24") + 1);
 
-	setCollisionBounds = relativeToAbsolute<decltype(setCollisionBounds)>(findPattern(CLIENT_DLL, "\xE8????\x0F\xBF\x87????") + 1);
-	calculateView = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xEC\x14\x53\x56\x57\xFF\x75\x18");
+	setCollisionBounds = relativeToAbsolute<decltype(setCollisionBounds)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 0F BF 87 ? ? ? ?") + 1);
+	calculateView = findPattern(CLIENT_DLL, "55 8B EC 83 EC 14 53 56 57 FF 75 18");
 
-	setupVelocity = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x30\x56\x57\x8B\x3D");
-	setupMovement = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xE4\xF8\x81\xEC????\x56\x57\x8B\x3D????\x8B\xF1");
-	setupAliveloop = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x51\x53\x56\x57\x8B\xF9\x8B\x77\x60");
+	setupVelocity = findPattern(CLIENT_DLL, "55 8B EC 83 E4 F8 83 EC 30 56 57 8B 3D");
+	setupMovement = findPattern(CLIENT_DLL, "55 8B EC 83 E4 F8 81 EC ? ? ? ? 56 57 8B 3D ? ? ? ? 8B F1");
+	setupAliveloop = findPattern(CLIENT_DLL, "55 8B EC 51 53 56 57 8B F9 8B 77 60");
 
-	getWeaponPrefix = reinterpret_cast<decltype(getWeaponPrefix)>(findPattern(CLIENT_DLL, "\x53\x56\x57\x8B\xF9\x33\xF6\x8B\x4F\x60\x8B\x01\xFF"));
-	getLayerActivity = reinterpret_cast<decltype(getLayerActivity)>(findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xEC\x08\x53\x56\x8B\x35????\x57\x8B\xF9\x8B\xCE\x8B\x06\xFF\x90????\x8B\x7F\x60\x83"));
+	getWeaponPrefix = reinterpret_cast<decltype(getWeaponPrefix)>(findPattern(CLIENT_DLL, "53 56 57 8B F9 33 F6 8B 4F 60 8B 01 FF"));
+	getLayerActivity = reinterpret_cast<decltype(getLayerActivity)>(findPattern(CLIENT_DLL, "55 8B EC 83 EC 08 53 56 8B 35 ? ? ? ? 57 8B F9 8B CE 8B 06 FF 90 ? ? ? ? 8B 7F 60 83"));
 
-	lookUpSequence = relativeToAbsolute<decltype(lookUpSequence)>(findPattern(CLIENT_DLL, "\xE8????\x5E\x83\xF8\xFF") + 1);
-	seqdesc = relativeToAbsolute<decltype(seqdesc)>(findPattern(CLIENT_DLL, "\xE8????\x03\x40\x04") + 1);
-	getFirstSequenceAnimTag = relativeToAbsolute<decltype(getFirstSequenceAnimTag)>(findPattern(CLIENT_DLL, "\xE8????\xF3\x0F\x11\x86????\x0F\x57\xDB") + 1);
-	getSequenceLinearMotion = relativeToAbsolute<decltype(getSequenceLinearMotion)>(findPattern(CLIENT_DLL, "\xE8????\xF3\x0F\x10\x4D?\x83\xC4\x08\xF3\x0F\x10\x45?\xF3\x0F\x59\xC0") + 1);
-	sequenceDuration = relativeToAbsolute<decltype(sequenceDuration)>(findPattern(CLIENT_DLL, "\xE8????\xF3\x0F\x11\x86????\x51") + 1);
-	lookUpPoseParameter = relativeToAbsolute<decltype(lookUpPoseParameter)>(findPattern(CLIENT_DLL, "\xE8????\x85\xC0\x79\x08") + 1);
-	studioSetPoseParameter = relativeToAbsolute<decltype(studioSetPoseParameter)>(findPattern(CLIENT_DLL, "\xE8????\x0F\x28\xD8\x83\xC4\x04") + 1);
-	calcAbsoluteVelocity = relativeToAbsolute<decltype(calcAbsoluteVelocity)>(findPattern(CLIENT_DLL, "\xE8????\x83\x7B\x30\x00") + 1);
-	utilPlayerByIndex = reinterpret_cast<decltype(utilPlayerByIndex)>(findPattern(SERVER_DLL, "\x85\xC9\x7E\x32\xA1????"));
-	drawServerHitboxes = findPattern(SERVER_DLL, "\x55\x8B\xEC\x81\xEC????\x53\x56\x8B\x35????\x8B\xD9\x57\x8B\xCE");
-	postDataUpdate = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x53\x56\x8B\xF1\x57\x80??????\x74\x0A");
+	lookUpSequence = relativeToAbsolute<decltype(lookUpSequence)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 5E 83 F8 FF") + 1);
+	seqdesc = relativeToAbsolute<decltype(seqdesc)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 03 40 04") + 1);
+	getFirstSequenceAnimTag = relativeToAbsolute<decltype(getFirstSequenceAnimTag)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? F3 0F 11 86 ? ? ? ? 0F 57 DB") + 1);
+	getSequenceLinearMotion = relativeToAbsolute<decltype(getSequenceLinearMotion)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? F3 0F 10 4D ? 83 C4 08 F3 0F 10 45 ? F3 0F 59 C0") + 1);
+	sequenceDuration = relativeToAbsolute<decltype(sequenceDuration)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? F3 0F 11 86 ? ? ? ? 51") + 1);
+	lookUpPoseParameter = relativeToAbsolute<decltype(lookUpPoseParameter)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 85 C0 79 08") + 1);
+	studioSetPoseParameter = relativeToAbsolute<decltype(studioSetPoseParameter)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 0F 28 D8 83 C4 04") + 1);
+	calcAbsoluteVelocity = relativeToAbsolute<decltype(calcAbsoluteVelocity)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 83 7B 30 00") + 1);
+	utilPlayerByIndex = reinterpret_cast<decltype(utilPlayerByIndex)>(findPattern(SERVER_DLL, "85 C9 7E 32 A1 ? ? ? ?"));
+	drawServerHitboxes = findPattern(SERVER_DLL, "55 8B EC 81 EC ? ? ? ? 53 56 8B 35 ? ? ? ? 8B D9 57 8B CE");
+	postDataUpdate = findPattern(CLIENT_DLL, "55 8B EC 53 56 8B F1 57 80 ? ? ? ? ? ? 74 0A");
 
-	setupBones = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xE4\xF0\xB8\xD8");
+	setupBones = findPattern(CLIENT_DLL, "55 8B EC 83 E4 F0 B8 D8");
 
-	restoreEntityToPredictedFrame = reinterpret_cast<decltype(restoreEntityToPredictedFrame)>(findPattern(CLIENT_DLL, "\x55\x8B\xEC\x8B\x4D?\x56\xE8????\x8B\x75"));
+	restoreEntityToPredictedFrame = reinterpret_cast<decltype(restoreEntityToPredictedFrame)>(findPattern(CLIENT_DLL, "55 8B EC 8B 4D ? 56 E8 ? ? ? ? 8B 75"));
 
-	markSurroundingBoundsDirty = relativeToAbsolute<decltype(markSurroundingBoundsDirty)>(findPattern(CLIENT_DLL, "\xE8????\x83\xFB\x01\x75\x41") + 1);
-	isBreakableEntity = reinterpret_cast<decltype(isBreakableEntity)>(findPattern(CLIENT_DLL, "\x55\x8B\xEC\x51\x56\x8B\xF1\x85\xF6\x74\x68"));
+	markSurroundingBoundsDirty = relativeToAbsolute<decltype(markSurroundingBoundsDirty)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 83 FB 01 75 41") + 1);
+	isBreakableEntity = reinterpret_cast<decltype(isBreakableEntity)>(findPattern(CLIENT_DLL, "55 8B EC 51 56 8B F1 85 F6 74 68"));
 
-	clSendMove = findPattern(ENGINE_DLL, "\x55\x8B\xEC\x8B\x4D\x04\x81\xEC????");
-	clMsgMoveSetData = relativeToAbsolute<decltype(clMsgMoveSetData)>(findPattern(ENGINE_DLL, "\xE8????\x8D\x7E\x18") + 1);
-	clMsgMoveDescontructor = relativeToAbsolute<decltype(clMsgMoveDescontructor)>(findPattern(ENGINE_DLL, "\xE8????\x5F\x5E\x5B\x8B\xE5\x5D\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x55\x8B\xEC\x81\xEC????") + 1);
-	clMove = findPattern(ENGINE_DLL, "\x55\x8B\xEC\x81\xEC????\x53\x56\x8A\xF9");
-	chokeLimit = findPattern(ENGINE_DLL, "\xB8????\x3B\xF0\x0F\x4F\xF0\x89\x5D\xFC") + 1;
-	relayCluster = *reinterpret_cast<std::string**>(findPattern(STEAMNETWORKINGSOCKETS_DLL, "\xB8????\xB9????\x0F\x43") + 1);
-	unlockInventory = findPattern(CLIENT_DLL, "\x84\xC0\x75\x05\xB0\x01\x5F");
-	getColorModulation = findPattern(MATERIALSYSTEM_DLL, "\x55\x8B\xEC\x83\xEC?\x56\x8B\xF1\x8A\x46");
-	isUsingStaticPropDebugModes = relativeToAbsolute<decltype(isUsingStaticPropDebugModes)>(findPattern(ENGINE_DLL, "\xE8????\x84\xC0\x8B\x45\x08") + 1);
-	traceFilterForHeadCollision = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x56\x8B\x75\x0C\x57\x8B\xF9\xF7\xC6????");
-	performScreenOverlay = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x51\xA1????\x53\x56\x8B\xD9");
-	postNetworkDataReceived = relativeToAbsolute<decltype(postNetworkDataReceived)>(findPattern(CLIENT_DLL, "\xE8????\x33\xF6\x6A\x02") + 1);
-	saveData = relativeToAbsolute<decltype(saveData)>(findPattern(CLIENT_DLL, "\xE8????\x6B\x45\x08\x34") + 1);
-	isDepthOfFieldEnabled = findPattern(CLIENT_DLL, "\x8B\x0D????\x56\x8B\x01\xFF\x50\x34\x8B\xF0\x85\xF6\x75\x04");
-	eyeAngles = findPattern(CLIENT_DLL, "\x56\x8B\xF1\x85\xF6\x74\x32");
-	eyePositionAndVectors = findPattern(CLIENT_DLL, "\x8B\x55\x0C\x8B\xC8\xE8????\x83\xC4\x08\x5E\x8B\xE5");
-	calcViewBob = findPattern(CLIENT_DLL, "\x55\x8B\xEC\xA1????\x83\xEC\x10\x56\x8B\xF1\xB9????");
-	getClientModelRenderable = findPattern(CLIENT_DLL, "\x56\x8B\xF1\x80\xBE?????\x0F\x84????\x80\xBE");
-	physicsSimulate = findPattern(CLIENT_DLL, "\x56\x8B\xF1\x8B?????\x83\xF9\xFF\x74\x23");
-	updateFlashBangEffect = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x8B\x55\x04\x56\x8B\xF1\x57\x8D\x8E????");
-	writeUsercmd = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xE4\xF8\x51\x53\x56\x8B\xD9\x8B\x0D");
-	reevauluateAnimLODAddress = relativeToAbsolute<decltype(reevauluateAnimLODAddress)>(findPattern(CLIENT_DLL, "\xE8????\x8B\xCE\xE8????\x8B\x8F????") + 0x2B);
-	physicsRunThink = reinterpret_cast<decltype(physicsRunThink)>(findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xEC\x10\x53\x56\x57\x8B\xF9\x8B\x87"));
-	checkHasThinkFunction = reinterpret_cast<decltype(checkHasThinkFunction)>(findPattern(CLIENT_DLL, "\x55\x8B\xEC\x56\x57\x8B\xF9\x8B\xB7????\x8B\xC6\xC1\xE8"));
-	postThinkVPhysics = reinterpret_cast<decltype(postThinkVPhysics)>(findPattern(CLIENT_DLL, "\x55\x8B\xEC\x83\xE4\xF8\x81\xEC????\x53\x8B\xD9\x56\x57\x83\xBB?????\x0F\x84"));
-	simulatePlayerSimulatedEntities = reinterpret_cast<decltype(simulatePlayerSimulatedEntities)>(findPattern(CLIENT_DLL, "\x56\x8B\xF1\x57\x8B\xBE????\x83\xEF\x01\x78\x74"));
+	clSendMove = findPattern(ENGINE_DLL, "55 8B EC 8B 4D 04 81 EC ? ? ? ?");
+	clMsgMoveSetData = relativeToAbsolute<decltype(clMsgMoveSetData)>(findPattern(ENGINE_DLL, "E8 ? ? ? ? 8D 7E 18") + 1);
+	clMsgMoveDescontructor = relativeToAbsolute<decltype(clMsgMoveDescontructor)>(findPattern(ENGINE_DLL, "E8 ? ? ? ? 5F 5E 5B 8B E5 5D C3 CC CC CC CC CC CC CC CC CC 55 8B EC 81 EC ? ? ? ?") + 1);
+	clMove = findPattern(ENGINE_DLL, "55 8B EC 81 EC ? ? ? ? 53 56 8A F9");
+	chokeLimit = findPattern(ENGINE_DLL, "B8 ? ? ? ? 3B F0 0F 4F F0 89 5D FC") + 1;
+	relayCluster = *reinterpret_cast<std::string**>(findPattern(STEAMNETWORKINGSOCKETS_DLL, "B8 ? ? ? ? B9 ? ? ? ? 0F 43") + 1);
+	unlockInventory = findPattern(CLIENT_DLL, "84 C0 75 05 B0 01 5F");
+	getColorModulation = findPattern(MATERIALSYSTEM_DLL, "55 8B EC 83 EC ? 56 8B F1 8A 46");
+	isUsingStaticPropDebugModes = relativeToAbsolute<decltype(isUsingStaticPropDebugModes)>(findPattern(ENGINE_DLL, "E8 ? ? ? ? 84 C0 8B 45 08") + 1);
+	traceFilterForHeadCollision = findPattern(CLIENT_DLL, "55 8B EC 56 8B 75 0C 57 8B F9 F7 C6 ? ? ? ?");
+	performScreenOverlay = findPattern(CLIENT_DLL, "55 8B EC 51 A1 ? ? ? ? 53 56 8B D9");
+	postNetworkDataReceived = relativeToAbsolute<decltype(postNetworkDataReceived)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 33 F6 6A 02") + 1);
+	saveData = relativeToAbsolute<decltype(saveData)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 6B 45 08 34") + 1);
+	isDepthOfFieldEnabled = findPattern(CLIENT_DLL, "8B 0D ? ? ? ? 56 8B 01 FF 50 34 8B F0 85 F6 75 04");
+	eyeAngles = findPattern(CLIENT_DLL, "56 8B F1 85 F6 74 32");
+	eyePositionAndVectors = findPattern(CLIENT_DLL, "8B 55 0C 8B C8 E8 ? ? ? ? 83 C4 08 5E 8B E5");
+	calcViewBob = findPattern(CLIENT_DLL, "55 8B EC A1 ? ? ? ? 83 EC 10 56 8B F1 B9 ? ? ? ?");
+	getClientModelRenderable = findPattern(CLIENT_DLL, "56 8B F1 80 BE ? ? ? ? ? 0F 84 ? ? ? ? 80 BE");
+	physicsSimulate = findPattern(CLIENT_DLL, "56 8B F1 8B ? ? ? ? ? 83 F9 FF 74 23");
+	updateFlashBangEffect = findPattern(CLIENT_DLL, "55 8B EC 8B 55 04 56 8B F1 57 8D 8E ? ? ? ?");
+	writeUsercmd = findPattern(CLIENT_DLL, "55 8B EC 83 E4 F8 51 53 56 8B D9 8B 0D");
+	reevauluateAnimLODAddress = relativeToAbsolute<decltype(reevauluateAnimLODAddress)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 8B CE E8 ? ? ? ? 8B 8F ? ? ? ?") + 0x2B);
+	physicsRunThink = reinterpret_cast<decltype(physicsRunThink)>(findPattern(CLIENT_DLL, "55 8B EC 83 EC 10 53 56 57 8B F9 8B 87"));
+	checkHasThinkFunction = reinterpret_cast<decltype(checkHasThinkFunction)>(findPattern(CLIENT_DLL, "55 8B EC 56 57 8B F9 8B B7 ? ? ? ? 8B C6 C1 E8"));
+	postThinkVPhysics = reinterpret_cast<decltype(postThinkVPhysics)>(findPattern(CLIENT_DLL, "55 8B EC 83 E4 F8 81 EC ? ? ? ? 53 8B D9 56 57 83 BB ? ? ? ? ? 0F 84"));
+	simulatePlayerSimulatedEntities = reinterpret_cast<decltype(simulatePlayerSimulatedEntities)>(findPattern(CLIENT_DLL, "56 8B F1 57 8B BE ? ? ? ? 83 EF 01 78 74"));
 
-	predictionPlayer = *reinterpret_cast<int**>(findPattern(CLIENT_DLL, "\x89\x35????\xF3\x0F\x10\x48") + 0x2);
+	predictionPlayer = *reinterpret_cast<int**>(findPattern(CLIENT_DLL, "89 35 ? ? ? ? F3 0F 10 48") + 0x2);
 
-	newFunctionClientDLL = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x56\x8B\xF1\x33\xC0\x57\x8B\x7D\x08");
-	newFunctionEngineDLL = findPattern(ENGINE_DLL, "\x55\x8B\xEC\x56\x8B\xF1\x33\xC0\x57\x8B\x7D\x08");
-	newFunctionStudioRenderDLL = findPattern(STUDIORENDER_DLL, "\x55\x8B\xEC\x56\x8B\xF1\x33\xC0\x57\x8B\x7D\x08");
-	newFunctionMaterialSystemDLL = findPattern(MATERIALSYSTEM_DLL, "\x55\x8B\xEC\x56\x8B\xF1\x33\xC0\x57\x8B\x7D\x08");
-	transferData = reinterpret_cast<decltype(transferData)>(findPattern(CLIENT_DLL, "\x55\x8B\xEC\x8B\x45\x10\x53\x56\x8B\xF1\x57"));
-	findLoggingChannel = reinterpret_cast<decltype(findLoggingChannel)>(GetProcAddress(GetModuleHandleA("tier0.dll"), "LoggingSystem_FindChannel"));
-	logDirect = reinterpret_cast<decltype(logDirect)>(GetProcAddress(GetModuleHandleA("tier0.dll"), "LoggingSystem_LogDirect"));
-	getGameModeNameFn = findPattern(CLIENT_DLL, "\x55\x8B\xEC\x8B\x0D????\x53\x57\x8B\x01");
+	newFunctionClientDLL = findPattern(CLIENT_DLL, "55 8B EC 56 8B F1 33 C0 57 8B 7D 08");
+	newFunctionEngineDLL = findPattern(ENGINE_DLL, "55 8B EC 56 8B F1 33 C0 57 8B 7D 08");
+	newFunctionStudioRenderDLL = findPattern(STUDIORENDER_DLL, "55 8B EC 56 8B F1 33 C0 57 8B 7D 08");
+	newFunctionMaterialSystemDLL = findPattern(MATERIALSYSTEM_DLL, "55 8B EC 56 8B F1 33 C0 57 8B 7D 08");
+	transferData = reinterpret_cast<decltype(transferData)>(findPattern(CLIENT_DLL, "55 8B EC 8B 45 10 53 56 8B F1 57"));
+	findLoggingChannel = reinterpret_cast<decltype(findLoggingChannel)>(GetProcAddress(tier0, "LoggingSystem_FindChannel"));
+	logDirect = reinterpret_cast<decltype(logDirect)>(GetProcAddress(tier0, "LoggingSystem_LogDirect"));
+	getGameModeNameFn = findPattern(CLIENT_DLL, "55 8B EC 8B 0D ? ? ? ? 53 57 8B 01");
 
-	createSimpleThread = reinterpret_cast<decltype(createSimpleThread)>(GetProcAddress(GetModuleHandleA("tier0.dll"), "CreateSimpleThread"));
-	releaseThreadHandle = reinterpret_cast<decltype(releaseThreadHandle)>(GetProcAddress(GetModuleHandleA("tier0.dll"), "ReleaseThreadHandle"));
+	createSimpleThread = reinterpret_cast<decltype(createSimpleThread)>(GetProcAddress(tier0, "CreateSimpleThread"));
+	releaseThreadHandle = reinterpret_cast<decltype(releaseThreadHandle)>(GetProcAddress(tier0, "ReleaseThreadHandle"));
 }
