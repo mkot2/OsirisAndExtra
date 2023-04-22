@@ -424,8 +424,8 @@ bool AimbotFunction::hitboxIntersection(const matrix3x4 matrix[MAXSTUDIOBONES], 
 		VectorTransform_Wrapper(vectorRotate(hitbox->bbMin, hitbox->offsetOrientation), matrix[hitbox->bone], mins);
 		VectorTransform_Wrapper(vectorRotate(hitbox->bbMax, hitbox->offsetOrientation), matrix[hitbox->bone], maxs);
 
-		vectorITransform(start, matrix[hitbox->bone], mins);
-		vectorITransform(end, matrix[hitbox->bone], maxs);
+        vectorITransform(start, matrix[hitbox->bone], mins);
+        vectorITransform(end, matrix[hitbox->bone], maxs);
 
 		if (intersectLineWithBb(mins, maxs, hitbox->bbMin, hitbox->bbMax))
 			return true;
