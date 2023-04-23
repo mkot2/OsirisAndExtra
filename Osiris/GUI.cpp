@@ -1518,7 +1518,7 @@ void GUI::renderVisualsWindow() noexcept
 
 void GUI::renderSkinChangerWindow() noexcept
 {
-	static auto itemIndex = 0;
+	/*static auto itemIndex = 0;
 
 	ImGui::PushItemWidth(110.0f);
 	ImGui::Combo("##1", &itemIndex, [](void* data, int idx, const char** out_text) {
@@ -1716,7 +1716,7 @@ void GUI::renderSkinChangerWindow() noexcept
 	ImGui::Separator();
 
 	if (ImGui::Button("Update", { 130.0f, 30.0f }))
-		SkinChanger::scheduleHudUpdate();
+		SkinChanger::scheduleHudUpdate();*/
 }
 
 void GUI::renderMiscWindow() noexcept

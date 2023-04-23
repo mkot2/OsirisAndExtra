@@ -27,48 +27,48 @@ public:
 
 	std::add_pointer_t<int __fastcall(SoundInfo&)> originalDispatchSound;
 
-	MinHook buildTransformations;
-	MinHook doExtraBoneProcessing;
-	MinHook shouldSkipAnimationFrame;
-	MinHook standardBlendingRules;
-	MinHook updateClientSideAnimation;
-	MinHook checkForSequenceChange;
+	HookType buildTransformations;
+	HookType doExtraBoneProcessing;
+	HookType shouldSkipAnimationFrame;
+	HookType standardBlendingRules;
+	HookType updateClientSideAnimation;
+	HookType checkForSequenceChange;
 
-	MinHook modifyEyePosition;
-	MinHook calculateView;
-	MinHook updateState;
+	HookType modifyEyePosition;
+	HookType calculateView;
+	HookType updateState;
 
-	MinHook resetState;
-	MinHook setupVelocity;
-	MinHook setupMovement;
-	MinHook setupAliveloop;
-	MinHook setupWeaponAction;
+	HookType resetState;
+	HookType setupVelocity;
+	HookType setupMovement;
+	HookType setupAliveloop;
+	HookType setupWeaponAction;
 
-	MinHook sendDatagram;
+	HookType sendDatagram;
 
-	MinHook setupBones;
-	MinHook eyeAngles;
-	MinHook calcViewBob;
+	HookType setupBones;
+	HookType eyeAngles;
+	HookType calcViewBob;
 
-	MinHook postDataUpdate;
+	HookType postDataUpdate;
 
-	MinHook clSendMove;
-	MinHook clMove;
+	HookType clSendMove;
+	HookType clMove;
 
-	MinHook getColorModulation;
-	MinHook isUsingStaticPropDebugModes;
-	MinHook traceFilterForHeadCollision;
-	MinHook performScreenOverlay;
-	MinHook postNetworkDataReceived;
-	MinHook isDepthOfFieldEnabled;
-	MinHook getClientModelRenderable;
-	MinHook physicsSimulate;
-	MinHook updateFlashBangEffect;
+	HookType getColorModulation;
+	HookType isUsingStaticPropDebugModes;
+	HookType traceFilterForHeadCollision;
+	HookType performScreenOverlay;
+	HookType postNetworkDataReceived;
+	HookType isDepthOfFieldEnabled;
+	HookType getClientModelRenderable;
+	HookType physicsSimulate;
+	HookType updateFlashBangEffect;
 
-	MinHook newFunctionClientDLL;
-	MinHook newFunctionEngineDLL;
-	MinHook newFunctionStudioRenderDLL;
-	MinHook newFunctionMaterialSystemDLL;
+	HookType newFunctionClientDLL;
+	HookType newFunctionEngineDLL;
+	HookType newFunctionStudioRenderDLL;
+	HookType newFunctionMaterialSystemDLL;
 
 	HookType fileSystem;
 	HookType bspQuery;

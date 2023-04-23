@@ -179,7 +179,6 @@ void Ragebot::run(UserCmd* cmd) noexcept
 	// Head
 	hitbox[Head] = (cfg[weaponIndex].hitboxes & 1 << 0) == 1 << 0;
 	// Chest
-	hitbox[Neck] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
 	hitbox[UpperChest] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
 	hitbox[Thorax] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
 	hitbox[LowerChest] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
