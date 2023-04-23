@@ -838,7 +838,7 @@ void GUI::renderChamsWindow() noexcept
 void GUI::renderGlowWindow() noexcept
 {
 	ImGui::Columns(2, nullptr, false);
-	ImGui::SetColumnOffset(1, 500.f);
+	ImGui::SetColumnOffset(1, 400.f);
 	ImGui::hotkey2("Key", config->glowKey, 80.0f);
 	ImGui::Separator();
 
@@ -868,16 +868,13 @@ void GUI::renderGlowWindow() noexcept
 	ImGui::SameLine();
 	ImGui::Checkbox("Enabled", &currentItem->enabled);
 	ImGui::Separator();
-	ImGui::Columns(2, nullptr, false);
-	ImGui::SetColumnOffset(1, 150.0f);
 	ImGui::Checkbox("Health based", &currentItem->healthBased);
+	ImGui::SameLine();
+	ImGui::SetNextItemWidth(100.0f);
+	ImGui::Combo("Style", &currentItem->style, "Default\0Rim3d\0Edge\0Edge Pulse\0");
 	if (currentType == 2 && currentCategory <= 3) ImGui::Checkbox("Audible only", &currentItem->audibleOnly);
 
 	ImGuiCustom::colorPicker("Color", *currentItem);
-
-	ImGui::NextColumn();
-	ImGui::SetNextItemWidth(100.0f);
-	ImGui::Combo("Style", &currentItem->style, "Default\0Rim3d\0Edge\0Edge Pulse\0");
 
 	ImGui::Columns(1);
 }
@@ -1335,7 +1332,7 @@ void GUI::renderVisualsWindow() noexcept
 	ImGui::Checkbox("Wireframe molotov", &config->visuals.wireframeMolotov);
 	ImGui::Checkbox("No blur", &config->visuals.noBlur);
 	ImGui::Checkbox("No scope overlay", &config->visuals.noScopeOverlay);
-	ImGui::Checkbox("No scope zoom", &config->visuals.keepFov);
+	ImGui::Checkbox("No scope zoom", &config->visuals.noScopeZoom);
 	ImGui::Checkbox("No grass", &config->visuals.noGrass);
 	ImGui::Checkbox("No shadows", &config->visuals.noShadows);
 
@@ -1460,6 +1457,7 @@ void GUI::renderVisualsWindow() noexcept
 	ImGui::SliderFloat("On hit hitbox time", &config->visuals.onHitHitbox.duration, 0.1f, 60.0f, "On Hit Hitbox time: % .2fs");
 	ImGuiCustom::colorPicker("Molotov hull", config->visuals.molotovHull);
 	ImGuiCustom::colorPicker("Smoke hull", config->visuals.smokeHull);
+	ImGuiCustom::colorPicker("Nade blast", config->visuals.nadeBlast);
 	ImGui::Checkbox("Molotov polygon", &config->visuals.molotovPolygon.enabled);
 	ImGui::SameLine();
 	if (ImGui::Button("...##molotov_polygon"))

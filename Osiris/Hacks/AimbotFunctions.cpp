@@ -502,33 +502,6 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 	return vecArray;
 }
 
-
-int AimbotFunction::approxHitchance(float wepInnacuracy, int hitbox, float distance)
-{
-	float multiplier = 1.f;
-
-	switch (static_cast<Hitbox>(hitbox)) {
-	case Hitbox::Pelvis:
-	case Hitbox::Belly:
-	case Hitbox::Thorax:
-	case Hitbox::LowerChest:
-	case Hitbox::UpperChest:
-		multiplier = 1.8f;
-		break;
-	case Hitbox::RightThigh:
-	case Hitbox::LeftThigh:
-		multiplier = 4.f/3.f;
-		break;
-	case Hitbox::Neck:
-		multiplier = 1.154f;
-		break;
-	}
-
-	wepInnacuracy = std::max(wepInnacuracy, 0.0000001f);
-	float b = std::sqrt(std::tan((wepInnacuracy) * 3.932f) * distance);
-	return static_cast<int>(((5.1432f / b) * 100.f * multiplier) * 0.8f); // * 0.8 => 0-120 --> 0-100 range
-}
-
 bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitboxSet* set, const matrix3x4 matrix[MAXSTUDIOBONES], Entity* activeWeapon, const Vector& destination, const UserCmd* cmd, const int hitChance) noexcept
 {
 	static auto isSpreadEnabled = interfaces->cvar->findVar("weapon_accuracy_nospread");

@@ -256,6 +256,7 @@ public:
 		bool wireframeMolotov{ false };
 		bool noBlur{ false };
 		bool noScopeOverlay{ false };
+		bool noScopeZoom{ false };
 		bool noGrass{ false };
 		bool noShadows{ false };
 		struct ShadowsChanger {
@@ -272,7 +273,6 @@ public:
 		bool freeCam{ false };
 		KeyBind freeCamKey{ std::string("freecam") };
 		int freeCamSpeed{ 2 };
-		bool keepFov{ false };
 		int fov{ 0 };
 		int farZ{ 0 };
 		int flashReduction{ 0 };
@@ -311,6 +311,7 @@ public:
 		BulletTracers bulletTracers;
 		ColorToggle molotovHull{ 1.0f, 0.27f, 0.0f, 0.3f };
 		ColorToggle smokeHull{ 0.5f, 0.5f, 0.5f, 0.3f };
+		ColorToggle nadeBlast{ 1.0f, 0.0f, 0.0f, 0.3f };
 		struct MolotovPolygon {
 			bool enabled{ false };
 			Color4 enemy{ 1.f, 0.27f, 0.f, 0.3f };

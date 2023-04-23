@@ -123,6 +123,7 @@ static HRESULT __stdcall present(IDirect3DDevice9* device, const RECT* src, cons
 		Visuals::drawMolotovHull(ImGui::GetBackgroundDrawList());
 		Visuals::drawMolotovPolygon(ImGui::GetBackgroundDrawList());
 		Visuals::drawSmokeHull(ImGui::GetBackgroundDrawList());
+		Visuals::drawNadeBlast(ImGui::GetBackgroundDrawList());
 		Visuals::drawSmokeTimer(ImGui::GetBackgroundDrawList());
 		Visuals::drawMolotovTimer(ImGui::GetBackgroundDrawList());
 		Misc::watermark();
@@ -642,35 +643,33 @@ static void __stdcall setDrawColor(int r, int g, int b, int a) noexcept
 
 static void __stdcall overrideView(ViewSetup* setup) noexcept
 {
-	const float fov = 90.f + config->visuals.fov;
-
 	const auto zoomSensitivity = interfaces->cvar->findVar("zoom_sensitivity_ratio_mouse");
 	const auto delayUnscope = interfaces->cvar->findVar("cl_sniper_delay_unscope"); // i use this and i want to fix it
 	static auto zoomSensitivityBackUp = zoomSensitivity->getFloat();
 
 	if (localPlayer) {
 		static bool once = true;
-		if (localPlayer->isAlive()) {
-			if ((!localPlayer->isScoped() && !localPlayer->waitForNoAttack()) || config->visuals.keepFov) {
-				if (localPlayer->isScoped() && once) {
-					if (once) {
-						zoomSensitivityBackUp = zoomSensitivity->getFloat();
-						once = false;
-					}
-					zoomSensitivity->setValue(0.f);
+		const auto activeWeapon = localPlayer->getActiveWeapon();
+		if (activeWeapon && activeWeapon->isSniperRifle() && localPlayer->isScoped()) {
+			if (config->visuals.noScopeZoom) {
+				if (once) {
+					zoomSensitivityBackUp = zoomSensitivity->getFloat();
+					once = false;
 				}
-				setup->fov = fov;
+				zoomSensitivity->setValue(0.f);
+				setup->fov = 90.f;
 			}
 		} else if (auto observed = localPlayer->getObserverTarget(); observed && localPlayer->getObserverMode() == ObsMode::InEye) {
-			if (!observed->isScoped() || config->visuals.keepFov)
-				setup->fov = fov;
+			if (!observed->isScoped() || config->visuals.noScopeZoom)
+				setup->fov = 90.f;
 		} else if (!once) {
 			zoomSensitivity->setValue(zoomSensitivityBackUp);
 			once = true;
-		} else {
-			setup->fov = fov;
 		}
 	}
+
+	if (localPlayer && ((localPlayer->isScoped() && config->visuals.noScopeZoom) || !localPlayer->isScoped()))
+		setup->fov += config->visuals.fov;
 
 	setup->farZ += config->visuals.farZ * 10;
 

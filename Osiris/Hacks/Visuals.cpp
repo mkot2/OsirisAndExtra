@@ -1222,6 +1222,114 @@ void Visuals::drawMolotovHull(ImDrawList* drawList) noexcept
 	}
 }
 
+#define IM_NORMALIZE2F_OVER_ZERO(VX,VY)     do { float d2 = VX*VX + VY*VY; if (d2 > 0.0f) { float inv_len = 1.0f / ImSqrt(d2); VX *= inv_len; VY *= inv_len; } } while (0)
+#define IM_FIXNORMAL2F(VX,VY)               do { float d2 = VX*VX + VY*VY; if (d2 < 0.5f) d2 = 0.5f; float inv_lensq = 1.0f / d2; VX *= inv_lensq; VY *= inv_lensq; } while (0)
+
+static auto generateAntialiasedDot() noexcept
+{
+	constexpr auto segments = 4;
+	constexpr auto radius = 1.0f;
+
+	std::array<ImVec2, segments> circleSegments;
+
+	for (int i = 0; i < segments; ++i) {
+		circleSegments[i] = ImVec2{ radius * std::cos(Helpers::deg2rad(i * (360.0f / segments) + 45.0f)),
+									radius * std::sin(Helpers::deg2rad(i * (360.0f / segments) + 45.0f)) };
+	}
+
+	// based on ImDrawList::AddConvexPolyFilled()
+	const float AA_SIZE = 1.0f; // _FringeScale;
+	constexpr int idx_count = (segments - 2) * 3 + segments * 6;
+	constexpr int vtx_count = (segments * 2);
+
+	std::array<ImDrawIdx, idx_count> indices;
+	std::size_t indexIdx = 0;
+
+	// Add indexes for fill
+	for (int i = 2; i < segments; ++i) {
+		indices[indexIdx++] = 0;
+		indices[indexIdx++] = (i - 1) << 1;
+		indices[indexIdx++] = i << 1;
+	}
+
+	// Compute normals
+	std::array<ImVec2, segments> temp_normals;
+	for (int i0 = segments - 1, i1 = 0; i1 < segments; i0 = i1++) {
+		const ImVec2& p0 = circleSegments[i0];
+		const ImVec2& p1 = circleSegments[i1];
+		float dx = p1.x - p0.x;
+		float dy = p1.y - p0.y;
+		IM_NORMALIZE2F_OVER_ZERO(dx, dy);
+		temp_normals[i0].x = dy;
+		temp_normals[i0].y = -dx;
+	}
+
+	std::array<ImVec2, vtx_count> vertices;
+	std::size_t vertexIdx = 0;
+
+	for (int i0 = segments - 1, i1 = 0; i1 < segments; i0 = i1++) {
+		// Average normals
+		const ImVec2& n0 = temp_normals[i0];
+		const ImVec2& n1 = temp_normals[i1];
+		float dm_x = (n0.x + n1.x) * 0.5f;
+		float dm_y = (n0.y + n1.y) * 0.5f;
+		IM_FIXNORMAL2F(dm_x, dm_y);
+		dm_x *= AA_SIZE * 0.5f;
+		dm_y *= AA_SIZE * 0.5f;
+
+		vertices[vertexIdx++] = ImVec2{ circleSegments[i1].x - dm_x, circleSegments[i1].y - dm_y };
+		vertices[vertexIdx++] = ImVec2{ circleSegments[i1].x + dm_x, circleSegments[i1].y + dm_y };
+
+		indices[indexIdx++] = (i1 << 1);
+		indices[indexIdx++] = (i0 << 1);
+		indices[indexIdx++] = (i0 << 1) + 1;
+		indices[indexIdx++] = (i0 << 1) + 1;
+		indices[indexIdx++] = (i1 << 1) + 1;
+		indices[indexIdx++] = (i1 << 1);
+	}
+
+	return std::make_pair(vertices, indices);
+}
+
+template <std::size_t N>
+static auto generateSpherePoints() noexcept
+{
+	constexpr auto goldenAngle = 2.399963229728653f;
+
+	std::array<Vector, N> points;
+	for (std::size_t i = 1; i <= points.size(); ++i) {
+		const auto latitude = std::asin(2.0f * i / (points.size() + 1) - 1.0f);
+		const auto longitude = goldenAngle * i;
+
+		points[i - 1] = Vector{ std::cos(longitude) * std::cos(latitude), std::sin(longitude) * std::cos(latitude), std::sin(latitude) };
+	}
+	return points;
+};
+
+template <std::size_t VTX_COUNT, std::size_t IDX_COUNT>
+static void drawPrecomputedPrimitive(ImDrawList* drawList, const ImVec2& pos, ImU32 color, const std::array<ImVec2, VTX_COUNT>& vertices, const std::array<ImDrawIdx, IDX_COUNT>& indices) noexcept
+{
+	drawList->PrimReserve(indices.size(), vertices.size());
+
+	const ImU32 colors[2]{ color, color & ~IM_COL32_A_MASK };
+	const auto uv = ImGui::GetDrawListSharedData()->TexUvWhitePixel;
+	for (std::size_t i = 0; i < vertices.size(); ++i) {
+		drawList->_VtxWritePtr[i].pos = vertices[i] + pos;
+		drawList->_VtxWritePtr[i].uv = uv;
+		drawList->_VtxWritePtr[i].col = colors[i & 1];
+	}
+	drawList->_VtxWritePtr += vertices.size();
+
+	std::memcpy(drawList->_IdxWritePtr, indices.data(), indices.size() * sizeof(ImDrawIdx));
+
+	const auto baseIdx = drawList->_VtxCurrentIdx;
+	for (std::size_t i = 0; i < indices.size(); ++i)
+		drawList->_IdxWritePtr[i] += baseIdx;
+
+	drawList->_IdxWritePtr += indices.size();
+	drawList->_VtxCurrentIdx += vertices.size();
+}
+
 void Visuals::drawSmokeHull(ImDrawList* drawList) noexcept
 {
 	if (!config->visuals.smokeHull.enabled)
@@ -1229,39 +1337,45 @@ void Visuals::drawSmokeHull(ImDrawList* drawList) noexcept
 
 	const auto color = Helpers::calculateColor(config->visuals.smokeHull);
 
+	static const auto spherePoints = generateSpherePoints<2000>();
+	static const auto [vertices, indices] = generateAntialiasedDot();
+
+	constexpr auto animationDuration = 0.35f;
+
 	GameData::Lock lock;
-
-	static const auto smokeCircumference = [] {
-		std::array<Vector, 72> points;
-		for (std::size_t i = 0; i < points.size(); ++i) {
-			constexpr auto smokeRadius = 150.0f; // https://github.com/perilouswithadollarsign/cstrike15_src/blob/f82112a2388b841d72cb62ca48ab1846dfcc11c8/game/server/cstrike15/Effects/inferno.cpp#L889
-			points[i] = Vector{ smokeRadius * std::cos(Helpers::deg2rad(i * (360.0f / points.size()))),
-								smokeRadius * std::sin(Helpers::deg2rad(i * (360.0f / points.size()))),
-								0.0f };
+	for (const auto& smoke : smokes) {
+		for (const auto& point : spherePoints) {
+			const auto radius = ImLerp(10.0f, 140.0f, std::clamp((smoke.destructionTime - memory->globalVars->realtime) / animationDuration, 0.0f, 1.0f));
+			if (ImVec2 screenPos; Helpers::worldToScreen(smoke.pos + point * Vector{ radius, radius, radius * 0.7f }, screenPos)) {
+				drawPrecomputedPrimitive(drawList, screenPos, color, vertices, indices);
+			}
 		}
-		return points;
-	}();
+	}
+}
 
-	for (const auto& smoke : GameData::smokes()) {
-		std::array<ImVec2, smokeCircumference.size()> screenPoints;
-		std::size_t count = 0;
+void Visuals::drawNadeBlast(ImDrawList* drawList) noexcept
+{
+	if (!config->visuals.nadeBlast.enabled)
+		return;
 
-		for (const auto& point : smokeCircumference) {
-			if (Helpers::worldToScreen(smoke.origin + point, screenPoints[count]))
-				++count;
-		}
+	const auto color = Helpers::calculateColor(config->visuals.nadeBlast);
 
-		if (count < 1)
+	static const auto spherePoints = generateSpherePoints<1000>();
+	static const auto [vertices, indices] = generateAntialiasedDot();
+
+	constexpr auto blastDuration = 0.35f;
+
+	GameData::Lock lock;
+	for (const auto& projectile : GameData::projectiles()) {
+		if (!projectile.exploded || projectile.explosionTime + blastDuration < memory->globalVars->realtime)
 			continue;
 
-		std::swap(screenPoints[0], *std::min_element(screenPoints.begin(), screenPoints.begin() + count, [](const auto& a, const auto& b) { return a.y < b.y || (a.y == b.y && a.x < b.x); }));
-
-		constexpr auto orientation = [](const ImVec2& a, const ImVec2& b, const ImVec2& c) {
-			return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
-		};
-
-		std::sort(screenPoints.begin() + 1, screenPoints.begin() + count, [&](const auto& a, const auto& b) { return orientation(screenPoints[0], a, b) > 0.0f; });
-		drawList->AddConvexPolyFilled(screenPoints.data(), count, color);
+		for (const auto& point : spherePoints) {
+			const auto radius = ImLerp(10.0f, 70.0f, (memory->globalVars->realtime - projectile.explosionTime) / blastDuration);
+			if (ImVec2 screenPos; Helpers::worldToScreen(projectile.coordinateFrame.origin() + point * radius, screenPos)) {
+				drawPrecomputedPrimitive(drawList, screenPos, color, vertices, indices);
+			}
+		}
 	}
 }
 

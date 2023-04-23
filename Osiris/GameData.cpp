@@ -148,8 +148,11 @@ void GameData::update() noexcept
 				switch (classId) {
 				case ClassId::BaseCSGrenadeProjectile:
 					if (!entity->shouldDraw()) {
-						if (const auto it = std::find(projectileData.begin(), projectileData.end(), entity->handle()); it != projectileData.end())
+						if (const auto it = std::find(projectileData.begin(), projectileData.end(), entity->handle()); it != projectileData.end()) {
+							if (!it->exploded)
+								it->explosionTime = memory->globalVars->realtime;
 							it->exploded = true;
+						}
 						break;
 					}
 					[[fallthrough]];
@@ -829,4 +832,6 @@ InfernoData::InfernoData(Entity* inferno) noexcept
 SmokeData::SmokeData(Entity* smoke) noexcept
 {
 	origin = smoke->getAbsOrigin();
+	explosionTime = memory->globalVars->realtime;
+	handle = smoke->handle();
 }

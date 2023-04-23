@@ -46,6 +46,7 @@ namespace Visuals
 	void drawHitboxMatrix(GameEvent* event = nullptr) noexcept;
 	void drawMolotovHull(ImDrawList* drawList) noexcept;
 	void drawSmokeHull(ImDrawList* drawList) noexcept;
+	void drawNadeBlast(ImDrawList* drawList) noexcept;
 	void drawMolotovPolygon(ImDrawList* draw_list) noexcept;
 	void changeGlowThickness() noexcept;
 	void footstepESP(GameEvent* event) noexcept;

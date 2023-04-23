@@ -119,7 +119,7 @@ void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const Ragebot::
 	}
 
 	if (bestTarget.notNull()) {
-		if ((AimbotFunction::approxHitchance(activeWeapon->getInaccuracy(), hitboxId, localPlayerEyePosition.distTo(bestTarget)) < static_cast<int>(std::round(cfg[weaponIndex].hitChance*.5f))) || !AimbotFunction::hitChance(localPlayer.get(), entity, set, matrix, activeWeapon, bestAngle, cmd, cfg[weaponIndex].hitChance)) {
+		if (!AimbotFunction::hitChance(localPlayer.get(), entity, set, matrix, activeWeapon, bestAngle, cmd, cfg[weaponIndex].hitChance)) {
 			bestTarget = Vector{ };
 			bestAngle = Vector{ };
 			damageDiff = FLT_MAX;
