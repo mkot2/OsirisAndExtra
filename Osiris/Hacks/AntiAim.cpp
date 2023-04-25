@@ -32,7 +32,7 @@ bool updateLby(bool update = false) noexcept
 		return false;
 	}
 
-	if (localPlayer->velocity().length2D() > 0.1f || fabsf(localPlayer->velocity().z) > 100.f)
+	if (localPlayer->velocity().length2D() > 0.1f || std::abs(localPlayer->velocity().z) > 100.f)
 		timer = memory->globalVars->serverTime() + 0.22f;
 
 	if (timer < memory->globalVars->serverTime()) {
@@ -73,8 +73,8 @@ bool autoDirection(Vector eyeAngle) noexcept
 	interfaces->engineTrace->traceRay({ startPosition, startPosition + viewAnglesLeft45 }, 0x4600400B, { localPlayer.get() }, traceLeft45);
 	interfaces->engineTrace->traceRay({ startPosition, startPosition + viewAnglesRight45 }, 0x4600400B, { localPlayer.get() }, traceRight45);
 
-	float distanceLeft45 = sqrtf(powf(startPosition.x - traceRight45.endpos.x, 2) + powf(startPosition.y - traceRight45.endpos.y, 2) + powf(startPosition.z - traceRight45.endpos.z, 2));
-	float distanceRight45 = sqrtf(powf(startPosition.x - traceLeft45.endpos.x, 2) + powf(startPosition.y - traceLeft45.endpos.y, 2) + powf(startPosition.z - traceLeft45.endpos.z, 2));
+	float distanceLeft45 = static_cast<float>(std::sqrt(std::pow(startPosition.x - traceRight45.endpos.x, 2) + std::pow(startPosition.y - traceRight45.endpos.y, 2) + std::pow(startPosition.z - traceRight45.endpos.z, 2)));
+	float distanceRight45 = static_cast<float>(std::sqrt(std::pow(startPosition.x - traceLeft45.endpos.x, 2) + std::pow(startPosition.y - traceLeft45.endpos.y, 2) + std::pow(startPosition.z - traceLeft45.endpos.z, 2)));
 
 	float mindistance = std::min(distanceLeft45, distanceRight45);
 
@@ -290,7 +290,7 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
 
 			switch (config->fakeAngle[static_cast<int>(moving_flag)].lbyMode) {
 			case 0: // Normal(sidemove)
-				if (fabsf(cmd->sidemove) < 5.0f) {
+				if (std::abs(cmd->sidemove) < 5.0f) {
 					if (cmd->buttons & UserCmd::IN_DUCK)
 						cmd->sidemove = cmd->tickCount & 1 ? 3.25f : -3.25f;
 					else
@@ -340,7 +340,7 @@ void AntiAim::legit(UserCmd* cmd, const Vector& previousViewAngles, const Vector
 			return;
 		}
 
-		if (fabsf(cmd->sidemove) < 5.0f && !config->legitAntiAim.extend) {
+		if (std::abs(cmd->sidemove) < 5.0f && !config->legitAntiAim.extend) {
 			if (cmd->buttons & UserCmd::IN_DUCK)
 				cmd->sidemove = cmd->tickCount & 1 ? 3.25f : -3.25f;
 			else

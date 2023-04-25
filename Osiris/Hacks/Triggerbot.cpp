@@ -184,7 +184,7 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 				continue;
 
 			const auto angle = AimbotFunction::calculateRelativeAngle(startPos, records->at(i).origin, cmd->viewangles + aimPunch);
-			const auto fov = std::hypotf(angle.x, angle.y);
+			const auto fov = std::hypot(angle.x, angle.y);
 			if (fov < bestFov) {
 				bestFov = fov;
 				bestTick = i;

@@ -56,7 +56,7 @@ static auto playerByHandleWritable(int handle) noexcept
 static void updateNetLatency() noexcept
 {
 	if (const auto networkChannel = interfaces->engine->getNetworkChannel())
-		netOutgoingLatency = (std::max)(static_cast<int>(networkChannel->getLatency(0) * 1000.0f), 0);
+		netOutgoingLatency = std::max(static_cast<int>(networkChannel->getLatency(0) * 1000.0f), 0);
 	else
 		netOutgoingLatency = 0;
 }
@@ -552,7 +552,7 @@ void PlayerData::update(Entity* entity) noexcept
 		return;
 
 	matrix3x4 boneMatrices[MAXSTUDIOBONES];
-	memcpy(boneMatrices, entity->getBoneCache().memory, std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
+	std::memcpy(boneMatrices, entity->getBoneCache().memory, std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
 
 	bones.clear();
 	bones.reserve(20);

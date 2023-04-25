@@ -29,7 +29,7 @@ std::array<float, 3U> Helpers::rgbToHsv(float r, float g, float b) noexcept
 
 	if (delta) {
 		if (max == r)
-			hue = std::fmodf((g - b) / delta, 6.0f) / 6.0f;
+			hue = std::fmod((g - b) / delta, 6.0f) / 6.0f;
 		else if (max == g)
 			hue = ((b - r) / delta + 2.0f) / 6.0f;
 		else if (max == b)
@@ -44,11 +44,11 @@ std::array<float, 3U> Helpers::rgbToHsv(float r, float g, float b) noexcept
 
 std::array<float, 3U> Helpers::hsvToRgb(float h, float s, float v) noexcept
 {
-	h = h < 0.0f ? std::fmodf(h, 1.0f) + 1.0f : std::fmodf(h, 1.0f);
+	h = h < 0.0f ? std::fmod(h, 1.0f) + 1.0f : std::fmod(h, 1.0f);
 	s = std::clamp(s, 0.0f, 1.0f);
 	v = std::clamp(v, 0.0f, 1.0f);
 	const auto c = s * v;
-	const auto x = c * (1.0f - std::fabsf(std::fmodf(h * 6.0f, 2.0f) - 1.0f));
+	const auto x = c * (1.0f - std::abs(std::fmod(h * 6.0f, 2.0f) - 1.0f));
 	const auto m = v - c;
 
 	float r = 0.0f, g = 0.0f, b = 0.0f;
@@ -137,9 +137,9 @@ float Helpers::bias(float x, float biasAmt) noexcept
 	static float lastAmt = -1;
 	static float lastExponent = 0;
 	if (lastAmt != biasAmt) {
-		lastExponent = log(biasAmt) * -1.4427f;
+		lastExponent = std::log(biasAmt) * -1.4427f;
 	}
-	return pow(x, lastExponent);
+	return std::pow(x, lastExponent);
 }
 
 float Helpers::smoothStepBounds(float edge0, float edge1, float x) noexcept
@@ -186,17 +186,17 @@ float Helpers::approachValueSmooth(float target, float value, float fraction) no
 void Helpers::angleVectors(Vector angles, Vector* forward, Vector* right, Vector* up)
 {
 	float angle;
-	static float sr, sp, sy, cr, cp, cy, cpi = (M_PI * 2 / 360);
+	static float sr, sp, sy, cr, cp, cy, cpi = (std::numbers::pi_v<float> * 2.f / 360.f);
 
 	angle = angles.x * cpi;
-	sy = sin(angle);
-	cy = cos(angle);
+	sy = std::sin(angle);
+	cy = std::cos(angle);
 	angle = angles.y * cpi;
-	sp = sin(angle);
-	cp = cos(angle);
+	sp = std::sin(angle);
+	cp = std::cos(angle);
 	angle = angles.z * cpi;
-	sr = sin(angle);
-	cr = cos(angle);
+	sr = std::sin(angle);
+	cr = std::cos(angle);
 
 	if (forward) {
 		forward->y = (cp * cy);
@@ -219,7 +219,7 @@ void Helpers::angleVectors(Vector angles, Vector* forward, Vector* right, Vector
 
 float Helpers::angleDiff(float destAngle, float srcAngle) noexcept
 {
-	float delta = std::fmodf(destAngle - srcAngle, 360.0f);
+	float delta = std::fmod(destAngle - srcAngle, 360.0f);
 
 	if (destAngle > srcAngle) {
 		if (delta >= 180)
@@ -248,7 +248,7 @@ Vector Helpers::approach(Vector target, Vector value, float speed) noexcept
 
 float Helpers::angleNormalize(float angle) noexcept
 {
-	angle = fmodf(angle, 360.0f);
+	angle = std::fmod(angle, 360.0f);
 
 	if (angle > 180.f)
 		angle -= 360.f;

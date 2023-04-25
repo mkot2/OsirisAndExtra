@@ -164,11 +164,6 @@ static void menuBarItem(const char* name, bool& enabled) noexcept
 
 void GUI::renderLegitbotWindow() noexcept
 {
-	static constexpr const char* hitboxes[]{ "Head","Chest","Stomach","Arms","Legs","Feet"};
-	static bool hitbox[ARRAYSIZE(hitboxes)] = { false, false, false, false, false, false };
-	static std::string previewvalue = "";
-	bool once = false;
-
 	ImGui::PushID("Key");
 	ImGui::hotkey2("Key", config->legitbotKey);
 	ImGui::PopID();
@@ -274,30 +269,7 @@ void GUI::renderLegitbotWindow() noexcept
 	ImGui::Checkbox("Ignore flash", &config->legitbot[currentWeapon].ignoreFlash);
 	ImGui::Checkbox("Ignore smoke", &config->legitbot[currentWeapon].ignoreSmoke);
 	ImGui::Checkbox("Auto scope", &config->legitbot[currentWeapon].autoScope);
-
-	for (size_t i = 0; i < ARRAYSIZE(hitbox); i++) {
-		hitbox[i] = (config->legitbot[currentWeapon].hitboxes & 1 << i) == 1 << i;
-	}
-	if (ImGui::BeginCombo("Hitbox", previewvalue.c_str())) {
-		previewvalue = "";
-		for (size_t i = 0; i < ARRAYSIZE(hitboxes); i++) {
-			ImGui::Selectable(hitboxes[i], &hitbox[i], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups);
-		}
-		ImGui::EndCombo();
-	}
-	for (size_t i = 0; i < ARRAYSIZE(hitboxes); i++) {
-		if (!once) {
-			previewvalue = "";
-			once = true;
-		}
-		if (hitbox[i]) {
-			previewvalue += previewvalue.size() ? std::string(", ") + hitboxes[i] : hitboxes[i];
-			config->legitbot[currentWeapon].hitboxes |= 1 << i;
-		} else {
-			config->legitbot[currentWeapon].hitboxes &= ~(1 << i);
-		}
-	}
-
+	ImGuiCustom::multiCombo("Hitbox", config->legitbot[currentWeapon].hitboxes, "Head\0Chest\0Stomach\0Arms\0Legs\0Feet\0");
 	ImGui::NextColumn();
 	ImGui::PushItemWidth(240.0f);
 	ImGui::SliderFloat("FOV", &config->legitbot[currentWeapon].fov, 0.0f, 255.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
@@ -327,11 +299,6 @@ void GUI::renderLegitbotWindow() noexcept
 
 void GUI::renderRagebotWindow() noexcept
 {
-	static constexpr const char* hitboxes[]{ "Head","Chest","Stomach","Arms","Legs","Feet" };
-	static bool hitbox[ARRAYSIZE(hitboxes)] = { false, false, false, false, false, false };
-	static std::string previewvalue = "";
-	bool once = false;
-
 	ImGui::PushID("Ragebot Key");
 	ImGui::hotkey2("Key", config->ragebotKey);
 	ImGui::PopID();
@@ -451,30 +418,7 @@ void GUI::renderRagebotWindow() noexcept
 	ImGui::Checkbox("Low performance mode", &config->optimizations.lowPerformanceMode);
 	ImGui::Checkbox("Between shots", &config->ragebot[currentWeapon].betweenShots);
 	ImGui::Combo("Priority", &config->ragebot[currentWeapon].priority, "Health\0Distance\0Fov\0");
-
-	for (size_t i = 0; i < ARRAYSIZE(hitbox); i++) {
-		hitbox[i] = (config->ragebot[currentWeapon].hitboxes & 1 << i) == 1 << i;
-	}
-	if (ImGui::BeginCombo("Hitbox", previewvalue.c_str())) {
-		previewvalue = "";
-		for (size_t i = 0; i < ARRAYSIZE(hitboxes); i++) {
-			ImGui::Selectable(hitboxes[i], &hitbox[i], ImGuiSelectableFlags_DontClosePopups);
-		}
-		ImGui::EndCombo();
-	}
-	for (size_t i = 0; i < ARRAYSIZE(hitboxes); i++) {
-		if (!once) {
-			previewvalue = "";
-			once = true;
-		}
-		if (hitbox[i]) {
-			previewvalue += previewvalue.size() ? std::string(", ") + hitboxes[i] : hitboxes[i];
-			config->ragebot[currentWeapon].hitboxes |= 1 << i;
-		} else {
-			config->ragebot[currentWeapon].hitboxes &= ~(1 << i);
-		}
-	}
-
+	ImGuiCustom::multiCombo("Hitbox", config->ragebot[currentWeapon].hitboxes, "Head\0Chest\0Stomach\0Arms\0Legs\0Feet\0");
 	ImGui::NextColumn();
 	ImGui::PushItemWidth(240.0f);
 	ImGui::SliderFloat("FOV", &config->ragebot[currentWeapon].fov, 0.0f, 255.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
@@ -515,10 +459,6 @@ void GUI::renderRagebotWindow() noexcept
 
 void GUI::renderTriggerbotWindow() noexcept
 {
-	static constexpr const char* hitboxes[]{ "Head","Chest","Stomach","Arms","Legs","Feet" };
-	static bool hitbox[ARRAYSIZE(hitboxes)] = { false, false, false, false, false, false };
-	static std::string previewvalue = "";
-
 	ImGui::Columns(2, nullptr, false);
 	ImGui::SetColumnOffset(1, 350.0f);
 
@@ -624,29 +564,7 @@ void GUI::renderTriggerbotWindow() noexcept
 	ImGui::Checkbox("Ignore flash", &config->triggerbot[currentWeapon].ignoreFlash);
 	ImGui::Checkbox("Ignore smoke", &config->triggerbot[currentWeapon].ignoreSmoke);
 	ImGui::SetNextItemWidth(85.0f);
-
-	for (size_t i = 0; i < ARRAYSIZE(hitbox); i++) {
-		hitbox[i] = (config->triggerbot[currentWeapon].hitboxes & 1 << i) == 1 << i;
-	}
-
-	if (ImGui::BeginCombo("Hitbox", previewvalue.c_str())) {
-		previewvalue = "";
-		for (size_t i = 0; i < ARRAYSIZE(hitboxes); i++) {
-			ImGui::Selectable(hitboxes[i], &hitbox[i], ImGuiSelectableFlags_DontClosePopups);
-		}
-		ImGui::EndCombo();
-	}
-	for (size_t i = 0; i < ARRAYSIZE(hitboxes); i++) {
-		if (i == 0)
-			previewvalue = "";
-
-		if (hitbox[i]) {
-			previewvalue += previewvalue.size() ? std::string(", ") + hitboxes[i] : hitboxes[i];
-			config->triggerbot[currentWeapon].hitboxes |= 1 << i;
-		} else {
-			config->triggerbot[currentWeapon].hitboxes &= ~(1 << i);
-		}
-	}
+	ImGuiCustom::multiCombo("Hitbox", config->triggerbot[currentWeapon].hitboxes, "Head\0Chest\0Stomach\0Arms\0Legs\0Feet\0");
 	ImGui::PushItemWidth(220.0f);
 	ImGui::SliderInt("Hitchance", &config->triggerbot[currentWeapon].hitChance, 0, 100, "%d");
 	ImGui::PushItemWidth(220.0f);
@@ -809,7 +727,7 @@ void GUI::renderChamsWindow() noexcept
 	ImGui::SameLine();
 	ImGui::Text("%d", material);
 
-	constexpr std::array categories{ "Allies", "Enemies", "Planting", "Defusing", "Local player", "Weapons", "Hands", "Backtrack", "Sleeves", "Desync", "Ragdolls", "Fake lag"};
+	constexpr std::array categories{ "Allies", "Enemies", "Planting", "Defusing", "Local player", "Weapons", "Hands", "Backtrack", "Sleeves", "Desync", "Ragdolls", "Fake lag" };
 
 	ImGui::SameLine();
 
@@ -2166,56 +2084,8 @@ void GUI::renderMiscWindow() noexcept
 		ImGui::Combo("Primary weapon", &config->misc.autoBuy.primaryWeapon, "None\0MAC-10 | MP9\0MP7 | MP5-SD\0UMP-45\0P90\0PP-Bizon\0Galil AR | FAMAS\0AK-47 | M4A4 | M4A1-S\0SSG 08\0SG553 |AUG\0AWP\0G3SG1 | SCAR-20\0Nova\0XM1014\0Sawed-Off | MAG-7\0M249\0Negev\0");
 		ImGui::Combo("Secondary weapon", &config->misc.autoBuy.secondaryWeapon, "None\0Glock-18 | P2000 | USP-S\0Dual Berettas\0P250\0CZ75-Auto | Five-SeveN | Tec-9\0Desert Eagle | R8 Revolver\0");
 		ImGui::Combo("Armor", &config->misc.autoBuy.armor, "None\0Kevlar\0Kevlar + Helmet\0");
-
-		static bool utilities[2]{ false, false };
-		static const char* utility[]{ "Defuser","Taser" };
-		static std::string previewvalueutility = "";
-		for (size_t i = 0; i < ARRAYSIZE(utilities); i++) {
-			utilities[i] = (config->misc.autoBuy.utility & 1 << i) == 1 << i;
-		}
-		if (ImGui::BeginCombo("Utility", previewvalueutility.c_str())) {
-			previewvalueutility = "";
-			for (size_t i = 0; i < ARRAYSIZE(utilities); i++) {
-				ImGui::Selectable(utility[i], &utilities[i], ImGuiSelectableFlags_DontClosePopups);
-			}
-			ImGui::EndCombo();
-		}
-		for (size_t i = 0; i < ARRAYSIZE(utilities); i++) {
-			if (i == 0)
-				previewvalueutility = "";
-
-			if (utilities[i]) {
-				previewvalueutility += previewvalueutility.size() ? std::string(", ") + utility[i] : utility[i];
-				config->misc.autoBuy.utility |= 1 << i;
-			} else {
-				config->misc.autoBuy.utility &= ~(1 << i);
-			}
-		}
-
-		static bool nading[5]{ false, false, false, false, false };
-		static const char* nades[]{ "HE Grenade","Smoke Grenade","Molotov","Flashbang","Decoy" };
-		static std::string previewvaluenades = "";
-		for (size_t i = 0; i < ARRAYSIZE(nading); i++) {
-			nading[i] = (config->misc.autoBuy.grenades & 1 << i) == 1 << i;
-		}
-		if (ImGui::BeginCombo("Nades", previewvaluenades.c_str())) {
-			previewvaluenades = "";
-			for (size_t i = 0; i < ARRAYSIZE(nading); i++) {
-				ImGui::Selectable(nades[i], &nading[i], ImGuiSelectableFlags_DontClosePopups);
-			}
-			ImGui::EndCombo();
-		}
-		for (size_t i = 0; i < ARRAYSIZE(nading); i++) {
-			if (i == 0)
-				previewvaluenades = "";
-
-			if (nading[i]) {
-				previewvaluenades += previewvaluenades.size() ? std::string(", ") + nades[i] : nades[i];
-				config->misc.autoBuy.grenades |= 1 << i;
-			} else {
-				config->misc.autoBuy.grenades &= ~(1 << i);
-			}
-		}
+		ImGuiCustom::multiCombo("Utility", config->misc.autoBuy.utility, "Defuser\0Taser\0");
+		ImGuiCustom::multiCombo("Grenades", config->misc.autoBuy.grenades, "HE Grenade\0Smoke Grenade\0Molotov\0Flashbang\0Decoy\0");
 		ImGui::EndPopup();
 	}
 	ImGui::PopID();
@@ -2228,57 +2098,8 @@ void GUI::renderMiscWindow() noexcept
 		ImGui::OpenPopup("");
 
 	if (ImGui::BeginPopup("")) {
-
-		static bool modes[2]{ false, false };
-		static const char* mode[]{ "Console", "Event log" };
-		static std::string previewvaluemode = "";
-		for (size_t i = 0; i < ARRAYSIZE(modes); i++) {
-			modes[i] = (config->misc.loggerOptions.modes & 1 << i) == 1 << i;
-		}
-		if (ImGui::BeginCombo("Log output", previewvaluemode.c_str())) {
-			previewvaluemode = "";
-			for (size_t i = 0; i < ARRAYSIZE(modes); i++) {
-				ImGui::Selectable(mode[i], &modes[i], ImGuiSelectableFlags_DontClosePopups);
-			}
-			ImGui::EndCombo();
-		}
-		for (size_t i = 0; i < ARRAYSIZE(modes); i++) {
-			if (i == 0)
-				previewvaluemode = "";
-
-			if (modes[i]) {
-				previewvaluemode += previewvaluemode.size() ? std::string(", ") + mode[i] : mode[i];
-				config->misc.loggerOptions.modes |= 1 << i;
-			} else {
-				config->misc.loggerOptions.modes &= ~(1 << i);
-			}
-		}
-
-		static bool events[4]{ false, false, false, false };
-		static const char* event[]{ "Damage dealt", "Damage received", "Hostage taken", "Bomb plants" };
-		static std::string previewvalueevent = "";
-		for (size_t i = 0; i < ARRAYSIZE(events); i++) {
-			events[i] = (config->misc.loggerOptions.events & 1 << i) == 1 << i;
-		}
-		if (ImGui::BeginCombo("Log events", previewvalueevent.c_str())) {
-			previewvalueevent = "";
-			for (size_t i = 0; i < ARRAYSIZE(events); i++) {
-				ImGui::Selectable(event[i], &events[i], ImGuiSelectableFlags_DontClosePopups);
-			}
-			ImGui::EndCombo();
-		}
-		for (size_t i = 0; i < ARRAYSIZE(events); i++) {
-			if (i == 0)
-				previewvalueevent = "";
-
-			if (events[i]) {
-				previewvalueevent += previewvalueevent.size() ? std::string(", ") + event[i] : event[i];
-				config->misc.loggerOptions.events |= 1 << i;
-			} else {
-				config->misc.loggerOptions.events &= ~(1 << i);
-			}
-		}
-
+		ImGuiCustom::multiCombo("Log output", config->misc.loggerOptions.modes, "Console\0Event log\0");
+		ImGuiCustom::multiCombo("Log events", config->misc.loggerOptions.events, "Damage dealt\0Damage received\0Hostage taken\0Bomb plants\0");
 		ImGui::EndPopup();
 	}
 	ImGui::PopID();

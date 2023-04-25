@@ -30,7 +30,7 @@ public:
 	Vector right{ };
 	Vector up{ };
 
-	Angle(const Vector& v) noexcept :sp{ sinf(Helpers::deg2rad(v.x)) }, cp{ cosf(Helpers::deg2rad(v.x)) }, sy{ sinf(Helpers::deg2rad(v.y)) }, cy{ cosf(Helpers::deg2rad(v.y)) }, sr{ sinf(Helpers::deg2rad(v.z)) }, cr{ cosf(Helpers::deg2rad(v.z)) },
+	Angle(const Vector& v) noexcept :sp{ std::sin(Helpers::deg2rad(v.x)) }, cp{ std::cos(Helpers::deg2rad(v.x)) }, sy{ std::sin(Helpers::deg2rad(v.y)) }, cy{ std::cos(Helpers::deg2rad(v.y)) }, sr{ std::sin(Helpers::deg2rad(v.z)) }, cr{ std::cos(Helpers::deg2rad(v.z)) },
 		forward{ get(0) }, right{ get(1) }, up{ get(2) }
 	{
 	}

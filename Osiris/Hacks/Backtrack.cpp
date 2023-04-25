@@ -29,7 +29,7 @@ static Cvars cvars;
 float Backtrack::getLerp() noexcept
 {
 	auto ratio = std::clamp(cvars.interpRatio->getFloat(), cvars.minInterpRatio->getFloat(), cvars.maxInterpRatio->getFloat());
-	return (std::max)(cvars.interp->getFloat(), (ratio / ((cvars.maxUpdateRate) ? cvars.maxUpdateRate->getFloat() : cvars.updateRate->getFloat())));
+	return std::max(cvars.interp->getFloat(), (ratio / ((cvars.maxUpdateRate) ? cvars.maxUpdateRate->getFloat() : cvars.updateRate->getFloat())));
 }
 
 void Backtrack::run(UserCmd* cmd) noexcept
@@ -75,7 +75,7 @@ void Backtrack::run(UserCmd* cmd) noexcept
 			if (valid(player.backtrackRecords.at(j).simulationTime)) {
 				for (auto& position : player.backtrackRecords.at(j).positions) {
 					auto angle = AimbotFunction::calculateRelativeAngle(localPlayerEyePosition, position, cmd->viewangles + aimPunch);
-					auto fov = std::hypotf(angle.x, angle.y);
+					auto fov = std::hypot(angle.x, angle.y);
 					if (fov < bestFov) {
 						bestFov = fov;
 						bestRecord = j;

@@ -132,8 +132,8 @@ struct Vector {
 	Vector normalized() noexcept
 	{
 		auto vectorNormalize = [](Vector& vector) {
-			float radius = std::sqrtf(std::powf(vector.x, 2) + std::powf(vector.y, 2) + std::powf(vector.z, 2));
-			radius = 1.f / (radius + FLT_EPSILON);
+			float radius = static_cast<float>(std::sqrt(std::pow(vector.x, 2) + std::pow(vector.y, 2) + std::pow(vector.z, 2)));
+			radius = 1.f / (radius + std::numeric_limits<float>::epsilon());
 
 			vector *= radius;
 
@@ -204,7 +204,7 @@ struct Vector {
 		const float l = length2D();
 		bool xp = x >= 0.0f;
 		bool yp = y >= 0.0f;
-		bool xy = std::fabsf(x) >= std::fabsf(y);
+		bool xy = std::abs(x) >= std::abs(y);
 		if (xp && xy)
 			return Vector{ l, 0.0f, 0.0f };
 		if (!xp && xy)

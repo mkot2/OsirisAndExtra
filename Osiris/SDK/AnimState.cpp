@@ -23,11 +23,11 @@ void AnimState::setupVelocity() noexcept
 	*/
 
 	//this is a hack to fix shuffling animations due to rounding errors, not part of actual game code
-	if (fabsf(vecAbsVelocity.x) < 0.001)
+	if (std::abs(vecAbsVelocity.x) < 0.001)
 		vecAbsVelocity.x = 0.0f;
-	if (fabsf(vecAbsVelocity.y) < 0.001)
+	if (std::abs(vecAbsVelocity.y) < 0.001)
 		vecAbsVelocity.y = 0.0f;
-	if (fabsf(vecAbsVelocity.z) < 0.001)
+	if (std::abs(vecAbsVelocity.z) < 0.001)
 		vecAbsVelocity.z = 0.0f;
 
 	// save vertical velocity component
@@ -45,13 +45,13 @@ void AnimState::setupVelocity() noexcept
 	vecVelocityNormalized = vecVelocity.normalized();
 
 	// save horizontal velocity length
-	velocityLengthXY = std::fminf(vecVelocity.length(), CS_PLAYER_SPEED_RUN);
+	velocityLengthXY = std::min(vecVelocity.length(), CS_PLAYER_SPEED_RUN);
 
 	if (velocityLengthXY > 0.f)
 		vecVelocityNormalizedNonZero = vecVelocityNormalized;
 
 	auto currentWeapon = reinterpret_cast<Entity*>(weapon);
-	float maxSpeedRun = currentWeapon ? std::fmaxf(currentWeapon->getMaxSpeed(), 0.001f) : CS_PLAYER_SPEED_RUN;
+	float maxSpeedRun = currentWeapon ? std::max(currentWeapon->getMaxSpeed(), 0.001f) : CS_PLAYER_SPEED_RUN;
 
 	//compute speed in various normalized forms
 	speedAsPortionOfRunTopSpeed = std::clamp(velocityLengthXY / maxSpeedRun, 0.f, 1.f);
@@ -109,24 +109,24 @@ void AnimState::setupVelocity() noexcept
 	float tempYawMin = aimYawMin * aimMatrixWidthRange;
 
 	if (eyeFootDelta > tempYawMax) {
-		footYaw = eyeYaw - fabs(tempYawMax);
+		footYaw = eyeYaw - std::abs(tempYawMax);
 	} else if (eyeFootDelta < tempYawMin) {
-		footYaw = eyeYaw + fabs(tempYawMin);
+		footYaw = eyeYaw + std::abs(tempYawMin);
 	}
 	footYaw = Helpers::angleNormalize(footYaw);
 
-	if (velocityLengthXY > 0.1f || fabs(velocityLengthZ) > 100.0f) {
+	if (velocityLengthXY > 0.1f || std::abs(velocityLengthZ) > 100.0f) {
 		footYaw = Helpers::approachAngle(eyeYaw, footYaw, lastUpdateIncrement * (30.0f + 20.0f * walkToRunTransition));
 		lowerBodyRealignTimer = lastUpdateTime + (CSGO_ANIM_LOWER_REALIGN_DELAY * 0.2f);
 	} else {
 		footYaw = Helpers::approachAngle(entity->lby(), footYaw, lastUpdateIncrement * CSGO_ANIM_LOWER_CATCHUP_IDLE);
 
-		if (lastUpdateTime > lowerBodyRealignTimer && fabsf(Helpers::angleDiff(footYaw, eyeYaw)) > 35.0f) {
+		if (lastUpdateTime > lowerBodyRealignTimer && std::abs(Helpers::angleDiff(footYaw, eyeYaw)) > 35.0f) {
 			lowerBodyRealignTimer = lastUpdateTime + CSGO_ANIM_LOWER_REALIGN_DELAY;
 		}
 	}
 
-	if (velocityLengthXY <= CS_PLAYER_SPEED_STOPPED && onGround && !onLadder && !landing && lastUpdateIncrement > 0.f && std::fabsf(Helpers::angleDiff(footYawLast, footYaw) / lastUpdateIncrement > 120.f)) {
+	if (velocityLengthXY <= CS_PLAYER_SPEED_STOPPED && onGround && !onLadder && !landing && lastUpdateIncrement > 0.f && std::abs(Helpers::angleDiff(footYawLast, footYaw) / lastUpdateIncrement > 120.f)) {
 		setLayerSequence(ANIMATION_LAYER_ADJUST, ACT_CSGO_IDLE_TURN_BALANCEADJUST);
 		adjustStarted = true;
 	}
@@ -152,28 +152,28 @@ void AnimState::setupVelocity() noexcept
 		if (moveSeq != -1) {
 			StudioSeqdesc seqdesc = entity->getModelPtr()->seqdesc(moveSeq);
 			if (seqdesc.numAnimTags > 0) {
-				if (fabsf(Helpers::angleDiff(moveYaw, 180)) <= EIGHT_WAY_WIDTH) //N
+				if (std::abs(Helpers::angleDiff(moveYaw, 180)) <= EIGHT_WAY_WIDTH) //N
 				{
 					primaryCycle = entity->getFirstSequenceAnimTag(moveSeq, ANIMTAG_STARTCYCLE_N);
-				} else if (fabsf(Helpers::angleDiff(moveYaw, 135)) <= EIGHT_WAY_WIDTH) //NE
+				} else if (std::abs(Helpers::angleDiff(moveYaw, 135)) <= EIGHT_WAY_WIDTH) //NE
 				{
 					primaryCycle = entity->getFirstSequenceAnimTag(moveSeq, ANIMTAG_STARTCYCLE_NE);
-				} else if (fabsf(Helpers::angleDiff(moveYaw, 90)) <= EIGHT_WAY_WIDTH) //E
+				} else if (std::abs(Helpers::angleDiff(moveYaw, 90)) <= EIGHT_WAY_WIDTH) //E
 				{
 					primaryCycle = entity->getFirstSequenceAnimTag(moveSeq, ANIMTAG_STARTCYCLE_E);
-				} else if (fabsf(Helpers::angleDiff(moveYaw, 45)) <= EIGHT_WAY_WIDTH) //SE
+				} else if (std::abs(Helpers::angleDiff(moveYaw, 45)) <= EIGHT_WAY_WIDTH) //SE
 				{
 					primaryCycle = entity->getFirstSequenceAnimTag(moveSeq, ANIMTAG_STARTCYCLE_SE);
-				} else if (fabsf(Helpers::angleDiff(moveYaw, 0)) <= EIGHT_WAY_WIDTH) //S
+				} else if (std::abs(Helpers::angleDiff(moveYaw, 0)) <= EIGHT_WAY_WIDTH) //S
 				{
 					primaryCycle = entity->getFirstSequenceAnimTag(moveSeq, ANIMTAG_STARTCYCLE_S);
-				} else if (fabsf(Helpers::angleDiff(moveYaw, -45)) <= EIGHT_WAY_WIDTH) //SW
+				} else if (std::abs(Helpers::angleDiff(moveYaw, -45)) <= EIGHT_WAY_WIDTH) //SW
 				{
 					primaryCycle = entity->getFirstSequenceAnimTag(moveSeq, ANIMTAG_STARTCYCLE_SW);
-				} else if (fabsf(Helpers::angleDiff(moveYaw, -90)) <= EIGHT_WAY_WIDTH) //W
+				} else if (std::abs(Helpers::angleDiff(moveYaw, -90)) <= EIGHT_WAY_WIDTH) //W
 				{
 					primaryCycle = entity->getFirstSequenceAnimTag(moveSeq, ANIMTAG_STARTCYCLE_W);
-				} else if (fabsf(Helpers::angleDiff(moveYaw, -135)) <= EIGHT_WAY_WIDTH) //NW
+				} else if (std::abs(Helpers::angleDiff(moveYaw, -135)) <= EIGHT_WAY_WIDTH) //NW
 				{
 					primaryCycle = entity->getFirstSequenceAnimTag(moveSeq, ANIMTAG_STARTCYCLE_NW);
 				}
@@ -248,11 +248,11 @@ void AnimState::setupMovement() noexcept
 	if (velocityLengthXY > (CS_PLAYER_SPEED_RUN * CS_PLAYER_SPEED_WALK_MODIFIER) && walkToRunTransitionState == ANIM_TRANSITION_RUN_TO_WALK) {
 		//crossed the walk to run threshold
 		walkToRunTransitionState = ANIM_TRANSITION_WALK_TO_RUN;
-		walkToRunTransition = std::fmaxf(0.01f, walkToRunTransition);
+		walkToRunTransition = std::max(0.01f, walkToRunTransition);
 	} else if (velocityLengthXY < (CS_PLAYER_SPEED_RUN * CS_PLAYER_SPEED_WALK_MODIFIER) && walkToRunTransitionState == ANIM_TRANSITION_WALK_TO_RUN) {
 		//crossed the run to walk threshold
 		walkToRunTransitionState = ANIM_TRANSITION_RUN_TO_WALK;
-		walkToRunTransition = std::fmaxf(0.99f, walkToRunTransition);
+		walkToRunTransition = std::max(0.99f, walkToRunTransition);
 	}
 
 	if (animstateModelVersion < 2) {
@@ -287,18 +287,18 @@ void AnimState::setupMovement() noexcept
 
 	Vector vecMoveYawDir;
 	Vector::fromAngle(Vector{ 0.f, Helpers::angleNormalize(footYaw + moveYaw + 180.f), 0.f }, &vecMoveYawDir);
-	float yawDeltaAbsDot = std::fabsf(vecVelocityNormalizedNonZero.dotProduct(vecMoveYawDir));
+	float yawDeltaAbsDot = std::abs(vecVelocityNormalizedNonZero.dotProduct(vecMoveYawDir));
 	moveWeight *= Helpers::bias(yawDeltaAbsDot, 0.2f);
 
 	float moveWeightWithAirSmooth = moveWeight * inAirSmoothValue;
 
 	// dampen move weight for landings
-	moveWeightWithAirSmooth *= std::fmaxf((1.0f - getLayerWeight(ANIMATION_LAYER_MOVEMENT_LAND_OR_CLIMB)), 0.55f);
+	moveWeightWithAirSmooth *= std::max((1.0f - getLayerWeight(ANIMATION_LAYER_MOVEMENT_LAND_OR_CLIMB)), 0.55f);
 
 	float moveCycleRate = 0.f;
 	if (velocityLengthXY > 0.f) {
 		moveCycleRate = entity->getSequenceCycleRate(weaponMoveSeq);
-		float sequenceGroundSpeed = std::fmaxf(entity->getSequenceMoveDist(entity->getModelPtr(), weaponMoveSeq) / (1.0f / moveCycleRate), 0.001f);
+		float sequenceGroundSpeed = std::max(entity->getSequenceMoveDist(entity->getModelPtr(), weaponMoveSeq) / (1.0f / moveCycleRate), 0.001f);
 		moveCycleRate *= velocityLengthXY / sequenceGroundSpeed;
 
 		moveCycleRate *= Helpers::lerp(walkToRunTransition, 1.0f, CSGO_ANIM_RUN_ANIM_PLAYBACK_MULTIPLIER);
@@ -383,11 +383,11 @@ void AnimState::setupMovement() noexcept
 	}
 
 	if (landedOnGroundThisFrame) {
-		distanceFell = fabs(leftGroundHeight - vecPositionCurrent.z);
+		distanceFell = std::abs(leftGroundHeight - vecPositionCurrent.z);
 		float distanceFallNormalizedBiasRange = Helpers::bias(Helpers::remapValClamped(distanceFell, 12.0f, 72.0f, 0.0f, 1.0f), 0.4f);
 
 		landAnimMultiplier = std::clamp(Helpers::bias(durationInAir, 0.3f), 0.1f, 1.0f);
-		duckAdditional = std::fmax(landAnimMultiplier, distanceFallNormalizedBiasRange);
+		duckAdditional = std::max(landAnimMultiplier, distanceFallNormalizedBiasRange);
 
 	} else {
 		duckAdditional = Helpers::approach(0.f, duckAdditional, lastUpdateIncrement * 2.f);
@@ -892,7 +892,7 @@ void AnimState::incrementLayerCycle(size_t layer, bool allowLoop) noexcept
 	if (!&l)
 		return;
 
-	if (fabsf(l.playbackRate) <= 0)
+	if (std::abs(l.playbackRate) <= 0)
 		return;
 
 	float currentCycle = l.cycle;
@@ -927,7 +927,7 @@ void AnimState::incrementLayerWeight(size_t layer) noexcept
 	if (!&l)
 		return;
 
-	if (abs(l.weightDeltaRate) <= 0)
+	if (std::abs(l.weightDeltaRate) <= 0)
 		return;
 
 	float currentWeight = l.weight;
@@ -1044,7 +1044,7 @@ float AnimState::calculatePlaybackRate(Vector velocity) noexcept
 	const float lastUpdateIncrement = memory->globalVars->intervalPerTick;
 
 	const Vector vecVelocity = Helpers::approach(velocity, this->vecVelocity, lastUpdateIncrement * 2000.f);
-	const float velocityLengthXY = std::fminf(vecVelocity.length(), CS_PLAYER_SPEED_RUN);
+	const float velocityLengthXY = std::min(vecVelocity.length(), CS_PLAYER_SPEED_RUN);
 
 	float walkToRunTransition = this->walkToRunTransition;
 	float walkToRunTransitionState = this->walkToRunTransitionState;
@@ -1060,10 +1060,10 @@ float AnimState::calculatePlaybackRate(Vector velocity) noexcept
 
 	if (velocityLengthXY > (CS_PLAYER_SPEED_RUN * CS_PLAYER_SPEED_WALK_MODIFIER) && walkToRunTransitionState == ANIM_TRANSITION_RUN_TO_WALK) {
 		walkToRunTransitionState = ANIM_TRANSITION_WALK_TO_RUN;
-		walkToRunTransition = std::fmaxf(0.01f, walkToRunTransition);
+		walkToRunTransition = std::max(0.01f, walkToRunTransition);
 	} else if (velocityLengthXY < (CS_PLAYER_SPEED_RUN * CS_PLAYER_SPEED_WALK_MODIFIER) && walkToRunTransitionState == ANIM_TRANSITION_WALK_TO_RUN) {
 		walkToRunTransitionState = ANIM_TRANSITION_RUN_TO_WALK;
-		walkToRunTransition = std::fmaxf(0.99f, walkToRunTransition);
+		walkToRunTransition = std::max(0.99f, walkToRunTransition);
 	}
 
 	char weaponMoveSequenceString[MAX_ANIMSTATE_ANIMNAME_CHARS];
@@ -1076,7 +1076,7 @@ float AnimState::calculatePlaybackRate(Vector velocity) noexcept
 	float moveCycleRate = 0.f;
 	if (velocityLengthXY > 0.f) {
 		moveCycleRate = entity->getSequenceCycleRate(weaponMoveSeq);
-		float sequenceGroundSpeed = std::fmaxf(entity->getSequenceMoveDist(entity->getModelPtr(), weaponMoveSeq) / (1.0f / moveCycleRate), 0.001f);
+		float sequenceGroundSpeed = std::max(entity->getSequenceMoveDist(entity->getModelPtr(), weaponMoveSeq) / (1.0f / moveCycleRate), 0.001f);
 		moveCycleRate *= velocityLengthXY / sequenceGroundSpeed;
 
 		moveCycleRate *= Helpers::lerp(walkToRunTransition, 1.0f, CSGO_ANIM_RUN_ANIM_PLAYBACK_MULTIPLIER);

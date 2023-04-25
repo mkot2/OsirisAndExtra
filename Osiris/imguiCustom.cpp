@@ -125,6 +125,60 @@ void ImGuiCustom::arrowButtonDisabled(const char* id, ImGuiDir dir) noexcept
 	ImGui::PopStyleVar();
 }
 
+void ImGuiCustom::multiCombo(const char* name, int& flagValue, const char* items) noexcept
+{
+	constexpr auto singleStringGetter = [](void* data, int idx, const char** outText) noexcept {
+		const char* itemsSeparatedByZeros = (const char*)data;
+		int itemsCount = 0;
+		const char* p = itemsSeparatedByZeros;
+		while (*p) {
+			if (idx == itemsCount)
+				break;
+			p += std::strlen(p) + 1;
+			itemsCount++;
+		}
+		if (!*p)
+			return false;
+		if (outText)
+			*outText = p;
+		return true;
+	};
+
+	int count = 0;
+	const char* p = items;
+	while (*p) {
+		p += std::strlen(p) + 1;
+		count++;
+	}
+
+	const char* preview = "";
+	if (flagValue == (1 << count) - 1)
+		preview = "All";
+	else if (!flagValue)
+		preview = "None";
+
+	void* data = (void*)items;
+
+	if (ImGui::BeginCombo(name, preview)) {
+		for (int i = 0; i < count; i++) {
+			bool selected = flagValue & (1 << i);
+
+			const char* item;
+			singleStringGetter(data, i, &item);
+
+			ImGui::PushID(i);
+			ImGui::Selectable(item, &selected, ImGuiSelectableFlags_DontClosePopups);
+			ImGui::PopID();
+
+			if (selected)
+				flagValue |= (1 << i);
+			else
+				flagValue &= ~(1 << i);
+		}
+		ImGui::EndCombo();
+	}
+}
+
 void ImGui::progressBarFullWidth(float fraction, float height) noexcept
 {
 	ImGuiWindow* window = GetCurrentWindow();

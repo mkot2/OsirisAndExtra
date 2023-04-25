@@ -201,7 +201,7 @@ void Animations::fake() noexcept
 		const auto backupPoses = localPlayer->poseParameters();
 
 		localPlayer->updateState(fakeAnimState, viewangles);
-		if (fabsf(fakeAnimState->footYaw - footYaw) <= 5.f) {
+		if (std::abs(fakeAnimState->footYaw - footYaw) <= 5.f) {
 			gotMatrix = false;
 			updatingFake = false;
 
@@ -326,7 +326,7 @@ void Animations::handlePlayers(FrameStage stage) noexcept
 
 			//Get chokedPackets
 
-			const auto simDifference = fabsf(entity->simulationTime() - player.simulationTime);
+			const auto simDifference = std::abs(entity->simulationTime() - player.simulationTime);
 
 			player.simulationTime != entity->simulationTime() ?
 				player.chokedPackets = static_cast<int>(simDifference / memory->globalVars->intervalPerTick) - 1 : player.chokedPackets = 0;
@@ -371,7 +371,7 @@ void Animations::handlePlayers(FrameStage stage) noexcept
 							const float speedNormalized = (weight / 2.8571432f) + 0.55f;
 							if (speedNormalized > 0.0f) {
 								const auto weapon = entity->getActiveWeapon();
-								const float maxSpeed = weapon ? std::fmaxf(weapon->getMaxSpeed(), 0.001f) : CS_PLAYER_SPEED_RUN;
+								const float maxSpeed = weapon ? std::max(weapon->getMaxSpeed(), 0.001f) : CS_PLAYER_SPEED_RUN;
 								const float speed = speedNormalized * maxSpeed;
 								if (speed > 0.0f && player.velocity.length2D() > 0.0f)
 									player.velocity = (player.velocity / player.velocity.length()) * speed;
@@ -388,7 +388,7 @@ void Animations::handlePlayers(FrameStage stage) noexcept
 				&& player.layers[ANIMATION_LAYER_ALIVELOOP].cycle > player.oldlayers[ANIMATION_LAYER_ALIVELOOP].cycle) {
 				float velocityLengthXY = 0.f;
 				const auto weapon = entity->getActiveWeapon();
-				const float maxSpeedRun = weapon ? std::fmaxf(weapon->getMaxSpeed(), 0.001f) : CS_PLAYER_SPEED_RUN;
+				const float maxSpeedRun = weapon ? std::max(weapon->getMaxSpeed(), 0.001f) : CS_PLAYER_SPEED_RUN;
 
 				const auto modifier = 0.35f * (1.0f - player.layers[ANIMATION_LAYER_ALIVELOOP].weight);
 
@@ -429,6 +429,7 @@ void Animations::handlePlayers(FrameStage stage) noexcept
 			} else {
 				//Simulate missing ticks
 				//TODO: Improve this drastically
+				// Disabled because this shit is broken XD
 				for (int i = 1; i <= player.chokedPackets + 1; i++) {
 					const float simulatedTime = player.simulationTime + (memory->globalVars->intervalPerTick * i);
 					const float lerpValue = 1.f - (entity->simulationTime() - simulatedTime) / (entity->simulationTime() - player.simulationTime);

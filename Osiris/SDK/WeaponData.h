@@ -2,7 +2,7 @@
 
 #include "Pad.h"
 
-enum class WeaponType {
+enum class WeaponType: short {
 	Knife = 0,
 	Pistol,
 	SubMachinegun,

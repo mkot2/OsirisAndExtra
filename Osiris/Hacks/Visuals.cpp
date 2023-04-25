@@ -204,7 +204,7 @@ void Visuals::visualizeSpread(ImDrawList* drawList) noexcept
 
 	if (ImVec2 edge; Helpers::worldToScreen(local.inaccuracy, edge)) {
 		const auto& displaySize = ImGui::GetIO().DisplaySize;
-		const auto radius = std::sqrtf(ImLengthSqr(edge - displaySize / 2.0f));
+		const auto radius = std::sqrt(ImLengthSqr(edge - displaySize / 2.0f));
 
 		if (radius > displaySize.x || radius > displaySize.y || !std::isfinite(radius))
 			return;
@@ -680,7 +680,7 @@ void Visuals::hitMarker(GameEvent* event, ImDrawList* drawList) noexcept
 	switch (config->visuals.hitMarker) {
 	case 1:
 		const auto & mid = ImGui::GetIO().DisplaySize / 2.0f;
-		const auto color = IM_COL32(255, 255, 255, static_cast<int>(Helpers::lerp(fabsf(lastHitTime + config->visuals.hitMarkerTime - memory->globalVars->realtime) / config->visuals.hitMarkerTime + FLT_EPSILON, 0.0f, 255.0f)));
+		const auto color = IM_COL32(255, 255, 255, static_cast<int>(Helpers::lerp(std::abs(lastHitTime + config->visuals.hitMarkerTime - memory->globalVars->realtime) / config->visuals.hitMarkerTime + FLT_EPSILON, 0.0f, 255.0f)));
 		drawList->AddLine({ mid.x - 10, mid.y - 10 }, { mid.x - 4, mid.y - 4 }, color);
 		drawList->AddLine({ mid.x + 10.5f, mid.y - 10.5f }, { mid.x + 4.5f, mid.y - 4.5f }, color);
 		drawList->AddLine({ mid.x + 10.5f, mid.y + 10.5f }, { mid.x + 4.5f, mid.y + 4.5f }, color);
@@ -763,9 +763,9 @@ void Visuals::motionBlur(ViewSetup* setup) noexcept
 				yawdiffAdjusted = std::clamp(yawdiffAdjusted, 0.0f, yawdiffOriginal);
 
 			const float undampenedYaw = yawdiffAdjusted / horizontalFov;
-			motionBlurValues[0] = undampenedYaw * (1.0f - (fabsf(currentPitch) / 90.0f));
+			motionBlurValues[0] = undampenedYaw * (1.0f - (std::abs(currentPitch) / 90.0f));
 
-			const float pitchCompensateMask = 1.0f - ((1.0f - fabsf(currentForwardVector[2])) * (1.0f - fabsf(currentForwardVector[2])));
+			const float pitchCompensateMask = 1.0f - ((1.0f - std::abs(currentForwardVector[2])) * (1.0f - std::abs(currentForwardVector[2])));
 			const float pitchdiffOriginal = history.previousPitch - currentPitch;
 			float pitchdiffAdjusted = pitchdiffOriginal;
 
@@ -782,14 +782,14 @@ void Visuals::motionBlur(ViewSetup* setup) noexcept
 
 			motionBlurValues[1] = pitchdiffAdjusted / verticalFov;
 			motionBlurValues[3] = undampenedYaw;
-			motionBlurValues[3] *= (fabs(currentPitch) / 90.0f) * (fabs(currentPitch) / 90.0f) * (fabs(currentPitch) / 90.0f);
+			motionBlurValues[3] *= (std::abs(currentPitch) / 90.0f) * (std::abs(currentPitch) / 90.0f) * (std::abs(currentPitch) / 90.0f);
 
 			if (timeElapsed > 0.0f)
 				motionBlurValues[2] /= timeElapsed * 30.0f;
 			else
 				motionBlurValues[2] = 0.0f;
 
-			motionBlurValues[2] = std::clamp((fabsf(motionBlurValues[2]) - config->visuals.motionBlur.fallingMin) / (config->visuals.motionBlur.fallingMax - config->visuals.motionBlur.fallingMin), 0.0f, 1.0f) * (motionBlurValues[2] >= 0.0f ? 1.0f : -1.0f);
+			motionBlurValues[2] = std::clamp((std::abs(motionBlurValues[2]) - config->visuals.motionBlur.fallingMin) / (config->visuals.motionBlur.fallingMax - config->visuals.motionBlur.fallingMin), 0.0f, 1.0f) * (motionBlurValues[2] >= 0.0f ? 1.0f : -1.0f);
 			motionBlurValues[2] /= 30.0f;
 			motionBlurValues[0] *= config->visuals.motionBlur.rotationIntensity * .15f * config->visuals.motionBlur.strength;
 			motionBlurValues[1] *= config->visuals.motionBlur.rotationIntensity * .15f * config->visuals.motionBlur.strength;
@@ -926,7 +926,7 @@ void Visuals::updateShots(UserCmd* cmd) noexcept
 
 	shotRecord.push_back(shotRecords(localPlayer->getEyePosition(), memory->globalVars->serverTime()));
 
-	while (!shotRecord.empty() && fabsf(shotRecord.front().time - memory->globalVars->serverTime()) > 1.0f)
+	while (!shotRecord.empty() && std::abs(shotRecord.front().time - memory->globalVars->serverTime()) > 1.0f)
 		shotRecord.pop_front();
 }
 
@@ -1144,7 +1144,7 @@ void Visuals::drawHitboxMatrix(GameEvent* event) noexcept
 	if (records && !records->empty()) {
 		for (int i = static_cast<int>(records->size() - 1); i >= 0; i--) {
 			if (Backtrack::valid(records->at(i).simulationTime)) {
-				for (auto position : records->at(i).positions) {
+				for (auto& position : records->at(i).positions) {
 					auto angle = AimbotFunction::calculateRelativeAngle(localPlayer->getEyePosition(), position, interfaces->engine->getViewAngles());
 					auto fov = std::hypotf(angle.x, angle.y);
 					if (fov < bestFov) {
@@ -1238,7 +1238,7 @@ static auto generateAntialiasedDot() noexcept
 	}
 
 	// based on ImDrawList::AddConvexPolyFilled()
-	const float AA_SIZE = 1.0f; // _FringeScale;
+	constexpr float AA_SIZE = 1.0f; // _FringeScale;
 	constexpr int idx_count = (segments - 2) * 3 + segments * 6;
 	constexpr int vtx_count = (segments * 2);
 

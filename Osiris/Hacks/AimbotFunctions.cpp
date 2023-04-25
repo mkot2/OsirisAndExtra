@@ -276,8 +276,8 @@ float segmentToSegment(const Vector& s1, const Vector& s2, const Vector& k1, con
 		}
 	}
 
-	auto sc = fabs(sn) < epsilon ? 0.0f : sn / sd;
-	auto tc = fabs(tn) < epsilon ? 0.0f : tn / td;
+	auto sc = std::abs(sn) < epsilon ? 0.0f : sn / sd;
+	auto tc = std::abs(tn) < epsilon ? 0.0f : tn / td;
 
 	auto dp = w + u * sc - v * tc;
 	return dp.length();
@@ -334,8 +334,8 @@ bool intersectLineWithBb(Vector& start, Vector& end, Vector& min, Vector& max) n
 
 void inline sinCos(float radians, float* sine, float* cosine)
 {
-	*sine = sin(radians);
-	*cosine = cos(radians);
+	*sine = std::sin(radians);
+	*cosine = std::cos(radians);
 }
 
 Vector vectorRotate(Vector& in1, Vector& in2) noexcept
@@ -508,7 +508,7 @@ bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitbox
 	if (!hitChance || isSpreadEnabled->getInt() >= 1)
 		return true;
 
-	constexpr int maxSeed = 512;
+	constexpr int maxSeed = 768;
 
 	const Angle angles(destination + cmd->viewangles);
 
@@ -521,13 +521,13 @@ bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitbox
 	const auto range = activeWeapon->getWeaponData()->range;
 
 	for (int i = 0; i < maxSeed; i++) {
-		const float spreadX = std::uniform_real_distribution<float>(0.f, 2.f * static_cast<float>(M_PI))(PCG::generator);
-		const float spreadY = std::uniform_real_distribution<float>(0.f, 2.f * static_cast<float>(M_PI))(PCG::generator);
+		const float spreadX = std::uniform_real_distribution<float>(0.f, 2.f * std::numbers::pi_v<float>)(PCG::generator);
+		const float spreadY = std::uniform_real_distribution<float>(0.f, 2.f * std::numbers::pi_v<float>)(PCG::generator);
 		auto inaccuracy = weapInaccuracy * std::uniform_real_distribution<float>(0.f, 1.f)(PCG::generator);
 		auto spread = weapSpread * std::uniform_real_distribution<float>(0.f, 1.f)(PCG::generator);
 
-		Vector spreadView{ (cosf(spreadX) * inaccuracy) + (cosf(spreadY) * spread),
-						   (sinf(spreadX) * inaccuracy) + (sinf(spreadY) * spread) };
+		Vector spreadView{ (std::cos(spreadX) * inaccuracy) + (std::cos(spreadY) * spread),
+						   (std::sin(spreadX) * inaccuracy) + (std::sin(spreadY) * spread) };
 		Vector direction{ (angles.forward + (angles.right * spreadView.x) + (angles.up * spreadView.y)) * range };
 
 		for (int hitbox = 0; hitbox < Max; hitbox++) {

@@ -39,12 +39,12 @@ void setup(Vector& vecSrc, Vector& vecThrow, Vector viewangles) noexcept
 	auto AngleVectors = [](const Vector& angles, Vector* forward, Vector* right, Vector* up) {
 		float sr, sp, sy, cr, cp, cy;
 
-		sp = static_cast<float>(sin(double(angles.x) * 0.01745329251f));
-		cp = static_cast<float>(cos(double(angles.x) * 0.01745329251f));
-		sy = static_cast<float>(sin(double(angles.y) * 0.01745329251f));
-		cy = static_cast<float>(cos(double(angles.y) * 0.01745329251f));
-		sr = static_cast<float>(sin(double(angles.z) * 0.01745329251f));
-		cr = static_cast<float>(cos(double(angles.z) * 0.01745329251f));
+		sp = static_cast<float>(std::sin(double(angles.x) * 0.01745329251f));
+		cp = static_cast<float>(std::cos(double(angles.x) * 0.01745329251f));
+		sy = static_cast<float>(std::sin(double(angles.y) * 0.01745329251f));
+		cy = static_cast<float>(std::cos(double(angles.y) * 0.01745329251f));
+		sr = static_cast<float>(std::sin(double(angles.z) * 0.01745329251f));
+		cr = static_cast<float>(std::cos(double(angles.z) * 0.01745329251f));
 
 		if (forward) {
 			forward->x = cp * cy;
@@ -75,12 +75,12 @@ void setup(Vector& vecSrc, Vector& vecThrow, Vector viewangles) noexcept
 		pitch -= 360.0f;
 	}
 
-	float a = pitch - (90.0f - fabs(pitch)) * 10.0f / 90.0f;
+	float a = pitch - (90.0f - std::abs(pitch)) * 10.0f / 90.0f;
 	angThrow.x = a;
 
 	float flVel = 750.0f * 0.9f;
 
-	static const float power[] = { 1.0f, 1.0f, 0.5f, 0.0f };
+	constexpr float power[] = { 1.0f, 1.0f, 0.5f, 0.0f };
 	float b = power[grenadeAct];
 	b = b * 0.7f;
 	b = b + 0.3f;
@@ -109,7 +109,7 @@ void setup(Vector& vecSrc, Vector& vecThrow, Vector viewangles) noexcept
 
 int physicsClipVelocity(const Vector& in, const Vector& normal, Vector& out, float overbounce) noexcept
 {
-	static const float STOP_EPSILON = 0.1f;
+	constexpr float STOP_EPSILON = 0.1f;
 
 	float    backoff;
 	float    change;
@@ -150,8 +150,8 @@ void pushEntity(Vector& src, const Vector& move, Trace& tr) noexcept
 void resolveFlyCollisionCustom(Trace& tr, Vector& vecVelocity, float interval) noexcept
 {
 	// Calculate elasticity
-	const float surfaceElasticity = 1.0;
-	const float grenadeElasticity = 0.45f;
+	constexpr float surfaceElasticity = 1.0f;
+	constexpr float grenadeElasticity = 0.45f;
 	float totalElasticity = grenadeElasticity * surfaceElasticity;
 	if (totalElasticity > 0.9f) totalElasticity = 0.9f;
 	if (totalElasticity < 0.0f) totalElasticity = 0.0f;
@@ -162,7 +162,7 @@ void resolveFlyCollisionCustom(Trace& tr, Vector& vecVelocity, float interval) n
 	vecAbsVelocity *= totalElasticity;
 
 	float speedSqr = vecAbsVelocity.squareLength();
-	static const float minSpeedSqr = 20.0f * 20.0f;
+	constexpr float minSpeedSqr = 20.0f * 20.0f;
 
 	if (speedSqr < minSpeedSqr) {
 		vecAbsVelocity.x = 0.0f;
@@ -192,7 +192,7 @@ void addGravityMove(Vector& move, Vector& vel, float frametime, bool onground) n
 	if (onground) {
 		move.z = (vel.z + basevel.z) * frametime;
 	} else {
-		float gravity = 800.0f * 0.4f;
+		constexpr float gravity = 800.0f * 0.4f;
 		float newZ = vel.z - (gravity * frametime);
 		move.z = ((vel.z + newZ) / 2.0f + basevel.z) * frametime;
 		vel.z = newZ;
@@ -245,7 +245,7 @@ void drawCircle(Vector position, float points, float radius) noexcept
 	ImVec2 end2d{}, start2d{};
 	Vector lastPos{};
 	for (float a = -step; a < 3.141592654f * 2.0f; a += step) {
-		Vector start{ radius * cosf(a) + position.x, radius * sinf(a) + position.y, position.z };
+		Vector start{ radius * std::cos(a) + position.x, radius * std::sin(a) + position.y, position.z };
 
 		Trace tr;
 		traceHull(position, start, tr);
@@ -298,13 +298,13 @@ void drawDamage(Vector position) noexcept
 		if (!tr.endpos.notNull() || !tr.entity || tr.entity->handle() != player.handle)
 			continue;
 
-		static const float a = 105.0f;
-		static const float b = 25.0f;
-		static const float c = 140.0f;
+		constexpr float a = 105.0f;
+		constexpr float b = 25.0f;
+		constexpr float c = 140.0f;
 
 		const float d = ((dist - b) / c);
-		const float damage = a * exp(-d * d);
-		float dmg = std::max(ceilf(calculateArmor(damage, player.armor)), 0.0f);
+		const float damage = a * std::exp(-d * d);
+		float dmg = std::max(std::ceil(calculateArmor(damage, player.armor)), 0.0f);
 		dmg = std::min(dmg, (player.armor > 0) ? 57.0f : 98.0f);
 
 		if (mp_friendlyfire->getInt() > 0 && !player.enemy)

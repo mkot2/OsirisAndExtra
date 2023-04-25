@@ -109,9 +109,9 @@ void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const Ragebot::
 			if (cfg[weaponIndex].autoScope && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !activeWeapon->zoomLevel() && localPlayer->flags() & 1 && !(cmd->buttons & UserCmd::IN_JUMP))
 				cmd->buttons |= UserCmd::IN_ZOOM;
 
-			if (std::fabsf(static_cast<float>(target.health) - damage) <= damageDiff) {
+			if (std::abs(static_cast<float>(target.health) - damage) <= damageDiff) {
 				bestAngle = angle;
-				damageDiff = std::fabsf(static_cast<float>(target.health) - damage);
+				damageDiff = std::abs(static_cast<float>(target.health) - damage);
 				bestTarget = bonePosition;
 				hitboxId = i;
 			}
@@ -281,7 +281,7 @@ void Ragebot::run(UserCmd* cmd) noexcept
 				if (bestTick <= -1)
 					continue;
 
-				memcpy(entity->getBoneCache().memory, records->at(bestTick).matrix, std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
+				std::memcpy(entity->getBoneCache().memory, records->at(bestTick).matrix, std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
 				memory->setAbsOrigin(entity, records->at(bestTick).origin);
 				memory->setAbsAngle(entity, Vector{ 0.f, records->at(bestTick).absAngle.y, 0.f });
 				memory->setCollisionBounds(entity->getCollideable(), records->at(bestTick).mins, records->at(bestTick).maxs);
@@ -292,7 +292,7 @@ void Ragebot::run(UserCmd* cmd) noexcept
 				if (cycle == 1)
 					continue;
 
-				memcpy(entity->getBoneCache().memory, player.matrix.data(), std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
+				std::memcpy(entity->getBoneCache().memory, player.matrix.data(), std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
 				memory->setAbsOrigin(entity, player.origin);
 				memory->setAbsAngle(entity, Vector{ 0.f, player.absAngle.y, 0.f });
 				memory->setCollisionBounds(entity->getCollideable(), player.mins, player.maxs);

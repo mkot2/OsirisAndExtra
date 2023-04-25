@@ -69,7 +69,7 @@ void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
 			choked_packets = config->fakelag[static_cast<int>(moving_flag)].limit;
 			break;
 		case 1: //Adaptive
-			choked_packets = std::clamp(static_cast<int>(std::ceilf(64 / (speed * memory->globalVars->intervalPerTick))), 1, config->fakelag[static_cast<int>(moving_flag)].limit);
+			choked_packets = std::clamp(static_cast<int>(std::ceil(64 / (speed * memory->globalVars->intervalPerTick))), 1, config->fakelag[static_cast<int>(moving_flag)].limit);
 			break;
 		case 2: // Random
 			choked_packets = std::uniform_int_distribution<int>(config->fakelag[static_cast<int>(moving_flag)].randomMinLimit, config->fakelag[static_cast<int>(moving_flag)].limit)(PCG::generator);

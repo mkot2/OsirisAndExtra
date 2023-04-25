@@ -43,7 +43,7 @@ namespace EnginePrediction
 		{
 			float delta = predicted - original;
 
-			if (fabsf(delta) <= epsilon)
+			if (std::abs(delta) <= epsilon)
 				return original;
 			return predicted;
 		}
@@ -52,9 +52,9 @@ namespace EnginePrediction
 		{
 			Vector delta = predicted - original;
 
-			if (fabsf(delta.x) <= epsilon
-				&& fabsf(delta.y) <= epsilon
-				&& fabsf(delta.z) <= epsilon) {
+			if (std::abs(delta.x) <= epsilon
+				&& std::abs(delta.y) <= epsilon
+				&& std::abs(delta.z) <= epsilon) {
 				return original;
 			}
 			return predicted;

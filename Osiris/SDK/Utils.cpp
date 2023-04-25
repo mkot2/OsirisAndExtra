@@ -19,7 +19,7 @@ std::tuple<float, float, float> rainbowColor(float speed) noexcept
 
 void resetMatrix(Entity* entity, matrix3x4* boneCacheData, Vector origin, Vector absAngle, Vector mins, Vector maxs) noexcept
 {
-	memcpy(entity->getBoneCache().memory, boneCacheData, std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
+	std::memcpy(entity->getBoneCache().memory, boneCacheData, std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
 	memory->setAbsOrigin(entity, origin);
 	memory->setAbsAngle(entity, Vector{ 0.f, absAngle.y, 0.f });
 	entity->getCollideable()->setCollisionBounds(mins, maxs);

@@ -250,9 +250,9 @@ void resolver::run_pre_update(Animations::Players& player, Entity* entity) noexc
 	desync_angle = entity->getAnimstate()->footYaw;
 	const auto anim_state = entity->getAnimstate();
 	anim_state->footYaw = desync_angle;
-	if (snapshot_player.workingangle != 0.f && fabs(desync_angle) > fabs(snapshot_player.workingangle)) {
+	if (snapshot_player.workingangle != 0.f && std::abs(desync_angle) > std::abs(snapshot_player.workingangle)) {
 		if (snapshot_player.workingangle < 0.f && player.side == 1)
-			snapshot_player.workingangle = fabs(snapshot_player.workingangle);
+			snapshot_player.workingangle = std::abs(snapshot_player.workingangle);
 		else if (snapshot_player.workingangle > 0.f && player.side == -1)
 			snapshot_player.workingangle = snapshot_player.workingangle * -1.f;
 		desync_angle = snapshot_player.workingangle;
@@ -286,9 +286,9 @@ void resolver::run_post_update(Animations::Players& player, Entity* entity) noex
 	setup_detect(player, entity);
 	resolve_entity(player, entity);
 	desync_angle = anim_state->footYaw;
-	if (snapshot_player.workingangle != 0.f && fabs(desync_angle) > fabs(snapshot_player.workingangle)) {
+	if (snapshot_player.workingangle != 0.f && std::abs(desync_angle) > std::abs(snapshot_player.workingangle)) {
 		if (snapshot_player.workingangle < 0.f && player.side == 1)
-			snapshot_player.workingangle = fabs(snapshot_player.workingangle);
+			snapshot_player.workingangle = std::abs(snapshot_player.workingangle);
 		else if (snapshot_player.workingangle > 0.f && player.side == -1)
 			snapshot_player.workingangle = snapshot_player.workingangle * -1.f;
 		desync_angle = snapshot_player.workingangle;
@@ -319,7 +319,7 @@ float build_server_abs_yaw(Entity* entity, const float angle)
 		return b + delta * i_radius * min_delta;
 	};
 
-	if (const float spd = velocity.squareLength(); spd > std::powf(1.2f * 260.0f, 2.f)) {
+	if (const float spd = velocity.squareLength(); spd > std::pow(1.2f * 260.0f, 2.f)) {
 		const Vector velocity_normalized = velocity.normalized();
 		velocity = velocity_normalized * (1.2f * 260.0f);
 	}
@@ -347,7 +347,7 @@ float build_server_abs_yaw(Entity* entity, const float angle)
 	float fl_max_movement_speed = 260.0f;
 
 	if (Entity* p_weapon = entity->getActiveWeapon(); p_weapon && p_weapon->getWeaponData())
-		fl_max_movement_speed = std::fmaxf(p_weapon->getWeaponData()->maxSpeedAlt, 0.001f);
+		fl_max_movement_speed = std::max(p_weapon->getWeaponData()->maxSpeedAlt, 0.001f);
 
 	float fl_running_speed = speed / (fl_max_movement_speed * 0.520f);
 
@@ -367,14 +367,14 @@ float build_server_abs_yaw(Entity* entity, const float angle)
 
 	if (const float fl_max_yaw_modifier = v61 * fl_yaw_modifier; eye_feet_delta <= fl_max_yaw_modifier) {
 		if (fl_min_yaw_modifier > eye_feet_delta)
-			m_fl_goal_feet_yaw = fabs(fl_min_yaw_modifier) + m_fl_eye_yaw;
+			m_fl_goal_feet_yaw = std::abs(fl_min_yaw_modifier) + m_fl_eye_yaw;
 	} else {
-		m_fl_goal_feet_yaw = m_fl_eye_yaw - fabs(fl_max_yaw_modifier);
+		m_fl_goal_feet_yaw = m_fl_eye_yaw - std::abs(fl_max_yaw_modifier);
 	}
 
 	Helpers::normalizeYaw(m_fl_goal_feet_yaw);
 
-	if (speed > 0.1f || fabs(velocity.z) > 100.0f) {
+	if (speed > 0.1f || std::abs(velocity.z) > 100.0f) {
 		m_fl_goal_feet_yaw = Helpers::approachAngle(
 			m_fl_eye_yaw,
 			m_fl_goal_feet_yaw,
@@ -441,10 +441,10 @@ void resolver::resolve_entity(const Animations::Players& player, Entity* entity)
 		const float angle_difference = Helpers::angleDiff(eye_yaw, entity->getAnimstate()->footYaw);
 		index = 2 * angle_difference <= 0.0f ? 1 : -1;
 	} else if (!static_cast<int>(player.layers[12].weight * 1000.f) && entity->velocity().length2D() > 0.1f) {
-		const auto m_layer_delta1 = abs(player.layers[6].playbackRate - player.oldlayers[6].playbackRate);
-		const auto m_layer_delta2 = abs(player.layers[6].playbackRate - player.oldlayers[6].playbackRate);
+		const auto m_layer_delta1 = std::abs(player.layers[6].playbackRate - player.oldlayers[6].playbackRate);
+		const auto m_layer_delta2 = std::abs(player.layers[6].playbackRate - player.oldlayers[6].playbackRate);
 
-		if (const auto m_layer_delta3 = abs(player.layers[6].playbackRate - player.oldlayers[6].playbackRate); m_layer_delta1 < m_layer_delta2
+		if (const auto m_layer_delta3 = std::abs(player.layers[6].playbackRate - player.oldlayers[6].playbackRate); m_layer_delta1 < m_layer_delta2
 			|| m_layer_delta3 <= m_layer_delta2
 			|| static_cast<signed int>((m_layer_delta2 * 1000.0f))) {
 			if (m_layer_delta1 >= m_layer_delta3
@@ -475,13 +475,13 @@ float resolver::resolve_shot(const Animations::Players& player, Entity* entity)
 	/* fix unrestricted shot */
 	const float fl_pseudo_fire_yaw = Helpers::angleNormalize(Helpers::angleDiff(localPlayer->origin().y, player.matrix[8].origin().y));
 	if (player.extended) {
-		const float fl_left_fire_yaw_delta = fabsf(Helpers::angleNormalize(fl_pseudo_fire_yaw - (entity->eyeAngles().y + 58.f)));
-		const float fl_right_fire_yaw_delta = fabsf(Helpers::angleNormalize(fl_pseudo_fire_yaw - (entity->eyeAngles().y - 58.f)));
+		const float fl_left_fire_yaw_delta = std::abs(Helpers::angleNormalize(fl_pseudo_fire_yaw - (entity->eyeAngles().y + 58.f)));
+		const float fl_right_fire_yaw_delta = std::abs(Helpers::angleNormalize(fl_pseudo_fire_yaw - (entity->eyeAngles().y - 58.f)));
 
 		return fl_left_fire_yaw_delta > fl_right_fire_yaw_delta ? -58.f : 58.f;
 	}
-	const float fl_left_fire_yaw_delta = fabsf(Helpers::angleNormalize(fl_pseudo_fire_yaw - (entity->eyeAngles().y + 28.f)));
-	const float fl_right_fire_yaw_delta = fabsf(Helpers::angleNormalize(fl_pseudo_fire_yaw - (entity->eyeAngles().y - 28.f)));
+	const float fl_left_fire_yaw_delta = std::abs(Helpers::angleNormalize(fl_pseudo_fire_yaw - (entity->eyeAngles().y + 28.f)));
+	const float fl_right_fire_yaw_delta = std::abs(Helpers::angleNormalize(fl_pseudo_fire_yaw - (entity->eyeAngles().y - 28.f)));
 
 	return fl_left_fire_yaw_delta > fl_right_fire_yaw_delta ? -28.f : 28.f;
 }
@@ -501,7 +501,7 @@ void resolver::setup_detect(Animations::Players& player, Entity* entity)
 	static float brute = 0.f;
 	const float fl_max_rotation = entity->getMaxDesyncAngle();
 	const float fl_eye_yaw = entity->getAnimstate()->eyeYaw;
-	const bool fl_forward = fabsf(Helpers::angleNormalize(get_angle(entity) - get_forward_yaw(entity))) < 90.f;
+	const bool fl_forward = std::abs(Helpers::angleNormalize(get_angle(entity) - get_forward_yaw(entity))) < 90.f;
 	const int fl_shots = player.misses;
 
 	/* clamp angle */
@@ -545,7 +545,7 @@ Vector calc_angle(const Vector source, const Vector entity_pos)
 {
 	const Vector delta{ source.x - entity_pos.x, source.y - entity_pos.y, source.z - entity_pos.z };
 	const auto& [x, y, z] = command->viewangles;
-	Vector angles{ Helpers::rad2deg(atan(delta.z / hypot(delta.x, delta.y))) - x, Helpers::rad2deg(atan(delta.y / delta.x)) - y, 0.f };
+	Vector angles{ Helpers::rad2deg(std::atan(delta.z / std::hypot(delta.x, delta.y))) - x, Helpers::rad2deg(std::atan(delta.y / delta.x)) - y, 0.f };
 	if (delta.x >= 0.f)
 		angles.y += 180;
 	return angles;
@@ -571,7 +571,7 @@ void resolver::anti_one_tap(const int userid, Entity* entity, const Vector shot)
 			const auto [x, y, z] = calc_angle(eye_pos, pos);
 			const auto [lx, ly, lz] = calc_angle(eye_pos, localPlayer->getEyePosition());
 			const Vector delta = { lx - x, ly - y, 0 };
-			if (const float fov = sqrt(delta.x * delta.x + delta.y * delta.y); fov < 20.f) {
+			if (const float fov = std::sqrt(delta.x * delta.x + delta.y * delta.y); fov < 20.f) {
 				Logger::addLog("Resolver: " + player.get().name + " missed");
 			}
 		}

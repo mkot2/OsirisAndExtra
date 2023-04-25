@@ -369,8 +369,8 @@ void bufferWrite::writeBitAngle(float angle, int numbits) noexcept
 void bufferWrite::writeBitCoord(const float f) noexcept
 {
 	int signbit = (f <= -COORD_RESOLUTION);
-	int intval = static_cast<int>(abs(f));
-	int fractval = abs(static_cast<int>((f * COORD_DENOMINATOR))) & (COORD_DENOMINATOR - 1);
+	int intval = static_cast<int>(std::abs(f));
+	int fractval = std::abs(static_cast<int>((f * COORD_DENOMINATOR))) & (COORD_DENOMINATOR - 1);
 
 
 	// Send the bit flags that indicate whether we have an integer part and/or a fraction part.
@@ -398,10 +398,10 @@ void bufferWrite::writeBitCoord(const float f) noexcept
 void bufferWrite::writeBitCoordMP(const float f, bool integral, bool lowPrecision) noexcept
 {
 	int signbit = (f <= -(lowPrecision ? COORD_RESOLUTION_LOWPRECISION : COORD_RESOLUTION));
-	int intval = static_cast<int>(abs(f));
+	int intval = static_cast<int>(std::abs(f));
 	int fractval = lowPrecision ?
-		(abs(static_cast<int>((f * COORD_DENOMINATOR_LOWPRECISION))) & (COORD_DENOMINATOR_LOWPRECISION - 1)) :
-		(abs(static_cast<int>((f * COORD_DENOMINATOR))) & (COORD_DENOMINATOR - 1));
+		(std::abs(static_cast<int>((f * COORD_DENOMINATOR_LOWPRECISION))) & (COORD_DENOMINATOR_LOWPRECISION - 1)) :
+		(std::abs(static_cast<int>((f * COORD_DENOMINATOR))) & (COORD_DENOMINATOR - 1));
 
 	bool    bInBounds = intval < (1 << COORD_INTEGER_BITS_MP);
 
@@ -461,7 +461,7 @@ void bufferWrite::writeBitNormal(float f) noexcept
 	int	signbit = (f <= -NORMAL_RESOLUTION);
 
 	// NOTE: Since +/-1 are valid values for a normal, I'm going to encode that as all ones
-	uint fractval = abs(static_cast<int>(f * NORMAL_DENOMINATOR));
+	uint fractval = std::abs(static_cast<int>(f * NORMAL_DENOMINATOR));
 
 	// clamp..
 	if (fractval > NORMAL_DENOMINATOR)
@@ -1022,7 +1022,7 @@ void bufferRead::readBitVec3Normal(Vector& fa) noexcept
 
 	float fafafbfb = fa.x * fa.x + fa.y * fa.y;
 	if (fafafbfb < 1.0f)
-		fa.z = sqrt(1.0f - fafafbfb);
+		fa.z = std::sqrt(1.0f - fafafbfb);
 	else
 		fa.z = 0.0f;
 

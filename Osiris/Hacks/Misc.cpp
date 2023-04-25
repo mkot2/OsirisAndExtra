@@ -211,11 +211,11 @@ void Misc::drawVelocity(ImDrawList* drawList) noexcept
 
 class JumpStatsCalculations {
 private:
-	static const auto white = '\x01';
-	static const auto violet = '\x03';
-	static const auto green = '\x04';
-	static const auto red = '\x07';
-	static const auto golden = '\x09';
+	static constexpr auto white = '\x01';
+	static constexpr auto violet = '\x03';
+	static constexpr auto green = '\x04';
+	static constexpr auto red = '\x07';
+	static constexpr auto golden = '\x09';
 public:
 	void resetStats() noexcept
 	{
@@ -241,7 +241,7 @@ public:
 
 		units = (startPosition - landingPosition).length2D() + (isLadderJump ? 0.0f : 32.0f);
 
-		const float z = fabsf(startPosition.z - landingPosition.z) - (isJumpbug ? 9.0f : 0.0f);
+		const float z = std::abs(startPosition.z - landingPosition.z) - (isJumpbug ? 9.0f : 0.0f);
 		const bool fail = z >= (isLadderJump ? 32.0f : (jumps > 0 ? (jumps > 1 ? 46.0f : 2.0f) : 46.0f));
 		const bool simplifyNames = config->misc.jumpStats.simplifyNaming;
 
@@ -432,7 +432,7 @@ public:
 			}
 
 			//Get max height and max velocity
-			maxHeight = std::max(fabsf(startPosition.z - origin.z), maxHeight);
+			maxHeight = std::max(std::abs(startPosition.z - origin.z), maxHeight);
 			maxVelocity = std::max(velocity, maxVelocity);
 
 			ticksInAir++; //We are in air
@@ -987,7 +987,7 @@ void Misc::freeCam(ViewSetup* setup) noexcept
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
-	float freeCamSpeed = fabsf(static_cast<float>(config->visuals.freeCamSpeed));
+	float freeCamSpeed = std::abs(static_cast<float>(config->visuals.freeCamSpeed));
 
 	if (newOrigin.null())
 		newOrigin = setup->origin;
@@ -1061,10 +1061,11 @@ void Misc::drawAutoPeek(ImDrawList* drawList) noexcept
 		return;
 
 	if (peekPosition.notNull()) {
-		constexpr float step = 3.141592654f * 2.0f / 20.0f;
+		constexpr float pi2 = std::numbers::pi_v<float> * 2.f;
+		constexpr float step = pi2 / 20.f;
 		std::vector<ImVec2> points;
-		for (float lat = 0.f; lat <= 3.141592654f * 2.0f; lat += step) {
-			const auto& point3d = Vector{ std::sin(lat), std::cos(lat), 0.f } *15.f;
+		for (float lat = 0.f; lat <= pi2; lat += step) {
+			const auto& point3d = Vector{ std::sin(lat), std::cos(lat), 0.f } * 15.f;
 			ImVec2 point2d;
 			if (Helpers::worldToScreen(peekPosition + point3d, point2d))
 				points.push_back(point2d);
@@ -1114,8 +1115,8 @@ void Misc::autoPeek(UserCmd* cmd, Vector currentViewAngles) noexcept
 
 			if (difference.length2D() > 5.0f) {
 				const auto velocity = Vector{
-					difference.x * std::cos(yaw / 180.0f * 3.141592654f) + difference.y * std::sin(yaw / 180.0f * 3.141592654f),
-					difference.y * std::cos(yaw / 180.0f * 3.141592654f) - difference.x * std::sin(yaw / 180.0f * 3.141592654f),
+					difference.x * std::cos(yaw / 180.0f * std::numbers::pi_v<float>) + difference.y * std::sin(yaw / 180.0f * std::numbers::pi_v<float>),
+					difference.y * std::cos(yaw / 180.0f * std::numbers::pi_v<float>) - difference.x * std::sin(yaw / 180.0f * std::numbers::pi_v<float>),
 					difference.z };
 
 				cmd->forwardmove = -velocity.x * 20.f;
@@ -1135,7 +1136,7 @@ void Misc::autoPeek(UserCmd* cmd, Vector currentViewAngles) noexcept
 
 void Misc::forceRelayCluster() noexcept
 {
-	const std::string dataCentersList[] = { "", "syd", "vie", "gru", "scl", "dxb", "par", "fra", "hkg",
+	constexpr std::string dataCentersList[] = { "", "syd", "vie", "gru", "scl", "dxb", "par", "fra", "hkg",
 	"maa", "bom", "tyo", "lux", "ams", "limc", "man", "waw", "sgp", "jnb",
 	"mad", "sto", "lhr", "atl", "eat", "ord", "lax", "mwh", "okc", "sea", "iad" };
 
@@ -1168,7 +1169,6 @@ std::vector<conCommandBase*> hidden;
 
 void Misc::initHiddenCvars() noexcept
 {
-
 	conCommandBase* iterator = **reinterpret_cast<conCommandBase***>(interfaces->cvar + 0x34);
 
 	for (auto c = iterator->next; c != nullptr; c = c->next) {
@@ -1185,7 +1185,6 @@ void Misc::initHiddenCvars() noexcept
 
 void Misc::unlockHiddenCvars() noexcept
 {
-
 	static bool toggle = true;
 
 	if (config->misc.unhideConvars == toggle)
@@ -1782,7 +1781,7 @@ void Misc::drawBombTimer() noexcept
 	ImGui::SetNextWindowSizeConstraints({ 0, -1 }, { FLT_MAX, -1 });
 	ImGui::Begin("Bomb Timer", nullptr, ImGuiWindowFlags_NoTitleBar | (gui->isOpen() ? 0 : ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration));
 
-	std::ostringstream ss; ss << "Bomb on " << (!plantedC4.bombsite ? 'A' : 'B') << " : " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.blowTime - memory->globalVars->currenttime, 0.0f) << " s";
+	std::ostringstream ss; ss << "Bomb on " << (!plantedC4.bombsite ? 'A' : 'B') << " : " << std::fixed << std::showpoint << std::setprecision(3) << std::max(plantedC4.blowTime - memory->globalVars->currenttime, 0.0f) << " s";
 
 	ImGui::textUnformattedCentered(ss.str().c_str());
 
@@ -1797,26 +1796,26 @@ void Misc::drawBombTimer() noexcept
 	if (!targetEntity || targetEntity->isDormant())
 		drawDamage = false;
 
-	constexpr float bombDamage = 500.f;
-	constexpr float bombRadius = bombDamage * 3.5f;
-	constexpr float sigma = bombRadius / 3.0f;
-
-	constexpr float armorRatio = 0.5f;
-	constexpr float armorBonus = 0.5f;
-
 	if (drawDamage) {
-		const float armorValue = static_cast<float>(targetEntity->armor());
+		constexpr double bombDamage = 500.; // This is not constant on every map, and so it might not work
+		constexpr double bombRadius = bombDamage * 3.5; // This is not constant either
+		constexpr double sigma = bombRadius / 3.;
+
+		constexpr double armorRatio = .5;
+		constexpr double armorBonus = .5;
+
+		const double armorValue = static_cast<double>(targetEntity->armor());
 		const int health = targetEntity->health();
 
-		float finalBombDamage = 0.f;
-		float distanceToLocalPlayer = (bombEntity->origin() - targetEntity->origin()).length();
-		float gaussianFalloff = exp(-distanceToLocalPlayer * distanceToLocalPlayer / (2.0f * sigma * sigma));
+		double finalBombDamage = 0.;
+		double distanceToLocalPlayer = (bombEntity->origin() - targetEntity->origin()).length();
+		double gaussianFalloff = std::exp(-distanceToLocalPlayer * distanceToLocalPlayer / (2. * sigma * sigma));
 
 		finalBombDamage = bombDamage * gaussianFalloff;
 
 		if (armorValue > 0) {
-			float newRatio = finalBombDamage * armorRatio;
-			float armor = (finalBombDamage - newRatio) * armorBonus;
+			double newRatio = finalBombDamage * armorRatio;
+			double armor = (finalBombDamage - newRatio) * armorBonus;
 
 			if (armor > armorValue) {
 				armor = armorValue * (1.f / armorBonus);
@@ -1825,15 +1824,15 @@ void Misc::drawBombTimer() noexcept
 			finalBombDamage = newRatio;
 		}
 
-		int displayBombDamage = static_cast<int>(floor(finalBombDamage));
+		int displayBombDamage = static_cast<int>(std::floor(finalBombDamage));
 
-		if (health <= (truncf(finalBombDamage * 10) / 10)) {
+		if (health <= (std::trunc(finalBombDamage * 10) / 10)) {
 			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
 			ImGui::textUnformattedCentered("Lethal");
 			ImGui::PopStyleColor();
 		} else {
 			std::ostringstream text; text << "Damage: " << std::clamp(displayBombDamage, 0, health - 1);
-			const auto color = Helpers::healthColor(std::clamp(1.f - (finalBombDamage / static_cast<float>(health)), 0.0f, 1.0f));
+			const auto color = Helpers::healthColor(static_cast<float>(std::clamp(1. - (finalBombDamage / static_cast<double>(health)), 0., 1.)));
 			ImGui::PushStyleColor(ImGuiCol_Text, color);
 			ImGui::textUnformattedCentered(text.str().c_str());
 			ImGui::PopStyleColor();
@@ -1857,7 +1856,7 @@ void Misc::drawBombTimer() noexcept
 			}
 			ImGui::PopStyleColor();
 		} else if (const auto defusingPlayer = GameData::playerByHandle(plantedC4.defuserHandle)) {
-			std::ostringstream ss; ss << defusingPlayer->name << " is defusing: " << std::fixed << std::showpoint << std::setprecision(3) << (std::max)(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
+			std::ostringstream ss; ss << defusingPlayer->name << " is defusing: " << std::fixed << std::showpoint << std::setprecision(3) << std::max(plantedC4.defuseCountDown - memory->globalVars->currenttime, 0.0f) << " s";
 
 			ImGui::textUnformattedCentered(ss.str().c_str());
 
@@ -2097,7 +2096,7 @@ void Misc::fixMovement(UserCmd* cmd, float yaw) noexcept
 {
 	float oldYaw = yaw + (yaw < 0.0f ? 360.0f : 0.0f);
 	float newYaw = cmd->viewangles.y + (cmd->viewangles.y < 0.0f ? 360.0f : 0.0f);
-	float yawDelta = newYaw < oldYaw ? fabsf(newYaw - oldYaw) : 360.0f - fabsf(newYaw - oldYaw);
+	float yawDelta = newYaw < oldYaw ? std::abs(newYaw - oldYaw) : 360.0f - std::abs(newYaw - oldYaw);
 	yawDelta = 360.0f - yawDelta;
 
 	const float forwardmove = cmd->forwardmove;
@@ -2232,7 +2231,7 @@ void Misc::moonwalk(UserCmd* cmd, bool& send_packet) noexcept
 	if (config->misc.moonwalk && localPlayer && localPlayer->moveType() != MoveType::LADDER)
 		if (!config->misc.leg_break || !send_packet)
 			cmd->buttons ^= UserCmd::IN_FORWARD | UserCmd::IN_BACK | UserCmd::IN_MOVELEFT | UserCmd::IN_MOVERIGHT;
-		else if (abs(cmd->forwardmove) > 3.f)
+		else if (std::abs(cmd->forwardmove) > 3.f)
 			cmd->buttons |= UserCmd::IN_BACK;
 		else return;
 }
@@ -2288,23 +2287,23 @@ void Misc::killSound(GameEvent& event) noexcept
 void Misc::autoBuy(GameEvent* event) noexcept
 {
 	static const std::array<std::string, 17> primary = {
-	"",
-	"mac10;buy mp9;",
-	"mp7;",
-	"ump45;",
-	"p90;",
-	"bizon;",
-	"galilar;buy famas;",
-	"ak47;buy m4a1;",
-	"ssg08;",
-	"sg556;buy aug;",
-	"awp;",
-	"g3sg1; buy scar20;",
-	"nova;",
-	"xm1014;",
-	"sawedoff;buy mag7;",
-	"m249; ",
-	"negev;"
+		"",
+		"mac10;buy mp9;",
+		"mp7;",
+		"ump45;",
+		"p90;",
+		"bizon;",
+		"galilar;buy famas;",
+		"ak47;buy m4a1;",
+		"ssg08;",
+		"sg556;buy aug;",
+		"awp;",
+		"g3sg1; buy scar20;",
+		"nova;",
+		"xm1014;",
+		"sawedoff;buy mag7;",
+		"m249; ",
+		"negev;"
 	};
 	static const std::array<std::string, 6> secondary = {
 		"",

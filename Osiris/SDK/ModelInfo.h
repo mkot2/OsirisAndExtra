@@ -40,7 +40,7 @@ enum class Hitbox {
 	Max
 };
 
-inline const char* hitbox_text[]
+inline constexpr const char* hitbox_text[]
 {
 	"Head",
 	"Neck",
