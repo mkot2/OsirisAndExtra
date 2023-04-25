@@ -11,8 +11,6 @@
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_stdlib.h"
 
-#include "imguiCustom.h"
-
 #include "Hacks/AntiAim.h"
 #include "Hacks/Backtrack.h"
 #include "Hacks/Glow.h"
@@ -1676,8 +1674,10 @@ void GUI::renderMiscWindow() noexcept
 
 	ImGui::Checkbox("Mini jump", &config->misc.miniJump);
 	ImGui::SameLine();
-	ImGui::PushID("Mini jump");
+	ImGui::PushID("Mini jump Key");
 	ImGui::hotkey2("", config->misc.miniJumpKey);
+	ImGui::PopID();
+	ImGui::PushID("Mini jump");
 	ImGui::SameLine();
 	if (ImGui::Button("..."))
 		ImGui::OpenPopup("");
@@ -1699,7 +1699,9 @@ void GUI::renderMiscWindow() noexcept
 	ImGui::SameLine();
 	ImGui::PushID("Edge bug Key");
 	ImGui::hotkey2("", config->misc.edgeBugKey);
+	ImGui::PopID();
 	ImGui::SameLine();
+	ImGui::PushID("Edge bug");
 	if (ImGui::Button("..."))
 		ImGui::OpenPopup("");
 	if (ImGui::BeginPopup("")) {
@@ -1712,9 +1714,11 @@ void GUI::renderMiscWindow() noexcept
 
 	ImGui::Checkbox("Auto pixel surf", &config->misc.autoPixelSurf);
 	ImGui::SameLine();
-	ImGui::PushID("Auto pixel surf");
+	ImGui::PushID("Auto pixel surf Key");
 	ImGui::hotkey2("", config->misc.autoPixelSurfKey);
+	ImGui::PopID();
 	ImGui::SameLine();
+	ImGui::PushID("Auto pixel surf");
 	if (ImGui::Button("..."))
 		ImGui::OpenPopup("");
 	if (ImGui::BeginPopup("")) {
@@ -1759,6 +1763,8 @@ void GUI::renderMiscWindow() noexcept
 	ImGui::SameLine();
 	ImGui::PushID("Slowwalk Key");
 	ImGui::hotkey2("", config->misc.slowwalkKey);
+	ImGui::PopID();
+	ImGui::PushID("Slowwalk");
 	ImGui::SameLine();
 	if (ImGui::Button("..."))
 		ImGui::OpenPopup("");

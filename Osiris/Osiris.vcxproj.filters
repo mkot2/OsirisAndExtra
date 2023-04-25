@@ -44,9 +44,6 @@
     <ClCompile Include="imgui\imgui.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\imgui_demo.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
     <ClCompile Include="imgui\imgui_draw.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
@@ -103,9 +100,6 @@
     </ClCompile>
     <ClCompile Include="Hacks\AntiAim.cpp">
       <Filter>Hacks</Filter>
-    </ClCompile>
-    <ClCompile Include="imguiCustom.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="imgui\imgui_stdlib.cpp">
       <Filter>imgui</Filter>
@@ -259,6 +253,9 @@
     </ClCompile>
     <ClCompile Include="PCG\pcg.cpp">
       <Filter>PCG</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_user.cpp">
+      <Filter>imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -450,9 +447,6 @@
     </ClInclude>
     <ClInclude Include="SDK\RenderContext.h">
       <Filter>SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="imguiCustom.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imgui_stdlib.h">
       <Filter>imgui</Filter>
@@ -681,6 +675,9 @@
     </ClInclude>
     <ClInclude Include="memory_signature.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_user.h">
+      <Filter>imgui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

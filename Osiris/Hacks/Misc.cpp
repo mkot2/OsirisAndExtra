@@ -41,8 +41,6 @@
 #include "../SDK/WeaponData.h"
 #include "../SDK/WeaponSystem.h"
 
-#include "../imguiCustom.h"
-
 #include "../PCG/pcg.h"
 
 bool Misc::isInChat() noexcept

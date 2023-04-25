@@ -53,9 +53,6 @@
       <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <ClCompile Include="Hooks\MinHook.cpp" />
-    <ClCompile Include="imguiCustom.cpp">
-      <IncludeInUnityFile>false</IncludeInUnityFile>
-    </ClCompile>
     <ClCompile Include="imgui\imgui_freetype.cpp">
       <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
@@ -65,6 +62,7 @@
     <ClCompile Include="imgui\imgui_tables.cpp">
       <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
+    <ClCompile Include="imgui\imgui_user.cpp" />
     <ClCompile Include="InputUtil.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MinHook\buffer.c" />
@@ -80,9 +78,6 @@
     </ClCompile>
     <ClCompile Include="Hooks.cpp" />
     <ClCompile Include="imgui\imgui.cpp">
-      <IncludeInUnityFile>false</IncludeInUnityFile>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_demo.cpp">
       <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <ClCompile Include="imgui\imgui_draw.cpp">
@@ -140,9 +135,9 @@
     <ClInclude Include="Hacks\Visuals.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Hooks\MinHook.h" />
-    <ClInclude Include="imguiCustom.h" />
     <ClInclude Include="imgui\imgui_freetype.h" />
     <ClInclude Include="imgui\imgui_stdlib.h" />
+    <ClInclude Include="imgui\imgui_user.h" />
     <ClInclude Include="imgui\imstb_sprintf.h" />
     <ClInclude Include="InputUtil.h" />
     <ClInclude Include="Logger.h" />
