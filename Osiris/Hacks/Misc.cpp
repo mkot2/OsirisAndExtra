@@ -1946,9 +1946,9 @@ void Misc::yawIndicator(ImDrawList* drawList) noexcept
         drawList->AddTriangleFilled(pos + ImVec2{ -20, -20 }, pos + ImVec2{ 20, -20 }, pos + ImVec2{ 0, -50 }, col);
     if (config->manualBackward.isToggled())
         drawList->AddTriangleFilled(pos + ImVec2{ -20, 20 }, pos + ImVec2{ 20, 20 }, pos + ImVec2{ 0, 50 }, col);
-    if (config->manualRight.isToggled() || AntiAim::auto_direction_yaw == 1)
+    if (config->manualRight.isToggled() || (AntiAim::auto_direction_yaw == 1 && config->autoDirection.isToggled()))
         drawList->AddTriangleFilled(pos + ImVec2{ 20, 20 }, pos + ImVec2{ 20, -20 }, pos + ImVec2{ 50, 0 }, col);
-    if (config->manualLeft.isToggled() || AntiAim::auto_direction_yaw == -1)
+    if (config->manualLeft.isToggled() || (AntiAim::auto_direction_yaw == -1 && config->autoDirection.isToggled()))
         drawList->AddTriangleFilled(pos + ImVec2{ -20, 20 }, pos + ImVec2{ -20, -20 }, pos + ImVec2{ -50, 0 }, col);
 }
 
