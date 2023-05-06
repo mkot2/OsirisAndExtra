@@ -5,5 +5,5 @@
 
 namespace PCG
 {
-	extern pcg32_c1024_fast generator;
+	extern pcg32_fast generator;
 }

@@ -279,6 +279,10 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 	const auto currentCmd{ *cmd };
 	auto angOldViewPoint{ cmd->viewangles };
 	const auto currentPredictedTick{ interfaces->prediction->split->commandsPredicted - 1 };
+	static const auto mouseSensitivity = interfaces->cvar->findVar("sensitivity");
+	static const auto mouseYaw = interfaces->cvar->findVar("m_yaw");
+	static const auto mousePitch = interfaces->cvar->findVar("m_pitch");
+	static const auto zoomModifier = interfaces->cvar->findVar("zoom_sensitivity_ratio_mouse");
 
 	if (Tickbase::isShifting()) {
 		sendPacket = Tickbase::isFinalTick();
@@ -340,10 +344,6 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 
 		// Delta fix
 		// https://github.com/LWSS/Fuzion/blob/8f045699707487d3aa79d16b2439788dafd15551/src/Hacks/aimbot.cpp#L730
-		static auto mouseSensitivity = interfaces->cvar->findVar("sensitivity");
-		static auto mouseYaw = interfaces->cvar->findVar("m_yaw");
-		static auto mousePitch = interfaces->cvar->findVar("m_pitch");
-		static auto zoomModifier = interfaces->cvar->findVar("zoom_sensitivity_ratio_mouse");
 		cmd->mousedx = static_cast<short>(previousViewAngles.y - viewAnglesDelta.y / (mouseYaw->getFloat() * mouseSensitivity->getFloat() * zoomModifier->getFloat()));
 		cmd->mousedy = static_cast<short>(-(previousViewAngles.x - viewAnglesDelta.x) / (mousePitch->getFloat() * mouseSensitivity->getFloat() * zoomModifier->getFloat()));
 
@@ -438,10 +438,6 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 
 	// Delta fix
 	// https://github.com/LWSS/Fuzion/blob/8f045699707487d3aa79d16b2439788dafd15551/src/Hacks/aimbot.cpp#L730
-	static auto mouseSensitivity = interfaces->cvar->findVar("sensitivity");
-	static auto mouseYaw = interfaces->cvar->findVar("m_yaw");
-	static auto mousePitch = interfaces->cvar->findVar("m_pitch");
-	static auto zoomModifier = interfaces->cvar->findVar("zoom_sensitivity_ratio_mouse");
 	cmd->mousedx = static_cast<short>(previousViewAngles.y - viewAnglesDelta.y / (mouseYaw->getFloat() * mouseSensitivity->getFloat() * zoomModifier->getFloat()));
 	cmd->mousedy = static_cast<short>(-(previousViewAngles.x - viewAnglesDelta.x) / (mousePitch->getFloat() * mouseSensitivity->getFloat() * zoomModifier->getFloat()));
 
@@ -740,7 +736,7 @@ static const DemoPlaybackParameters* __stdcall getDemoPlaybackParameters() noexc
 
 static bool __stdcall isPlayingDemo() noexcept
 {
-	if (config->misc.revealMoney && std::uintptr_t(_ReturnAddress()) == memory->demoOrHLTV && *reinterpret_cast<std::uintptr_t*>((std::uintptr_t(_AddressOfReturnAddress()) - sizeof(std::uintptr_t)) + 8) == memory->money)
+	if (config->misc.revealMoney && RETURN_ADDRESS() == memory->demoOrHLTV && *reinterpret_cast<std::uintptr_t*>((std::uintptr_t(_AddressOfReturnAddress()) - sizeof(std::uintptr_t)) + 8) == memory->money)
 		return true;
 
 	return hooks->engine.callOriginal<bool, 82>();
@@ -748,7 +744,7 @@ static bool __stdcall isPlayingDemo() noexcept
 
 static bool __fastcall isHltv() noexcept
 {
-	if (_ReturnAddress() == memory->setupVelocityAddress || _ReturnAddress() == memory->accumulateLayersAddress)// || _ReturnAddress() == memory->reevauluateAnimLODAddress)
+	if (RETURN_ADDRESS() == reinterpret_cast<std::uintptr_t>(memory->setupVelocityAddress) || RETURN_ADDRESS() == reinterpret_cast<std::uintptr_t>(memory->accumulateLayersAddress))// || _ReturnAddress() == memory->reevauluateAnimLODAddress)
 		return true;
 	return hooks->engine.callOriginal<bool, 93>();
 }

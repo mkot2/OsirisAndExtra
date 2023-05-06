@@ -332,10 +332,10 @@ bool intersectLineWithBb(Vector& start, Vector& end, Vector& min, Vector& max) n
 	return start_solid || (t1 < t2 && t1 >= 0.0f);
 }
 
-void inline sinCos(float radians, float* sine, float* cosine)
+void sinCos(float radians, float& sine, float& cosine)
 {
-	*sine = std::sin(radians);
-	*cosine = std::cos(radians);
+	sine = std::sin(radians);
+	cosine = std::cos(radians);
 }
 
 Vector vectorRotate(Vector& in1, Vector& in2) noexcept
@@ -346,9 +346,9 @@ Vector vectorRotate(Vector& in1, Vector& in2) noexcept
 	auto angleMatrix = [](const Vector& angles, matrix3x4& matrix) {
 		float sr, sp, sy, cr, cp, cy;
 
-		sinCos(Helpers::deg2rad(angles[1]), &sy, &cy);
-		sinCos(Helpers::deg2rad(angles[0]), &sp, &cp);
-		sinCos(Helpers::deg2rad(angles[2]), &sr, &cr);
+		sinCos(Helpers::deg2rad(angles[1]), sy, cy);
+		sinCos(Helpers::deg2rad(angles[0]), sp, cp);
+		sinCos(Helpers::deg2rad(angles[2]), sr, cr);
 
 		// matrix = (YAW * PITCH) * ROLL
 		matrix[0][0] = cp * cy;
@@ -508,7 +508,7 @@ bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitbox
 	if (!hitChance || isSpreadEnabled->getInt() >= 1)
 		return true;
 
-	constexpr int maxSeed = 768;
+	constexpr int maxSeed = 256;
 
 	const Angle angles(destination + cmd->viewangles);
 
