@@ -1912,23 +1912,23 @@ void Misc::hurtIndicator() noexcept
 
 void Misc::yawIndicator(ImDrawList* drawList) noexcept
 {
-	if (!config->misc.yawIndicator.enabled)
-		return;
-	{
-		GameData::Lock lock;
-		if (const auto& [exists, alive, inReload, shooting, noScope, nextWeaponAttack, fov, handle, flashDuration, aimPunch, origin, inaccuracy, team, velocityModifier] { GameData::local() }; !exists || !alive)
-			return;
-	}
-	const ImVec2 pos{ ImGui::GetIO().DisplaySize / 2 };
-	const ImU32 col{ Helpers::calculateColor(static_cast<Color4>(config->misc.yawIndicator)) };
-	if (config->manualForward.isToggled())
-		drawList->AddTriangleFilled(pos + ImVec2{ -20, -20 }, pos + ImVec2{ 20, -20 }, pos + ImVec2{ 0, -50 }, col);
-	if (config->manualBackward.isToggled())
-		drawList->AddTriangleFilled(pos + ImVec2{ -20, 20 }, pos + ImVec2{ 20, 20 }, pos + ImVec2{ 0, 50 }, col);
-	if (config->manualRight.isToggled() || AntiAim::auto_direction_yaw == 1)
-		drawList->AddTriangleFilled(pos + ImVec2{ 20, 20 }, pos + ImVec2{ 20, -20 }, pos + ImVec2{ 50, 0 }, col);
-	if (config->manualLeft.isToggled() || AntiAim::auto_direction_yaw == -1)
-		drawList->AddTriangleFilled(pos + ImVec2{ -20, 20 }, pos + ImVec2{ -20, -20 }, pos + ImVec2{ -50, 0 }, col);
+    if (!config->misc.yawIndicator.enabled)
+        return;
+    {
+        GameData::Lock lock;
+        if (const auto& [exists, alive, inReload, shooting, noScope, nextWeaponAttack, fov, handle, flashDuration, aimPunch, origin, inaccuracy, team, velocityModifier] { GameData::local() }; !exists || !alive)
+            return;
+    }
+    const ImVec2 pos{ ImGui::GetIO().DisplaySize / 2 };
+    const ImU32 col{ Helpers::calculateColor(static_cast<Color4>(config->misc.yawIndicator)) };
+    if (config->manualForward.isToggled())
+        drawList->AddTriangleFilled(pos + ImVec2{ -20, -20 }, pos + ImVec2{ 20, -20 }, pos + ImVec2{ 0, -50 }, col);
+    if (config->manualBackward.isToggled())
+        drawList->AddTriangleFilled(pos + ImVec2{ -20, 20 }, pos + ImVec2{ 20, 20 }, pos + ImVec2{ 0, 50 }, col);
+    if (config->manualRight.isToggled() || (AntiAim::auto_direction_yaw == 1 && config->autoDirection.isToggled()))
+        drawList->AddTriangleFilled(pos + ImVec2{ 20, 20 }, pos + ImVec2{ 20, -20 }, pos + ImVec2{ 50, 0 }, col);
+    if (config->manualLeft.isToggled() || (AntiAim::auto_direction_yaw == -1 && config->autoDirection.isToggled()))
+        drawList->AddTriangleFilled(pos + ImVec2{ -20, 20 }, pos + ImVec2{ -20, -20 }, pos + ImVec2{ -50, 0 }, col);
 }
 
 void Misc::stealNames() noexcept
