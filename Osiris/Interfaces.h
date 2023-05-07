@@ -1,5 +1,6 @@
 #pragma once
 
+#include <format>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -79,7 +80,7 @@ private:
 				return foundInterface;
 		}
 
-		MessageBoxA(nullptr, ("Failed to find " + std::string{ name } + " interface!").c_str(), "Osiris", MB_OK | MB_ICONERROR);
+		MessageBoxA(nullptr, std::format("Failed to find {} interface!", name).c_str(), "Osiris", MB_OK | MB_ICONERROR);
 		std::exit(EXIT_FAILURE);
 	}
 };

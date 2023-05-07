@@ -27,19 +27,19 @@ namespace Ragebot
 	};
 
 	struct {
-		bool operator()(Enemies a, Enemies b) const
+		bool operator()(Enemies& a, Enemies& b) const
 		{
 			return a.health < b.health;
 		}
 	} healthSort;
 	struct {
-		bool operator()(Enemies a, Enemies b) const
+		bool operator()(Enemies& a, Enemies& b) const
 		{
 			return a.distance < b.distance;
 		}
 	} distanceSort;
 	struct {
-		bool operator()(Enemies a, Enemies b) const
+		bool operator()(Enemies& a, Enemies& b) const
 		{
 			return a.fov < b.fov;
 		}

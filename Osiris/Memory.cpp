@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <array>
 #include <cstring>
+#include <format>
 #include <limits>
 #include <string_view>
 #include <utility>
@@ -23,20 +24,16 @@ static constexpr auto relativeToAbsolute(uintptr_t address) noexcept
 
 static std::uintptr_t findPattern(const char* moduleName, std::string_view patternString, bool reportNotFound = true) noexcept
 {
-	static auto id = 0;
-	++id;
-
-	if (auto module = mem::module::named(moduleName); module != mem::module()) {
+	if (const auto module = mem::module::named(moduleName); module != mem::module()) {
 		mem::pattern pattern(patternString.data());
 		mem::default_scanner scanner(pattern);
-		mem::region region(module);
 
-		if (const auto address = scanner.scan(region).as<std::uintptr_t>(); address != region.start.as<std::uintptr_t>() + region.size)
+		if (const auto address = scanner.scan(module).as<std::uintptr_t>(); address)
 			return address;
 	}
 
 	if (reportNotFound)
-		MessageBoxA(NULL, ("Failed to find pattern #" + std::to_string(id) + '!').c_str(), "Osiris", MB_OK | MB_ICONWARNING);
+		MessageBoxA(nullptr, std::format("Failed to find pattern: {}", patternString).c_str(), "Osiris", MB_OK | MB_ICONWARNING);
 	return 0;
 }
 

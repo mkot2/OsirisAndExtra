@@ -1610,47 +1610,18 @@ void Misc::watermark() noexcept
 	frame_rate = 0.9f * frame_rate + 0.1f * memory->globalVars->absoluteFrameTime;
 	GameData::Lock lock;
 	const auto& [exists, alive, inReload, shooting, noScope, nextWeaponAttack, fov, handle, flashDuration, aimPunch, origin, inaccuracy, team, velocityModifier] { GameData::local() };
-	ImGui::Text("Osiris [%s] | %d FPS | %d MS | %s%s%s",
+	ImGui::Text("Osiris%s | %d fps | %d ms | %s%s%s",
 #ifdef _DEBUG
-		"DEBUG",
+		" [DEBUG]",
 #else
-		"RELEASE",
+		"",
 #endif
 		frame_rate != 0.0f ? static_cast<int>(1 / frame_rate) : 0,
 		GameData::getNetOutgoingLatency(),
 		team == Team::Spectators ? "SPEC" : team == Team::TT ? "T" : team == Team::CT ? "CT" : "NONE",
 		inReload ? " | RELOADING" : "",
 		noScope ? " | NO SCOPE" : "");
-	//static int damage{};
-	//static int hit_chance{};
-	//static int min_damage{};
-	//static bool resolver{};
-	//if (localPlayer && localPlayer->isAlive() && localPlayer->getActiveWeapon() && localPlayer->getActiveWeapon()->clip() && getWeaponIndex(localPlayer->getActiveWeapon()->itemDefinitionIndex2()) != 0 && localPlayer->getActiveWeapon()->getWeaponData()) {
-	//	const auto active_weapon{ localPlayer->getActiveWeapon() };
-	//	const auto weapon_data{ active_weapon->getWeaponData() };
-	//	damage = weapon_data->damage;
-	//	hit_chance = config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].hitChance;
-	//	min_damage = config->minDamageOverrideKey.isActive()
-	//		? config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].minDamageOverride
-	//		: config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].minDamage;
-	//	resolver = config->ragebot[getWeaponIndex(active_weapon->itemDefinitionIndex2())].resolver;
-	//}
-	//ImGui::Text("DMG %d | HC %d%% | MIN DMG %d | RSLVR %s | HIT/MISS %d/%d (%.2lf%%)",
-	//	damage,
-	//	hit_chance,
-	//	min_damage,
-	//	resolver ? "On" : "Off",
-	//	resolver::hits,
-	//	resolver::misses,
-	//	resolver::hit_rate);
-	ImGui::Text("%s %s | FL %d%s%s%s | TGT %s",
-		AntiAim::peek_mode_text[
-			config->fakeAngle[AntiAim::latest_moving_flag].enabled
-				? config->fakeAngle[AntiAim::latest_moving_flag].peekMode
-				: 0],
-		AntiAim::lby_mode_text[config->fakeAngle[AntiAim::latest_moving_flag].enabled
-		? config->fakeAngle[AntiAim::latest_moving_flag].lbyMode
-		: 0],
+	ImGui::Text("%d ticks FL%s%s%s | Last target: %s",
 		Fakelag::latest_choked_packets,
 		config->tickbase.doubletap.isActive() ? " | DT" : "",
 		config->tickbase.hideshots.isActive() ? " | HS" : "",
@@ -2333,20 +2304,20 @@ void Misc::autoBuy(GameEvent* event) noexcept
 	std::string cmd = "";
 	if (event) {
 		if (config->misc.autoBuy.primaryWeapon)
-			cmd += std::format("buy %s", primary[config->misc.autoBuy.primaryWeapon]);
+			cmd += std::format("buy {}", primary[config->misc.autoBuy.primaryWeapon]);
 		if (config->misc.autoBuy.secondaryWeapon)
-			cmd += std::format("buy %s", secondary[config->misc.autoBuy.secondaryWeapon]);
+			cmd += std::format("buy {}", secondary[config->misc.autoBuy.secondaryWeapon]);
 		if (config->misc.autoBuy.armor)
-			cmd += std::format("buy %s", armor[config->misc.autoBuy.armor]);
+			cmd += std::format("buy {}", armor[config->misc.autoBuy.armor]);
 
 		for (size_t i = 0; i < utility.size(); i++) {
 			if ((config->misc.autoBuy.utility & 1 << i) == 1 << i)
-				cmd += std::format("buy %s", utility[i]);
+				cmd += std::format("buy {}", utility[i]);
 		}
 
 		for (size_t i = 0; i < nades.size(); i++) {
 			if ((config->misc.autoBuy.grenades & 1 << i) == 1 << i)
-				cmd += std::format("buy %s", nades[i]);
+				cmd += std::format("buy {}", nades[i]);
 		}
 
 		interfaces->engine->clientCmdUnrestricted(cmd.c_str());
