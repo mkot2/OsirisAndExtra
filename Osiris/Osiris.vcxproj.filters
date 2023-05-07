@@ -36,6 +36,9 @@
     <Filter Include="SDK">
       <UniqueIdentifier>{6cc612f0-86fb-4bf6-b64a-74e10f5b498a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="mem">
+      <UniqueIdentifier>{7566ce54-42de-4111-9732-6404f6ee387b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUI.cpp">
@@ -87,9 +90,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hacks\Visuals.cpp">
-      <Filter>Hacks</Filter>
-    </ClCompile>
-    <ClCompile Include="Hacks\SkinChanger.cpp">
       <Filter>Hacks</Filter>
     </ClCompile>
     <ClCompile Include="Hacks\Backtrack.cpp">
@@ -397,9 +397,6 @@
     <ClInclude Include="SDK\GameUI.h">
       <Filter>SDK</Filter>
     </ClInclude>
-    <ClInclude Include="Hacks\SkinChanger.h">
-      <Filter>Hacks</Filter>
-    </ClInclude>
     <ClInclude Include="SDK\FrameStage.h">
       <Filter>SDK</Filter>
     </ClInclude>
@@ -673,11 +670,85 @@
     <ClInclude Include="imgui\imstb_sprintf.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="memory_signature.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="imgui\imgui_user.h">
       <Filter>imgui</Filter>
     </ClInclude>
+    <ClInclude Include="mem\arch.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\bitwise_enum.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\boyer_moore_scanner.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\cmd_param.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\cmd_param-inl.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\data_buffer.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\defines.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\execution_handler.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\hasher.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\char_queue.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\init_function.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\macros.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\mem.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\module.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\pattern.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\pattern_cache.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\prot_flags.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\protect.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\rtti.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\simd_scanner.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\slice.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\stub.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\utils.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="mem\aligned_alloc.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="mem\cpp.hint">
+      <Filter>mem</Filter>
+    </None>
   </ItemGroup>
 </Project>

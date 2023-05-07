@@ -9,7 +9,6 @@
 #include "ConfigStructs.h"
 #include "InputUtil.h"
 #include "Hacks/AntiAim.h"
-#include "Hacks/SkinChanger.h"
 #include "imgui/imgui.h"
 
 class Config {
@@ -343,8 +342,6 @@ public:
 		Color4 molotovTimerText{ 0.0f, 0.0f, 0.0f, 1.0f };
 		float glowOutlineWidth{ 6.0f };
 	} visuals;
-
-	std::array<item_setting, 36> skinChanger;
 
 	struct Misc {
 		Misc() { clanTag[0] = '\0'; name[0] = '\0'; menuKey.keyMode = Toggle; }

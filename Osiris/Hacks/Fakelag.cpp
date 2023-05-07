@@ -32,7 +32,7 @@ void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
 	if (EnginePrediction::getVelocity().length2D() < 1)
 		return;
 
-	auto choked_packets = config->legitAntiAim.enabled || config->fakeAngle[static_cast<int>(moving_flag)].enabled ? std::uniform_int_distribution<int>(0, 2)(PCG::generator) : 0;
+	auto choked_packets = config->legitAntiAim.enabled || config->fakeAngle[moving_flag].enabled ? std::uniform_int_distribution<int>(0, 2)(PCG::generator) : 0;
 
 	if (config->tickbase.disabledTickbase && config->tickbase.onshotFl && config->tickbase.readyFire) {
 		choked_packets = -1;
@@ -62,17 +62,17 @@ void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
 		return;
 	}
 
-	if (config->fakelag[static_cast<int>(moving_flag)].enabled) {
+	if (config->fakelag[moving_flag].enabled) {
 		const float speed = EnginePrediction::getVelocity().length2D() >= 15.0f ? EnginePrediction::getVelocity().length2D() : 0.0f;
-		switch (config->fakelag[static_cast<int>(moving_flag)].mode) {
+		switch (config->fakelag[moving_flag].mode) {
 		case 0: //Static
-			choked_packets = config->fakelag[static_cast<int>(moving_flag)].limit;
+			choked_packets = config->fakelag[moving_flag].limit;
 			break;
 		case 1: //Adaptive
-			choked_packets = std::clamp(static_cast<int>(std::ceil(64 / (speed * memory->globalVars->intervalPerTick))), 1, config->fakelag[static_cast<int>(moving_flag)].limit);
+			choked_packets = std::clamp(static_cast<int>(std::ceil(64 / (speed * memory->globalVars->intervalPerTick))), 1, config->fakelag[moving_flag].limit);
 			break;
 		case 2: // Random
-			choked_packets = std::uniform_int_distribution<int>(config->fakelag[static_cast<int>(moving_flag)].randomMinLimit, config->fakelag[static_cast<int>(moving_flag)].limit)(PCG::generator);
+			choked_packets = std::uniform_int_distribution<int>(config->fakelag[moving_flag].randomMinLimit, config->fakelag[moving_flag].limit)(PCG::generator);
 			break;
 		default:
 			break;

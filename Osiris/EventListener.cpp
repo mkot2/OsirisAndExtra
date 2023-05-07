@@ -10,7 +10,6 @@
 
 #include "Hacks/Misc.h"
 #include "Hacks/resolver.h"
-#include "Hacks/SkinChanger.h"
 #include "Hacks/Visuals.h"
 
 EventListener::EventListener() noexcept
@@ -64,8 +63,6 @@ void EventListener::fireGameEvent(GameEvent* event)
 		Misc::purchaseList(event);
 		break;
 	case fnv::hash("player_death"):
-		/*SkinChanger::updateStatTrak(*event);
-		SkinChanger::overrideHudIcon(*event);*/
 		Misc::killfeedChanger(*event);
 		Misc::killMessage(*event);
 		Misc::killSound(*event);

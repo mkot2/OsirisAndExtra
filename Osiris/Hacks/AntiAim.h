@@ -18,7 +18,7 @@ namespace AntiAim
 		fake_ducking
 	};
 
-	inline const char* moving_flag_text[]
+	constexpr std::array moving_flag_text
 	{
 		"Freestanding",
 		"Moving",
@@ -29,7 +29,7 @@ namespace AntiAim
 		"Fake-ducking"
 	};
 
-	inline const char* peek_mode_text[]
+	constexpr std::array peek_mode_text
 	{
 		"Off",
 		"Peek Real",
@@ -38,7 +38,7 @@ namespace AntiAim
 		"Switch"
 	};
 
-	inline const char* lby_mode_text[]
+	constexpr std::array lby_mode_text
 	{
 		"Normal",
 		"Opposite",

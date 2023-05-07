@@ -13,6 +13,7 @@ constexpr auto FILESYSTEM_DLL = "filesystem_stdio";
 constexpr auto INPUTSYSTEM_DLL = "inputsystem";
 constexpr auto LOCALIZE_DLL = "localize";
 constexpr auto MATERIALSYSTEM_DLL = "materialsystem";
+constexpr auto OVERLAY_DLL = "gameoverlayrenderer";
 constexpr auto PANORAMA_DLL = "panorama";
 constexpr auto SOUNDEMITTERSYSTEM_DLL = "soundemittersystem";
 constexpr auto STEAMNETWORKINGSOCKETS_DLL = "steamnetworkingsockets";

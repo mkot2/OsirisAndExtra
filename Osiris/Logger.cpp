@@ -10,7 +10,7 @@
 #include "SDK/Entity.h"
 #include "SDK/LocalPlayer.h"
 
-std::string getStringFromHitgroup(int hitgroup) noexcept
+const char* getStringFromHitgroup(int hitgroup) noexcept
 {
 	switch (hitgroup) {
 	case HitGroup::Generic:

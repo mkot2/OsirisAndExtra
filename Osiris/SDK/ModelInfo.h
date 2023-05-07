@@ -40,7 +40,7 @@ enum class Hitbox {
 	Max
 };
 
-inline constexpr const char* hitbox_text[]
+constexpr std::array hitbox_text
 {
 	"Head",
 	"Neck",

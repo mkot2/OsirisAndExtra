@@ -26,7 +26,7 @@ public:
 	}
 };
 
-static const char* ButtonCodes[] =
+constexpr std::array ButtonCodes =
 {
 	"NONE",
 	"0",

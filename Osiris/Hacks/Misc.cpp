@@ -70,7 +70,7 @@ void Misc::gatherDataOnTick(UserCmd* cmd) noexcept
 
 void Misc::handleKeyEvent(int keynum, const char* currentBinding) noexcept
 {
-	if (!currentBinding || keynum <= 0 || keynum >= ARRAYSIZE(ButtonCodes))
+	if (!currentBinding || keynum <= 0 || keynum >= ButtonCodes.size())
 		return;
 
 	const auto buttonName = ButtonCodes[keynum];
@@ -1134,7 +1134,7 @@ void Misc::autoPeek(UserCmd* cmd, Vector currentViewAngles) noexcept
 
 void Misc::forceRelayCluster() noexcept
 {
-	constexpr std::string dataCentersList[] = { "", "syd", "vie", "gru", "scl", "dxb", "par", "fra", "hkg",
+	constexpr std::array dataCentersList = { "", "syd", "vie", "gru", "scl", "dxb", "par", "fra", "hkg",
 	"maa", "bom", "tyo", "lux", "ams", "limc", "man", "waw", "sgp", "jnb",
 	"mad", "sto", "lhr", "atl", "eat", "ord", "lax", "mwh", "okc", "sea", "iad" };
 
@@ -1612,7 +1612,7 @@ void Misc::watermark() noexcept
 	GameData::Lock lock;
 	const auto& [exists, alive, inReload, shooting, noScope, nextWeaponAttack, fov, handle, flashDuration, aimPunch, origin, inaccuracy, team, velocityModifier] { GameData::local() };
 	ImGui::Text("Osiris [%s] | %d FPS | %d MS | %s%s%s",
-#ifdef DEBUG
+#ifdef _DEBUG
 		"DEBUG",
 #else
 		"RELEASE",
@@ -1644,19 +1644,19 @@ void Misc::watermark() noexcept
 	//	resolver::hits,
 	//	resolver::misses,
 	//	resolver::hit_rate);
-	//ImGui::Text("%s %s | FL %d%s%s%s | TGT %s",
-	//	AntiAim::peek_mode_text[
-	//		config->fakeAngle[AntiAim::latest_moving_flag].enabled
-	//			? config->fakeAngle[AntiAim::latest_moving_flag].peekMode
-	//			: 0],
-	//	AntiAim::lby_mode_text[config->fakeAngle[AntiAim::latest_moving_flag].enabled
-	//	? config->fakeAngle[AntiAim::latest_moving_flag].lbyMode
-	//	: 0],
-	//	Fakelag::latest_choked_packets,
-	//	config->tickbase.doubletap.isActive() ? " | DT" : "",
-	//	config->tickbase.hideshots.isActive() ? " | HS" : "",
-	//	config->tickbase.teleport && (config->tickbase.doubletap.isActive() || config->tickbase.hideshots.isActive()) ? " | TP" : "",
-	//	Ragebot::latest_player.c_str());
+	ImGui::Text("%s %s | FL %d%s%s%s | TGT %s",
+		AntiAim::peek_mode_text[
+			config->fakeAngle[AntiAim::latest_moving_flag].enabled
+				? config->fakeAngle[AntiAim::latest_moving_flag].peekMode
+				: 0],
+		AntiAim::lby_mode_text[config->fakeAngle[AntiAim::latest_moving_flag].enabled
+		? config->fakeAngle[AntiAim::latest_moving_flag].lbyMode
+		: 0],
+		Fakelag::latest_choked_packets,
+		config->tickbase.doubletap.isActive() ? " | DT" : "",
+		config->tickbase.hideshots.isActive() ? " | HS" : "",
+		config->tickbase.teleport && (config->tickbase.doubletap.isActive() || config->tickbase.hideshots.isActive()) ? " | TP" : "",
+		Ragebot::latest_player.c_str());
 	ImGui::End();
 }
 
@@ -2284,7 +2284,7 @@ void Misc::killSound(GameEvent& event) noexcept
 
 void Misc::autoBuy(GameEvent* event) noexcept
 {
-	static const std::array<std::string, 17> primary = {
+	constexpr std::array primary = {
 		"",
 		"mac10;buy mp9;",
 		"mp7;",
@@ -2303,7 +2303,7 @@ void Misc::autoBuy(GameEvent* event) noexcept
 		"m249; ",
 		"negev;"
 	};
-	static const std::array<std::string, 6> secondary = {
+	constexpr std::array secondary = {
 		"",
 		"glock;buy hkp2000;",
 		"elite;",
@@ -2311,16 +2311,16 @@ void Misc::autoBuy(GameEvent* event) noexcept
 		"tec9;buy fiveseven;",
 		"deagle;buy revolver;"
 	};
-	static const std::array<std::string, 3> armor = {
+	constexpr std::array armor = {
 		"",
 		"vest;",
 		"vesthelm;",
 	};
-	static const std::array<std::string, 2> utility = {
+	constexpr std::array utility = {
 		"defuser;",
 		"taser;"
 	};
-	static const std::array<std::string, 5> nades = {
+	constexpr std::array nades = {
 		"hegrenade;",
 		"smokegrenade;",
 		"molotov;buy incgrenade;",
@@ -2332,23 +2332,22 @@ void Misc::autoBuy(GameEvent* event) noexcept
 		return;
 
 	std::string cmd = "";
-
 	if (event) {
 		if (config->misc.autoBuy.primaryWeapon)
-			cmd += "buy " + primary[config->misc.autoBuy.primaryWeapon];
+			cmd += std::format("buy %s", primary[config->misc.autoBuy.primaryWeapon]);
 		if (config->misc.autoBuy.secondaryWeapon)
-			cmd += "buy " + secondary[config->misc.autoBuy.secondaryWeapon];
+			cmd += std::format("buy %s", secondary[config->misc.autoBuy.secondaryWeapon]);
 		if (config->misc.autoBuy.armor)
-			cmd += "buy " + armor[config->misc.autoBuy.armor];
+			cmd += std::format("buy %s", armor[config->misc.autoBuy.armor]);
 
 		for (size_t i = 0; i < utility.size(); i++) {
 			if ((config->misc.autoBuy.utility & 1 << i) == 1 << i)
-				cmd += "buy " + utility[i];
+				cmd += std::format("buy %s", utility[i]);
 		}
 
 		for (size_t i = 0; i < nades.size(); i++) {
 			if ((config->misc.autoBuy.grenades & 1 << i) == 1 << i)
-				cmd += "buy " + nades[i];
+				cmd += std::format("buy %s", nades[i]);
 		}
 
 		interfaces->engine->clientCmdUnrestricted(cmd.c_str());

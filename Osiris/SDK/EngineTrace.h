@@ -67,8 +67,8 @@ namespace HitGroup
 		Gear = 10
 	};
 
-	inline const char* invalid{ "Invalid" };
-	inline const char* hitgroup_text[]
+	constexpr const char* invalid{ "Invalid" };
+	constexpr std::array hitgroup_text
 	{
 		"Generic",
 		"Head",

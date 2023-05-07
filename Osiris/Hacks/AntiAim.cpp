@@ -91,8 +91,8 @@ float random_float(const float a, const float b, const float multiplier)
 void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector& currentViewAngles, bool& sendPacket) noexcept
 {
 	const auto moving_flag{ get_moving_flag(cmd) };
-	if ((cmd->viewangles.x == currentViewAngles.x || Tickbase::isShifting()) && config->rageAntiAim[static_cast<int>(moving_flag)].enabled) {
-		switch (config->rageAntiAim[static_cast<int>(moving_flag)].pitch) {
+	if ((cmd->viewangles.x == currentViewAngles.x || Tickbase::isShifting()) && config->rageAntiAim[moving_flag].enabled) {
+		switch (config->rageAntiAim[moving_flag].pitch) {
 		case 0: //None
 			break;
 		case 1: //Down
@@ -109,14 +109,14 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
 		}
 	}
 	if (cmd->viewangles.y == currentViewAngles.y || Tickbase::isShifting()) {
-		if (config->rageAntiAim[static_cast<int>(moving_flag)].yawBase != Yaw::off
-			&& config->rageAntiAim[static_cast<int>(moving_flag)].enabled)   //AntiAim
+		if (config->rageAntiAim[moving_flag].yawBase != Yaw::off
+			&& config->rageAntiAim[moving_flag].enabled)   //AntiAim
 		{
 			float yaw = 0.f;
 			static bool flipJitter = false;
 			if (sendPacket && !AntiAim::getDidShoot())
 				flipJitter ^= 1;
-			if (config->rageAntiAim[static_cast<int>(moving_flag)].atTargets) {
+			if (config->rageAntiAim[moving_flag].atTargets) {
 				Vector localPlayerEyePosition = localPlayer->getEyePosition();
 				const auto aimPunch = localPlayer->getAimPunch();
 				float bestFov = 255.f;
@@ -137,12 +137,12 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
 				yaw = yawAngle;
 			}
 
-			if (config->rageAntiAim[static_cast<int>(moving_flag)].yawBase != Yaw::spin)
+			if (config->rageAntiAim[moving_flag].yawBase != Yaw::spin)
 				static_yaw = 1.f;
 
-			switch (config->rageAntiAim[static_cast<int>(moving_flag)].yawBase) {
+			switch (config->rageAntiAim[moving_flag].yawBase) {
 			case Yaw::paranoia:
-				yaw += std::uniform_real_distribution<float>(static_cast<float>(-config->rageAntiAim[static_cast<int>(moving_flag)].paranoiaMin), static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].paranoiaMax))(PCG::generator) + 180;
+				yaw += std::uniform_real_distribution<float>(static_cast<float>(-config->rageAntiAim[moving_flag].paranoiaMin), static_cast<float>(config->rageAntiAim[moving_flag].paranoiaMax))(PCG::generator) + 180;
 				break;
 			case Yaw::backward:
 				yaw += 180.f;
@@ -154,7 +154,7 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
 				yaw += 90.f;
 				break;
 			case Yaw::spin:
-				static_yaw += static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].spinBase);
+				static_yaw += static_cast<float>(config->rageAntiAim[moving_flag].spinBase);
 				yaw += static_yaw;
 				break;
 			case Yaw::off:
@@ -217,32 +217,32 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
 				yaw = 0.f;
 			}
 
-			switch (config->rageAntiAim[static_cast<int>(moving_flag)].yawModifier) {
+			switch (config->rageAntiAim[moving_flag].yawModifier) {
 			case 1: //Jitter
 				yaw -= static_cast<float>(flipJitter
-					? config->rageAntiAim[static_cast<int>(moving_flag)].jitterRange
-					: -config->rageAntiAim[static_cast<int>(moving_flag)].jitterRange);
+					? config->rageAntiAim[moving_flag].jitterRange
+					: -config->rageAntiAim[moving_flag].jitterRange);
 				break;
 			default:
 				break;
 			}
 
 			if (!isManualSet)
-				yaw += static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].yawAdd);
+				yaw += static_cast<float>(config->rageAntiAim[moving_flag].yawAdd);
 			cmd->viewangles.y += yaw;
 		}
-		if (config->fakeAngle[static_cast<int>(moving_flag)].enabled && !Tickbase::isShifting()) //Fakeangle
+		if (config->fakeAngle[moving_flag].enabled && !Tickbase::isShifting()) //Fakeangle
 		{
 			bool is_invert_toggled = config->invert.isActive();
 			static bool invert = true;
-			if (config->fakeAngle[static_cast<int>(moving_flag)].peekMode != 3)
+			if (config->fakeAngle[moving_flag].peekMode != 3)
 				invert = is_invert_toggled;
-			auto roll_offset_angle = static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].rollOffset);
-			auto pitch_angle = static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].rollPitch);
-			if (config->rageAntiAim[static_cast<int>(moving_flag)].exploitPitchSwitch)
-				pitch_angle = static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].exploitPitch) + 41225040.f * 129600.f;
-			if (config->rageAntiAim[static_cast<int>(moving_flag)].roll && (std::abs(config->rageAntiAim[static_cast<int>(moving_flag)].rollAdd) + std::abs(config->rageAntiAim[static_cast<int>(moving_flag)].rollOffset) < 5 || !config->rageAntiAim[static_cast<int>(moving_flag)].rollAlt || !(cmd->buttons & UserCmd::IN_JUMP || localPlayer->velocity().length2D() > 50.f))) {
-				cmd->viewangles.z = invert ? static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].rollAdd) : static_cast<float>(config->rageAntiAim[static_cast<int>(moving_flag)].rollAdd) * -1.f;
+			auto roll_offset_angle = static_cast<float>(config->rageAntiAim[moving_flag].rollOffset);
+			auto pitch_angle = static_cast<float>(config->rageAntiAim[moving_flag].rollPitch);
+			if (config->rageAntiAim[moving_flag].exploitPitchSwitch)
+				pitch_angle = static_cast<float>(config->rageAntiAim[moving_flag].exploitPitch) + 41225040.f * 129600.f;
+			if (config->rageAntiAim[moving_flag].roll && (std::abs(config->rageAntiAim[moving_flag].rollAdd) + std::abs(config->rageAntiAim[moving_flag].rollOffset) < 5 || !config->rageAntiAim[moving_flag].rollAlt || !(cmd->buttons & UserCmd::IN_JUMP || localPlayer->velocity().length2D() > 50.f))) {
+				cmd->viewangles.z = invert ? static_cast<float>(config->rageAntiAim[moving_flag].rollAdd) : static_cast<float>(config->rageAntiAim[moving_flag].rollAdd) * -1.f;
 				if (sendPacket) {
 					cmd->viewangles.z += invert ? pitch_angle : pitch_angle * -1.f;
 					if (pitch_angle > 0.01f || pitch_angle < -0.01f)
@@ -258,10 +258,10 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
 					return;
 			if (config->tickbase.disabledTickbase && config->tickbase.onshotFl && config->tickbase.lastFireShiftTick > memory->globalVars->tickCount)
 				return;
-			float left_desync_angle = static_cast<float>(config->fakeAngle[static_cast<int>(moving_flag)].leftLimit) * 2.f;
-			float right_desync_angle = static_cast<float>(config->fakeAngle[static_cast<int>(moving_flag)].rightLimit) * -2.f;
+			float left_desync_angle = static_cast<float>(config->fakeAngle[moving_flag].leftLimit) * 2.f;
+			float right_desync_angle = static_cast<float>(config->fakeAngle[moving_flag].rightLimit) * -2.f;
 
-			switch (config->fakeAngle[static_cast<int>(moving_flag)].peekMode) {
+			switch (config->fakeAngle[moving_flag].peekMode) {
 			case 0:
 				break;
 			case 1: // Peek real
@@ -288,7 +288,7 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
 				break;
 			}
 
-			switch (config->fakeAngle[static_cast<int>(moving_flag)].lbyMode) {
+			switch (config->fakeAngle[moving_flag].lbyMode) {
 			case 0: // Normal(sidemove)
 				if (std::abs(cmd->sidemove) < 5.0f) {
 					if (cmd->buttons & UserCmd::IN_DUCK)
@@ -377,7 +377,7 @@ void AntiAim::run(UserCmd* cmd, const Vector& previousViewAngles, const Vector& 
 
 	if (config->legitAntiAim.enabled)
 		legit(cmd, previousViewAngles, currentViewAngles, sendPacket);
-	else if (config->rageAntiAim[static_cast<int>(moving_flag)].enabled || config->fakeAngle[static_cast<int>(moving_flag)].enabled)
+	else if (config->rageAntiAim[moving_flag].enabled || config->fakeAngle[moving_flag].enabled)
 		rage(cmd, previousViewAngles, currentViewAngles, sendPacket);
 }
 
@@ -443,11 +443,11 @@ AntiAim::moving_flag AntiAim::get_moving_flag(const UserCmd* cmd) noexcept
 	if (!localPlayer->getAnimstate()->onGround)
 		return latest_moving_flag = jumping;
 	if (localPlayer->velocity().length2D() > 0.f) {
-		if (config->misc.slowwalkKey.isActive())
+		if (config->misc.slowwalk && config->misc.slowwalkKey.isActive())
 			return latest_moving_flag = slow_walking;
 		return latest_moving_flag = moving;
 	}
-	if (config->misc.fakeduckKey.isActive())
+	if (config->misc.fakeduck && config->misc.fakeduckKey.isActive())
 		return latest_moving_flag = fake_ducking;
 	return latest_moving_flag = freestanding;
 }

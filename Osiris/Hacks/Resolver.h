@@ -3,6 +3,7 @@
 #include "Animations.h"
 
 #include "../SDK/Entity.h"
+#include "../SDK/GameEvent.h"
 
 namespace resolver
 {

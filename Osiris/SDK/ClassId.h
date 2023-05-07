@@ -57,7 +57,7 @@ private:
 		ServerClass* serverclass = interfaces->server->getAllServerClasses();
 		int id = 0;
 		while (serverclass) {
-			if (!strcmp(serverclass->networkName, classname))
+			if (!std::strcmp(serverclass->networkName, classname))
 				return id;
 			serverclass = serverclass->next, id++;
 		}

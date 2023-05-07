@@ -107,7 +107,7 @@ namespace DataMap
 				if (pMap->dataDesc[i].fieldName == NULL)
 					continue;
 
-				if (strcmp(name, pMap->dataDesc[i].fieldName) == 0)
+				if (std::strcmp(name, pMap->dataDesc[i].fieldName) == 0)
 					return pMap->dataDesc[i].fieldOffset[TD_OFFSET_NORMAL];
 
 				if (pMap->dataDesc[i].fieldType == FIELD_EMBEDDED) {

@@ -15,7 +15,6 @@
 #include "Hacks/Backtrack.h"
 #include "Hacks/Glow.h"
 #include "Hacks/Misc.h"
-#include "Hacks/SkinChanger.h"
 #include "Hacks/Sound.h"
 #include "Hacks/Visuals.h"
 
@@ -182,7 +181,7 @@ void GUI::renderLegitbotWindow() noexcept
 		break;
 	case 1: {
 		static int currentPistol{ 0 };
-		static constexpr const char* pistols[]{ "All", "Glock-18", "P2000", "USP-S", "Dual Berettas", "P250", "Tec-9", "Five-Seven", "CZ-75", "Desert Eagle", "Revolver" };
+		constexpr std::array pistols{ "All", "Glock-18", "P2000", "USP-S", "Dual Berettas", "P250", "Tec-9", "Five-Seven", "CZ-75", "Desert Eagle", "Revolver" };
 
 		ImGui::Combo("", &currentPistol, [](void* data, int idx, const char** out_text) {
 			if (config->legitbot[idx ? idx : 35].enabled) {
@@ -193,14 +192,14 @@ void GUI::renderLegitbotWindow() noexcept
 				*out_text = pistols[idx];
 			}
 			return true;
-			}, nullptr, IM_ARRAYSIZE(pistols));
+			}, nullptr, pistols.size());
 
 		currentWeapon = currentPistol ? currentPistol : 35;
 		break;
 	}
 	case 2: {
 		static int currentHeavy{ 0 };
-		static constexpr const char* heavies[]{ "All", "Nova", "XM1014", "Sawed-off", "MAG-7", "M249", "Negev" };
+		constexpr std::array heavies{ "All", "Nova", "XM1014", "Sawed-off", "MAG-7", "M249", "Negev" };
 
 		ImGui::Combo("", &currentHeavy, [](void* data, int idx, const char** out_text) {
 			if (config->legitbot[idx ? idx + 10 : 36].enabled) {
@@ -211,14 +210,14 @@ void GUI::renderLegitbotWindow() noexcept
 				*out_text = heavies[idx];
 			}
 			return true;
-			}, nullptr, IM_ARRAYSIZE(heavies));
+			}, nullptr, heavies.size());
 
 		currentWeapon = currentHeavy ? currentHeavy + 10 : 36;
 		break;
 	}
 	case 3: {
 		static int currentSmg{ 0 };
-		static constexpr const char* smgs[]{ "All", "Mac-10", "MP9", "MP7", "MP5-SD", "UMP-45", "P90", "PP-Bizon" };
+		constexpr std::array smgs{ "All", "Mac-10", "MP9", "MP7", "MP5-SD", "UMP-45", "P90", "PP-Bizon" };
 
 		ImGui::Combo("", &currentSmg, [](void* data, int idx, const char** out_text) {
 			if (config->legitbot[idx ? idx + 16 : 37].enabled) {
@@ -229,14 +228,14 @@ void GUI::renderLegitbotWindow() noexcept
 				*out_text = smgs[idx];
 			}
 			return true;
-			}, nullptr, IM_ARRAYSIZE(smgs));
+			}, nullptr, smgs.size());
 
 		currentWeapon = currentSmg ? currentSmg + 16 : 37;
 		break;
 	}
 	case 4: {
 		static int currentRifle{ 0 };
-		static constexpr const char* rifles[]{ "All", "Galil AR", "Famas", "AK-47", "M4A4", "M4A1-S", "SSG-08", "SG-553", "AUG", "AWP", "G3SG1", "SCAR-20" };
+		constexpr std::array rifles{ "All", "Galil AR", "Famas", "AK-47", "M4A4", "M4A1-S", "SSG-08", "SG-553", "AUG", "AWP", "G3SG1", "SCAR-20" };
 
 		ImGui::Combo("", &currentRifle, [](void* data, int idx, const char** out_text) {
 			if (config->legitbot[idx ? idx + 23 : 38].enabled) {
@@ -247,7 +246,7 @@ void GUI::renderLegitbotWindow() noexcept
 				*out_text = rifles[idx];
 			}
 			return true;
-			}, nullptr, IM_ARRAYSIZE(rifles));
+			}, nullptr, rifles.size());
 
 		currentWeapon = currentRifle ? currentRifle + 23 : 38;
 		break;
@@ -317,7 +316,7 @@ void GUI::renderRagebotWindow() noexcept
 		break;
 	case 1: {
 		static int currentPistol{ 0 };
-		static constexpr const char* pistols[]{ "All", "Glock-18", "P2000", "USP-S", "Dual Berettas", "P250", "Tec-9", "Five-Seven", "CZ-75", "Desert Eagle", "Revolver" };
+		constexpr std::array pistols{ "All", "Glock-18", "P2000", "USP-S", "Dual Berettas", "P250", "Tec-9", "Five-Seven", "CZ-75", "Desert Eagle", "Revolver" };
 
 		ImGui::Combo("", &currentPistol, [](void* data, int idx, const char** out_text) {
 			if (config->ragebot[idx ? idx : 35].enabled) {
@@ -328,14 +327,14 @@ void GUI::renderRagebotWindow() noexcept
 				*out_text = pistols[idx];
 			}
 			return true;
-			}, nullptr, IM_ARRAYSIZE(pistols));
+			}, nullptr, pistols.size());
 
 		currentWeapon = currentPistol ? currentPistol : 35;
 		break;
 	}
 	case 2: {
 		static int currentHeavy{ 0 };
-		static constexpr const char* heavies[]{ "All", "Nova", "XM1014", "Sawed-off", "MAG-7", "M249", "Negev" };
+		constexpr std::array heavies{ "All", "Nova", "XM1014", "Sawed-off", "MAG-7", "M249", "Negev" };
 
 		ImGui::Combo("", &currentHeavy, [](void* data, int idx, const char** out_text) {
 			if (config->ragebot[idx ? idx + 10 : 36].enabled) {
@@ -346,14 +345,14 @@ void GUI::renderRagebotWindow() noexcept
 				*out_text = heavies[idx];
 			}
 			return true;
-			}, nullptr, IM_ARRAYSIZE(heavies));
+			}, nullptr, heavies.size());
 
 		currentWeapon = currentHeavy ? currentHeavy + 10 : 36;
 		break;
 	}
 	case 3: {
 		static int currentSmg{ 0 };
-		static constexpr const char* smgs[]{ "All", "Mac-10", "MP9", "MP7", "MP5-SD", "UMP-45", "P90", "PP-Bizon" };
+		constexpr std::array smgs{ "All", "Mac-10", "MP9", "MP7", "MP5-SD", "UMP-45", "P90", "PP-Bizon" };
 
 		ImGui::Combo("", &currentSmg, [](void* data, int idx, const char** out_text) {
 			if (config->ragebot[idx ? idx + 16 : 37].enabled) {
@@ -364,14 +363,14 @@ void GUI::renderRagebotWindow() noexcept
 				*out_text = smgs[idx];
 			}
 			return true;
-			}, nullptr, IM_ARRAYSIZE(smgs));
+			}, nullptr, smgs.size());
 
 		currentWeapon = currentSmg ? currentSmg + 16 : 37;
 		break;
 	}
 	case 4: {
 		static int currentRifle{ 0 };
-		static constexpr const char* rifles[]{ "All", "Galil AR", "Famas", "AK-47", "M4A4", "M4A1-S", "SSG-08", "SG-553", "AUG", "AWP", "G3SG1", "SCAR-20" };
+		constexpr std::array rifles{ "All", "Galil AR", "Famas", "AK-47", "M4A4", "M4A1-S", "SSG-08", "SG-553", "AUG", "AWP", "G3SG1", "SCAR-20" };
 
 		ImGui::Combo("", &currentRifle, [](void* data, int idx, const char** out_text) {
 			if (config->ragebot[idx ? idx + 23 : 38].enabled) {
@@ -382,7 +381,7 @@ void GUI::renderRagebotWindow() noexcept
 				*out_text = rifles[idx];
 			}
 			return true;
-			}, nullptr, IM_ARRAYSIZE(rifles));
+			}, nullptr, rifles.size());
 
 		currentWeapon = currentRifle ? currentRifle + 23 : 38;
 		break;
@@ -483,7 +482,7 @@ void GUI::renderTriggerbotWindow() noexcept
 
 	case 1: {
 		static int currentPistol{ 0 };
-		static constexpr const char* pistols[]{ "All", "Glock-18", "P2000", "USP-S", "Dual Berettas", "P250", "Tec-9", "Five-Seven", "CZ-75", "Desert Eagle", "Revolver" };
+		constexpr std::array pistols{ "All", "Glock-18", "P2000", "USP-S", "Dual Berettas", "P250", "Tec-9", "Five-Seven", "CZ-75", "Desert Eagle", "Revolver" };
 
 		ImGui::Combo("", &currentPistol, [](void* data, int idx, const char** out_text) {
 			if (config->triggerbot[idx ? idx : 35].enabled) {
@@ -494,14 +493,14 @@ void GUI::renderTriggerbotWindow() noexcept
 				*out_text = pistols[idx];
 			}
 			return true;
-			}, nullptr, IM_ARRAYSIZE(pistols));
+			}, nullptr, pistols.size());
 
 		currentWeapon = currentPistol ? currentPistol : 35;
 		break;
 	}
 	case 2: {
 		static int currentHeavy{ 0 };
-		static constexpr const char* heavies[]{ "All", "Nova", "XM1014", "Sawed-off", "MAG-7", "M249", "Negev" };
+		constexpr std::array heavies{ "All", "Nova", "XM1014", "Sawed-off", "MAG-7", "M249", "Negev" };
 
 		ImGui::Combo("", &currentHeavy, [](void* data, int idx, const char** out_text) {
 			if (config->triggerbot[idx ? idx + 10 : 36].enabled) {
@@ -512,14 +511,14 @@ void GUI::renderTriggerbotWindow() noexcept
 				*out_text = heavies[idx];
 			}
 			return true;
-			}, nullptr, IM_ARRAYSIZE(heavies));
+			}, nullptr, heavies.size());
 
 		currentWeapon = currentHeavy ? currentHeavy + 10 : 36;
 		break;
 	}
 	case 3: {
 		static int currentSmg{ 0 };
-		static constexpr const char* smgs[]{ "All", "Mac-10", "MP9", "MP7", "MP5-SD", "UMP-45", "P90", "PP-Bizon" };
+		constexpr std::array smgs{ "All", "Mac-10", "MP9", "MP7", "MP5-SD", "UMP-45", "P90", "PP-Bizon" };
 
 		ImGui::Combo("", &currentSmg, [](void* data, int idx, const char** out_text) {
 			if (config->triggerbot[idx ? idx + 16 : 37].enabled) {
@@ -530,14 +529,14 @@ void GUI::renderTriggerbotWindow() noexcept
 				*out_text = smgs[idx];
 			}
 			return true;
-			}, nullptr, IM_ARRAYSIZE(smgs));
+			}, nullptr, smgs.size());
 
 		currentWeapon = currentSmg ? currentSmg + 16 : 37;
 		break;
 	}
 	case 4: {
 		static int currentRifle{ 0 };
-		static constexpr const char* rifles[]{ "All", "Galil AR", "Famas", "AK-47", "M4A4", "M4A1-S", "SSG-08", "SG-553", "AUG", "AWP", "G3SG1", "SCAR-20" };
+		constexpr std::array rifles{ "All", "Galil AR", "Famas", "AK-47", "M4A4", "M4A1-S", "SSG-08", "SG-553", "AUG", "AWP", "G3SG1", "SCAR-20" };
 
 		ImGui::Combo("", &currentRifle, [](void* data, int idx, const char** out_text) {
 			if (config->triggerbot[idx ? idx + 23 : 38].enabled) {
@@ -548,7 +547,7 @@ void GUI::renderTriggerbotWindow() noexcept
 				*out_text = rifles[idx];
 			}
 			return true;
-			}, nullptr, IM_ARRAYSIZE(rifles));
+			}, nullptr, rifles.size());
 
 		currentWeapon = currentRifle ? currentRifle + 23 : 38;
 		break;
@@ -1197,7 +1196,7 @@ void GUI::renderVisualsWindow() noexcept
 {
 	ImGui::Columns(2, nullptr, false);
 	ImGui::SetColumnOffset(1, 280.0f);
-	constexpr auto playerModels = "Default\0Special Agent Ava | FBI\0Operator | FBI SWAT\0Markus Delrow | FBI HRT\0Michael Syfers | FBI Sniper\0B Squadron Officer | SAS\0Seal Team 6 Soldier | NSWC SEAL\0Buckshot | NSWC SEAL\0Lt. Commander Ricksaw | NSWC SEAL\0Third Commando Company | KSK\0'Two Times' McCoy | USAF TACP\0Dragomir | Sabre\0Rezan The Ready | Sabre\0'The Doctor' Romanov | Sabre\0Maximus | Sabre\0Blackwolf | Sabre\0The Elite Mr. Muhlik | Elite Crew\0Ground Rebel | Elite Crew\0Osiris | Elite Crew\0Prof. Shahmat | Elite Crew\0Enforcer | Phoenix\0Slingshot | Phoenix\0Soldier | Phoenix\0Pirate\0Pirate Variant A\0Pirate Variant B\0Pirate Variant C\0Pirate Variant D\0Anarchist\0Anarchist Variant A\0Anarchist Variant B\0Anarchist Variant C\0Anarchist Variant D\0Balkan Variant A\0Balkan Variant B\0Balkan Variant C\0Balkan Variant D\0Balkan Variant E\0Jumpsuit Variant A\0Jumpsuit Variant B\0Jumpsuit Variant C\0GIGN\0GIGN Variant A\0GIGN Variant B\0GIGN Variant C\0GIGN Variant D\0Street Soldier | Phoenix\0'Blueberries' Buckshot | NSWC SEAL\0'Two Times' McCoy | TACP Cavalry\0Rezan the Redshirt | Sabre\0Dragomir | Sabre Footsoldier\0Cmdr. Mae 'Dead Cold' Jamison | SWAT\0001st Lieutenant Farlow | SWAT\0John 'Van Healen' Kask | SWAT\0Bio-Haz Specialist | SWAT\0Sergeant Bombson | SWAT\0Chem-Haz Specialist | SWAT\0Sir Bloody Miami Darryl | The Professionals\0Sir Bloody Silent Darryl | The Professionals\0Sir Bloody Skullhead Darryl | The Professionals\0Sir Bloody Darryl Royale | The Professionals\0Sir Bloody Loudmouth Darryl | The Professionals\0Safecracker Voltzmann | The Professionals\0Little Kev | The Professionals\0Number K | The Professionals\0Getaway Sally | The Professionals\0";
+	constexpr const char* playerModels = "Default\0Special Agent Ava | FBI\0Operator | FBI SWAT\0Markus Delrow | FBI HRT\0Michael Syfers | FBI Sniper\0B Squadron Officer | SAS\0Seal Team 6 Soldier | NSWC SEAL\0Buckshot | NSWC SEAL\0Lt. Commander Ricksaw | NSWC SEAL\0Third Commando Company | KSK\0'Two Times' McCoy | USAF TACP\0Dragomir | Sabre\0Rezan The Ready | Sabre\0'The Doctor' Romanov | Sabre\0Maximus | Sabre\0Blackwolf | Sabre\0The Elite Mr. Muhlik | Elite Crew\0Ground Rebel | Elite Crew\0Osiris | Elite Crew\0Prof. Shahmat | Elite Crew\0Enforcer | Phoenix\0Slingshot | Phoenix\0Soldier | Phoenix\0Pirate\0Pirate Variant A\0Pirate Variant B\0Pirate Variant C\0Pirate Variant D\0Anarchist\0Anarchist Variant A\0Anarchist Variant B\0Anarchist Variant C\0Anarchist Variant D\0Balkan Variant A\0Balkan Variant B\0Balkan Variant C\0Balkan Variant D\0Balkan Variant E\0Jumpsuit Variant A\0Jumpsuit Variant B\0Jumpsuit Variant C\0GIGN\0GIGN Variant A\0GIGN Variant B\0GIGN Variant C\0GIGN Variant D\0Street Soldier | Phoenix\0'Blueberries' Buckshot | NSWC SEAL\0'Two Times' McCoy | TACP Cavalry\0Rezan the Redshirt | Sabre\0Dragomir | Sabre Footsoldier\0Cmdr. Mae 'Dead Cold' Jamison | SWAT\0001st Lieutenant Farlow | SWAT\0John 'Van Healen' Kask | SWAT\0Bio-Haz Specialist | SWAT\0Sergeant Bombson | SWAT\0Chem-Haz Specialist | SWAT\0Sir Bloody Miami Darryl | The Professionals\0Sir Bloody Silent Darryl | The Professionals\0Sir Bloody Skullhead Darryl | The Professionals\0Sir Bloody Darryl Royale | The Professionals\0Sir Bloody Loudmouth Darryl | The Professionals\0Safecracker Voltzmann | The Professionals\0Little Kev | The Professionals\0Number K | The Professionals\0Getaway Sally | The Professionals\0";
 	ImGui::Combo("T model", &config->visuals.playerModelT, playerModels);
 	ImGui::Combo("CT model", &config->visuals.playerModelCT, playerModels);
 	ImGui::InputText("Custom model", config->visuals.playerModel, sizeof(config->visuals.playerModel));
@@ -1428,209 +1427,6 @@ void GUI::renderVisualsWindow() noexcept
 	}
 
 	ImGui::Columns(1);
-}
-
-void GUI::renderSkinChangerWindow() noexcept
-{
-	/*static auto itemIndex = 0;
-
-	ImGui::PushItemWidth(110.0f);
-	ImGui::Combo("##1", &itemIndex, [](void* data, int idx, const char** out_text) {
-		*out_text = SkinChanger::weapon_names[idx].name;
-		return true;
-		}, nullptr, SkinChanger::weapon_names.size(), 5);
-	ImGui::PopItemWidth();
-
-	auto& selected_entry = config->skinChanger[itemIndex];
-	selected_entry.itemIdIndex = itemIndex;
-
-	constexpr auto rarityColor = [](int rarity) {
-		constexpr auto rarityColors = std::to_array<ImU32>({
-			IM_COL32(0,     0,   0,   0),
-			IM_COL32(176, 195, 217, 255),
-			IM_COL32(94, 152, 217, 255),
-			IM_COL32(75, 105, 255, 255),
-			IM_COL32(136,  71, 255, 255),
-			IM_COL32(211,  44, 230, 255),
-			IM_COL32(235,  75,  75, 255),
-			IM_COL32(228, 174,  57, 255)
-			});
-		return rarityColors[static_cast<std::size_t>(rarity) < rarityColors.size() ? rarity : 0];
-	};
-
-	constexpr auto passesFilter = [](const std::wstring& str, std::wstring filter) {
-		constexpr auto delimiter = L" ";
-		wchar_t* _;
-		wchar_t* token = std::wcstok(filter.data(), delimiter, &_);
-		while (token) {
-			if (!std::wcsstr(str.c_str(), token))
-				return false;
-			token = std::wcstok(nullptr, delimiter, &_);
-		}
-		return true;
-	};
-
-	{
-		ImGui::SameLine();
-		ImGui::Checkbox("Enabled", &selected_entry.enabled);
-		ImGui::Separator();
-		ImGui::Columns(2, nullptr, false);
-		ImGui::InputInt("Seed", &selected_entry.seed);
-		ImGui::InputInt("StatTrak\u2122", &selected_entry.stat_trak);
-		selected_entry.stat_trak = (std::max)(selected_entry.stat_trak, -1);
-		ImGui::SliderFloat("Wear", &selected_entry.wear, FLT_MIN, 1.f, "%.10f", ImGuiSliderFlags_Logarithmic);
-
-		const auto& kits = itemIndex == 1 ? SkinChanger::getGloveKits() : SkinChanger::getSkinKits();
-
-		if (ImGui::BeginCombo("Paint Kit", kits[selected_entry.paint_kit_vector_index].name.c_str())) {
-			ImGui::PushID("Paint Kit");
-			ImGui::PushID("Search");
-			ImGui::SetNextItemWidth(-1.0f);
-			static std::array<std::string, SkinChanger::weapon_names.size()> filters;
-			auto& filter = filters[itemIndex];
-			ImGui::InputTextWithHint("", "Search", &filter);
-			if (ImGui::IsItemHovered() || (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0)))
-				ImGui::SetKeyboardFocusHere(-1);
-			ImGui::PopID();
-
-			const std::wstring filterWide = Helpers::toUpper(Helpers::toWideString(filter));
-			if (ImGui::BeginChild("##scrollarea", { 0, 6 * ImGui::GetTextLineHeightWithSpacing() })) {
-				for (std::size_t i = 0; i < kits.size(); ++i) {
-					if (filter.empty() || passesFilter(kits[i].nameUpperCase, filterWide)) {
-						ImGui::PushID(i);
-						const auto selected = i == selected_entry.paint_kit_vector_index;
-						if (ImGui::SelectableWithBullet(kits[i].name.c_str(), rarityColor(kits[i].rarity), selected)) {
-							selected_entry.paint_kit_vector_index = i;
-							ImGui::CloseCurrentPopup();
-						}
-
-						if (ImGui::IsItemHovered()) {
-							if (const auto icon = SkinChanger::getItemIconTexture(kits[i].iconPath)) {
-								ImGui::BeginTooltip();
-								ImGui::Image(icon, { 200.0f, 150.0f });
-								ImGui::EndTooltip();
-							}
-						}
-						if (selected && ImGui::IsWindowAppearing())
-							ImGui::SetScrollHereY();
-						ImGui::PopID();
-					}
-				}
-			}
-			ImGui::EndChild();
-			ImGui::PopID();
-			ImGui::EndCombo();
-		}
-
-		ImGui::Combo("Quality", &selected_entry.entity_quality_vector_index, [](void* data, int idx, const char** out_text) {
-			*out_text = SkinChanger::getQualities()[idx].name.c_str(); // safe within this lamba
-			return true;
-			}, nullptr, SkinChanger::getQualities().size(), 5);
-
-		if (itemIndex == 0) {
-			ImGui::Combo("Knife", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text) {
-				*out_text = SkinChanger::getKnifeTypes()[idx].name.c_str();
-				return true;
-				}, nullptr, SkinChanger::getKnifeTypes().size(), 5);
-		} else if (itemIndex == 1) {
-			ImGui::Combo("Glove", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text) {
-				*out_text = SkinChanger::getGloveTypes()[idx].name.c_str();
-				return true;
-				}, nullptr, SkinChanger::getGloveTypes().size(), 5);
-		} else {
-			static auto unused_value = 0;
-			selected_entry.definition_override_vector_index = 0;
-			ImGui::Combo("Unavailable", &unused_value, "For knives or gloves\0");
-		}
-
-		ImGui::InputText("Name Tag", selected_entry.custom_name, 32);
-	}
-
-	ImGui::NextColumn();
-
-	{
-		ImGui::PushID("sticker");
-
-		static std::size_t selectedStickerSlot = 0;
-
-		ImGui::PushItemWidth(-1);
-		ImVec2 size;
-		size.x = 0.0f;
-		size.y = ImGui::GetTextLineHeightWithSpacing() * 5.25f + ImGui::GetStyle().FramePadding.y * 2.0f;
-
-		if (ImGui::BeginListBox("", size)) {
-			for (int i = 0; i < 5; ++i) {
-				ImGui::PushID(i);
-
-				const auto kit_vector_index = config->skinChanger[itemIndex].stickers[i].kit_vector_index;
-				const std::string text = '#' + std::to_string(i + 1) + "  " + SkinChanger::getStickerKits()[kit_vector_index].name;
-
-				if (ImGui::Selectable(text.c_str(), i == selectedStickerSlot))
-					selectedStickerSlot = i;
-
-				ImGui::PopID();
-			}
-			ImGui::EndListBox();
-		}
-
-		ImGui::PopItemWidth();
-
-		auto& selected_sticker = selected_entry.stickers[selectedStickerSlot];
-
-		const auto& kits = SkinChanger::getStickerKits();
-		if (ImGui::BeginCombo("Sticker", kits[selected_sticker.kit_vector_index].name.c_str())) {
-			ImGui::PushID("Sticker");
-			ImGui::PushID("Search");
-			ImGui::SetNextItemWidth(-1.0f);
-			static std::array<std::string, SkinChanger::weapon_names.size()> filters;
-			auto& filter = filters[itemIndex];
-			ImGui::InputTextWithHint("", "Search", &filter);
-			if (ImGui::IsItemHovered() || (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0)))
-				ImGui::SetKeyboardFocusHere(-1);
-			ImGui::PopID();
-
-			const std::wstring filterWide = Helpers::toUpper(Helpers::toWideString(filter));
-			if (ImGui::BeginChild("##scrollarea", { 0, 6 * ImGui::GetTextLineHeightWithSpacing() })) {
-				for (std::size_t i = 0; i < kits.size(); ++i) {
-					if (filter.empty() || passesFilter(kits[i].nameUpperCase, filterWide)) {
-						ImGui::PushID(i);
-						const auto selected = i == selected_sticker.kit_vector_index;
-						if (ImGui::SelectableWithBullet(kits[i].name.c_str(), rarityColor(kits[i].rarity), selected)) {
-							selected_sticker.kit_vector_index = i;
-							ImGui::CloseCurrentPopup();
-						}
-						if (ImGui::IsItemHovered()) {
-							if (const auto icon = SkinChanger::getItemIconTexture(kits[i].iconPath)) {
-								ImGui::BeginTooltip();
-								ImGui::Image(icon, { 200.0f, 150.0f });
-								ImGui::EndTooltip();
-							}
-						}
-						if (selected && ImGui::IsWindowAppearing())
-							ImGui::SetScrollHereY();
-						ImGui::PopID();
-					}
-				}
-			}
-			ImGui::EndChild();
-			ImGui::PopID();
-			ImGui::EndCombo();
-		}
-
-		ImGui::SliderFloat("Wear", &selected_sticker.wear, FLT_MIN, 1.0f, "%.10f", ImGuiSliderFlags_Logarithmic);
-		ImGui::SliderFloat("Scale", &selected_sticker.scale, 0.1f, 5.0f);
-		ImGui::SliderFloat("Rotation", &selected_sticker.rotation, 0.0f, 360.0f);
-
-		ImGui::PopID();
-	}
-	selected_entry.update();
-
-	ImGui::Columns(1);
-
-	ImGui::Separator();
-
-	if (ImGui::Button("Update", { 130.0f, 30.0f }))
-		SkinChanger::scheduleHudUpdate();*/
 }
 
 void GUI::renderMiscWindow() noexcept
@@ -2173,13 +1969,13 @@ void GUI::renderConfigWindow() noexcept
 			ImGui::OpenPopup("Config to reset");
 
 		if (ImGui::BeginPopup("Config to reset")) {
-			static constexpr const char* names[]{ "Whole", "Legitbot", "Legit Anti Aim", "Ragebot", "Rage Anti aim", "Fake angle", "Fakelag", "Backtrack", "Triggerbot", "Glow", "Chams", "ESP", "Visuals", "Skin changer", "Sound", "Misc" };
-			for (int i = 0; i < IM_ARRAYSIZE(names); i++) {
+			constexpr std::array names{ "Whole", "Legitbot", "Legit Anti Aim", "Ragebot", "Rage Anti aim", "Fake angle", "Fakelag", "Backtrack", "Triggerbot", "Glow", "Chams", "ESP", "Visuals", "Sound", "Misc" };
+			for (int i = 0; i < names.size(); i++) {
 				if (i == 1) ImGui::Separator();
 
 				if (ImGui::Selectable(names[i])) {
 					switch (i) {
-					case 0: config->reset(); Misc::updateClanTag(true); SkinChanger::scheduleHudUpdate(); break;
+					case 0: config->reset(); Misc::updateClanTag(true); break;
 					case 1: config->legitbot = { }; config->legitbotKey.reset(); break;
 					case 2: config->legitAntiAim = { }; break;
 					case 3: config->ragebot = { }; config->ragebotKey.reset();  break;
@@ -2192,9 +1988,8 @@ void GUI::renderConfigWindow() noexcept
 					case 10: config->chams = { }; config->chamsKey.reset(); break;
 					case 11: config->streamProofESP = { }; break;
 					case 12: config->visuals = { }; break;
-					case 13: config->skinChanger = { }; SkinChanger::scheduleHudUpdate(); break;
-					case 14: Sound::resetConfig(); break;
-					case 15: config->misc = { };  Misc::updateClanTag(true); break;
+					case 13: Sound::resetConfig(); break;
+					case 14: config->misc = { };  Misc::updateClanTag(true); break;
 					}
 				}
 			}
@@ -2210,7 +2005,6 @@ void GUI::renderConfigWindow() noexcept
 				ImGui::SameLine();
 				if (ImGui::Button("Yes", { 45.0f, 0.0f })) {
 					config->load(currentConfig, incrementalLoad);
-					SkinChanger::scheduleHudUpdate();
 					Misc::updateClanTag(true);
 					ImGui::CloseCurrentPopup();
 				}
@@ -2368,7 +2162,6 @@ void GUI::renderGuiStyle() noexcept
 							if (ImGui::Button("ESP                     ", ImVec2{ 80, 20 })) activeSubTabVisuals = 2;
 							if (ImGui::Button("Chams                   ", ImVec2{ 80, 20 })) activeSubTabVisuals = 3;
 							if (ImGui::Button("Glow                    ", ImVec2{ 80, 20 })) activeSubTabVisuals = 4;
-							if (ImGui::Button("Skins                   ", ImVec2{ 80, 20 })) activeSubTabVisuals = 5;
 							break;
 						case 4: //Misc
 							ImGui::SetCursorPosY(10);
@@ -2453,10 +2246,6 @@ void GUI::renderGuiStyle() noexcept
 								case 4:
 									//Glow
 									renderGlowWindow();
-									break;
-								case 5:
-									//Skins
-									renderSkinChangerWindow();
 									break;
 								default:
 									break;

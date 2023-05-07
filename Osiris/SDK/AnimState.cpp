@@ -23,11 +23,11 @@ void AnimState::setupVelocity() noexcept
 	*/
 
 	//this is a hack to fix shuffling animations due to rounding errors, not part of actual game code
-	if (std::abs(vecAbsVelocity.x) < 0.001)
+	if (std::abs(vecAbsVelocity.x) < 0.001f)
 		vecAbsVelocity.x = 0.0f;
-	if (std::abs(vecAbsVelocity.y) < 0.001)
+	if (std::abs(vecAbsVelocity.y) < 0.001f)
 		vecAbsVelocity.y = 0.0f;
-	if (std::abs(vecAbsVelocity.z) < 0.001)
+	if (std::abs(vecAbsVelocity.z) < 0.001f)
 		vecAbsVelocity.z = 0.0f;
 
 	// save vertical velocity component
@@ -264,7 +264,7 @@ void AnimState::setupMovement() noexcept
 	}
 
 	char weaponMoveSequenceString[MAX_ANIMSTATE_ANIMNAME_CHARS];
-	sprintf(weaponMoveSequenceString, "move_%s", memory->getWeaponPrefix(this));
+	std::sprintf(weaponMoveSequenceString, "move_%s", memory->getWeaponPrefix(this));
 
 	int weaponMoveSeq = entity->lookupSequence(weaponMoveSequenceString);
 	if (weaponMoveSeq == -1)
@@ -1067,7 +1067,7 @@ float AnimState::calculatePlaybackRate(Vector velocity) noexcept
 	}
 
 	char weaponMoveSequenceString[MAX_ANIMSTATE_ANIMNAME_CHARS];
-	sprintf(weaponMoveSequenceString, "move_%s", memory->getWeaponPrefix(this));
+	std::sprintf(weaponMoveSequenceString, "move_%s", memory->getWeaponPrefix(this));
 
 	int weaponMoveSeq = entity->lookupSequence(weaponMoveSequenceString);
 	if (weaponMoveSeq == -1)

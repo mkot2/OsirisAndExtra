@@ -6,13 +6,14 @@
 #include <utility>
 #include <Windows.h>
 #include <Psapi.h>
+#include <omp.h>
 
+#include "mem/module.h"
+#include "mem/pattern.h"
 #include "SDK/LocalPlayer.h"
 
 #include "Interfaces.h"
 #include "Memory.h"
-#include "memory_signature.h"
-
 
 template <typename T>
 static constexpr auto relativeToAbsolute(uintptr_t address) noexcept
@@ -20,26 +21,18 @@ static constexpr auto relativeToAbsolute(uintptr_t address) noexcept
 	return (T)(address + 4 + *reinterpret_cast<std::int32_t*>(address));
 }
 
-static std::pair<void*, std::size_t> getModuleInformation(const char* name) noexcept
-{
-	if (HMODULE handle = GetModuleHandleA(name)) {
-		if (MODULEINFO moduleInfo; GetModuleInformation(GetCurrentProcess(), handle, &moduleInfo, sizeof(moduleInfo)))
-			return std::make_pair(moduleInfo.lpBaseOfDll, moduleInfo.SizeOfImage);
-	}
-	return {};
-}
-
-static std::uintptr_t findPattern(const char* moduleName, std::string_view pattern, bool reportNotFound = true) noexcept
+static std::uintptr_t findPattern(const char* moduleName, std::string_view patternString, bool reportNotFound = true) noexcept
 {
 	static auto id = 0;
 	++id;
 
-	if (const auto [moduleBase, moduleSize] = getModuleInformation(moduleName); moduleBase && moduleSize) {
-		const char* start = static_cast<const char*>(moduleBase);
-		const char* end = start + moduleSize;
+	if (auto module = mem::module::named(moduleName); module != mem::module()) {
+		mem::pattern pattern(patternString.data());
+		mem::simd_scanner scanner(pattern);
+		mem::region region(module);
 
-		if (const char* address = jm::memory_signature(std::string{pattern}).find(start, end); address != end)
-			return reinterpret_cast<std::uintptr_t>(address);
+		if (const auto address = scanner.scan(region).as<std::uintptr_t>(); address != region.start.as<std::uintptr_t>() + region.size)
+			return address;
 	}
 
 	if (reportNotFound)
@@ -49,8 +42,8 @@ static std::uintptr_t findPattern(const char* moduleName, std::string_view patte
 
 Memory::Memory() noexcept
 {
-	present = findPattern("gameoverlayrenderer", "FF 15 ? ? ? ? 8B F0 85 FF") + 2;
-	reset = findPattern("gameoverlayrenderer", "C7 45 ? ? ? ? ? FF 15 ? ? ? ? 8B D8") + 9;
+	present = findPattern(OVERLAY_DLL, "FF 15 ? ? ? ? 8B F0 85 FF") + 2;
+	reset = findPattern(OVERLAY_DLL, "C7 45 ? ? ? ? ? FF 15 ? ? ? ? 8B D8") + 9;
 
 	clientMode = **reinterpret_cast<ClientMode***>((*reinterpret_cast<uintptr_t**>(interfaces->client))[10] + 5);
 	input = *reinterpret_cast<Input**>((*reinterpret_cast<uintptr_t**>(interfaces->client))[16] + 1);
@@ -63,9 +56,8 @@ Memory::Memory() noexcept
 	cameraThink = findPattern(CLIENT_DLL, "85 C0 75 30 38 87");
 	getSequenceActivity = reinterpret_cast<decltype(getSequenceActivity)>(findPattern(CLIENT_DLL, "55 8B EC 53 8B 5D 08 56 8B F1 83"));
 	isOtherEnemy = relativeToAbsolute<decltype(isOtherEnemy)>(findPattern(CLIENT_DLL, "8B CE E8 ? ? ? ? 02 C0") + 3);
-	auto temp = reinterpret_cast<std::uintptr_t*>(findPattern(CLIENT_DLL, "B9 ? ? ? ? E8 ? ? ? ? 8B 5D 08") + 1);
-	hud = *temp;
-	findHudElement = relativeToAbsolute<decltype(findHudElement)>(reinterpret_cast<uintptr_t>(temp) + 5);
+	hud = *reinterpret_cast<std::uintptr_t*>(findPattern(CLIENT_DLL, "B9 ? ? ? ? E8 ? ? ? ? 8B 5D 08") + 1);
+	findHudElement = reinterpret_cast<decltype(findHudElement)>(findPattern(CLIENT_DLL, "55 8B EC 53 8B 5D 08 56 57 8B F9 33 F6 39"));
 	clearHudWeapon = relativeToAbsolute<decltype(clearHudWeapon)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 8B F0 C6 44 24 ? ? C6 44 24") + 1);
 	itemSystem = relativeToAbsolute<decltype(itemSystem)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 0F B7 0F") + 1);
 	setAbsOrigin = relativeToAbsolute<decltype(setAbsOrigin)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? EB 19 8B 07") + 1);

@@ -216,7 +216,7 @@ float AimbotFunction::getScanDamage(Entity* entity, const Vector& destination, c
 
 float segmentToSegment(const Vector& s1, const Vector& s2, const Vector& k1, const Vector& k2) noexcept
 {
-	static auto constexpr epsilon = 0.00000001f;
+	constexpr auto epsilon = 0.00000001f;
 
 	auto u = s2 - s1;
 	auto v = k2 - k1;
@@ -471,8 +471,8 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 	Vector top = Vector{ 0, 0, 1 };
 	Vector bottom = Vector{ 0, 0, -1 };
 
-	float headMultiPoint = (std::min(_headMultiPoint, 95)) * 0.01f;
-	float bodyMultiPoint = (std::min(_bodyMultiPoint, 95)) * 0.01f;
+	float headMultiPoint = std::min(_headMultiPoint, 95) * 0.01f;
+	float bodyMultiPoint = std::min(_bodyMultiPoint, 95) * 0.01f;
 	static auto frameRate = 1.0f;
 	frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
 	// linear scaling 0 - 15 based on how low our fps is compared to the server's tickrate
@@ -526,8 +526,8 @@ bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitbox
 		auto inaccuracy = weapInaccuracy * std::uniform_real_distribution<float>(0.f, 1.f)(PCG::generator);
 		auto spread = weapSpread * std::uniform_real_distribution<float>(0.f, 1.f)(PCG::generator);
 
-		Vector spreadView{ (std::cos(spreadX) * inaccuracy) + (std::cos(spreadY) * spread),
-						   (std::sin(spreadX) * inaccuracy) + (std::sin(spreadY) * spread) };
+		Vector spreadView{ std::cos(spreadX) * inaccuracy + std::cos(spreadY) * spread,
+						   std::sin(spreadX) * inaccuracy + std::sin(spreadY) * spread };
 		Vector direction{ (angles.forward + (angles.right * spreadView.x) + (angles.up * spreadView.y)) * range };
 
 		for (int hitbox = 0; hitbox < Max; hitbox++) {

@@ -599,7 +599,7 @@ void Visuals::hitEffect(GameEvent* event) noexcept
 
 		if (lastHitTime + config->visuals.hitEffectTime >= memory->globalVars->realtime) {
 			constexpr auto getEffectMaterial = [] {
-				static constexpr const char* effects[]{
+				constexpr std::array effects{
 				"effects/dronecam",
 				"effects/underwater_overlay",
 				"effects/healthboost",
@@ -1146,7 +1146,7 @@ void Visuals::drawHitboxMatrix(GameEvent* event) noexcept
 			if (Backtrack::valid(records->at(i).simulationTime)) {
 				for (auto& position : records->at(i).positions) {
 					auto angle = AimbotFunction::calculateRelativeAngle(localPlayer->getEyePosition(), position, interfaces->engine->getViewAngles());
-					auto fov = std::hypotf(angle.x, angle.y);
+					auto fov = std::hypot(angle.x, angle.y);
 					if (fov < bestFov) {
 						bestFov = fov;
 						matrix = records->at(i).matrix;

@@ -13,6 +13,7 @@
 #include "Resources/avatar_tt.h"
 #include "Resources/skillgroups.h"
 
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 #include "SDK/ClientClass.h"

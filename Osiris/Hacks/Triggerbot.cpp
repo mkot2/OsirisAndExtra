@@ -115,7 +115,7 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 		Vector backupOrigin = entity->getAbsOrigin();
 		Vector backupAbsAngle = entity->getAbsAngle();
 
-		memcpy(entity->getBoneCache().memory, player.matrix.data(), std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
+		std::memcpy(entity->getBoneCache().memory, player.matrix.data(), std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
 		memory->setAbsOrigin(entity, player.origin);
 		memory->setAbsAngle(entity, Vector{ 0.f, player.absAngle.y, 0.f });
 		entity->getCollideable()->setCollisionBounds(player.mins, player.maxs);
@@ -202,7 +202,7 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 		backupOrigin = entity->getAbsOrigin();
 		backupAbsAngle = entity->getAbsAngle();
 
-		memcpy(entity->getBoneCache().memory, record.matrix, std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
+		std::memcpy(entity->getBoneCache().memory, record.matrix, std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
 		memory->setAbsOrigin(entity, record.origin);
 		memory->setAbsAngle(entity, Vector{ 0.f, record.absAngle.y, 0.f });
 		entity->getCollideable()->setCollisionBounds(record.mins, record.maxs);

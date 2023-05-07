@@ -29,7 +29,10 @@
     <ClCompile Include="freetype\src\sfnt\sfnt.c" />
     <ClCompile Include="freetype\src\smooth\smooth.c" />
     <ClCompile Include="freetype\src\truetype\truetype.c" />
-    <ClCompile Include="GameData.cpp" />
+    <ClCompile Include="GameData.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IncludeInUnityFile>
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IncludeInUnityFile>
+    </ClCompile>
     <ClCompile Include="Hacks\AimbotFunctions.cpp" />
     <ClCompile Include="Hacks\Animations.cpp" />
     <ClCompile Include="Hacks\AntiAim.cpp" />
@@ -43,7 +46,6 @@
     <ClCompile Include="Hacks\Legitbot.cpp" />
     <ClCompile Include="Hacks\Ragebot.cpp" />
     <ClCompile Include="Hacks\resolver.cpp" />
-    <ClCompile Include="Hacks\SkinChanger.cpp" />
     <ClCompile Include="Hacks\Sound.cpp" />
     <ClCompile Include="Hacks\StreamProofESP.cpp" />
     <ClCompile Include="Hacks\Tickbase.cpp" />
@@ -62,7 +64,10 @@
     <ClCompile Include="imgui\imgui_tables.cpp">
       <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
-    <ClCompile Include="imgui\imgui_user.cpp" />
+    <ClCompile Include="imgui\imgui_user.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IncludeInUnityFile>
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IncludeInUnityFile>
+    </ClCompile>
     <ClCompile Include="InputUtil.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MinHook\buffer.c" />
@@ -127,7 +132,6 @@
     <ClInclude Include="Hacks\Misc.h" />
     <ClInclude Include="Hacks\Ragebot.h" />
     <ClInclude Include="Hacks\resolver.h" />
-    <ClInclude Include="Hacks\SkinChanger.h" />
     <ClInclude Include="Hacks\Sound.h" />
     <ClInclude Include="Hacks\StreamProofESP.h" />
     <ClInclude Include="Hacks\Tickbase.h" />
@@ -141,7 +145,30 @@
     <ClInclude Include="imgui\imstb_sprintf.h" />
     <ClInclude Include="InputUtil.h" />
     <ClInclude Include="Logger.h" />
-    <ClInclude Include="memory_signature.h" />
+    <ClInclude Include="mem\aligned_alloc.h" />
+    <ClInclude Include="mem\arch.h" />
+    <ClInclude Include="mem\bitwise_enum.h" />
+    <ClInclude Include="mem\boyer_moore_scanner.h" />
+    <ClInclude Include="mem\char_queue.h" />
+    <ClInclude Include="mem\cmd_param-inl.h" />
+    <ClInclude Include="mem\cmd_param.h" />
+    <ClInclude Include="mem\data_buffer.h" />
+    <ClInclude Include="mem\defines.h" />
+    <ClInclude Include="mem\execution_handler.h" />
+    <ClInclude Include="mem\hasher.h" />
+    <ClInclude Include="mem\init_function.h" />
+    <ClInclude Include="mem\macros.h" />
+    <ClInclude Include="mem\mem.h" />
+    <ClInclude Include="mem\module.h" />
+    <ClInclude Include="mem\pattern.h" />
+    <ClInclude Include="mem\pattern_cache.h" />
+    <ClInclude Include="mem\protect.h" />
+    <ClInclude Include="mem\prot_flags.h" />
+    <ClInclude Include="mem\rtti.h" />
+    <ClInclude Include="mem\simd_scanner.h" />
+    <ClInclude Include="mem\slice.h" />
+    <ClInclude Include="mem\stub.h" />
+    <ClInclude Include="mem\utils.h" />
     <ClInclude Include="MinHook\buffer.h" />
     <ClInclude Include="MinHook\hde\hde32.h" />
     <ClInclude Include="MinHook\hde\hde64.h" />
@@ -247,6 +274,9 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Threading.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="mem\cpp.hint" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{81D9D7BB-A927-4EB6-9743-F73E6A1DEE48}</ProjectGuid>
@@ -261,7 +291,8 @@
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <SpectreMitigation>false</SpectreMitigation>
-    <EnableASAN>true</EnableASAN>
+    <EnableASAN>
+    </EnableASAN>
     <EnableFuzzer>
     </EnableFuzzer>
     <EnableUnitySupport>true</EnableUnitySupport>
@@ -308,34 +339,38 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;WIN32_LEAN_AND_MEAN;WINVER=0x0601;_WIN32_WINNT=0x0601;WIN32;_DEBUG;OSIRIS_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;WIN32_LEAN_AND_MEAN;WINVER=0x0601;_WIN32_WINNT=0x0601;WIN32;OSIRIS_EXPORTS;_WINDOWS;_USRDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <EnableEnhancedInstructionSet>
-      </EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalOptions>/utf-8 /d2archSSE42 %(AdditionalOptions)</AdditionalOptions>
       <CallingConvention>VectorCall</CallingConvention>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <OpenMPSupport>true</OpenMPSupport>
+      <OpenMPSupport>
+      </OpenMPSupport>
       <StringPooling>true</StringPooling>
-      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointModel>Strict</FloatingPointModel>
       <IntelJCCErratum>true</IntelJCCErratum>
-      <EnableModules>false</EnableModules>
-      <FloatingPointExceptions>true</FloatingPointExceptions>
+      <EnableModules>
+      </EnableModules>
+      <FloatingPointExceptions>
+      </FloatingPointExceptions>
       <CreateHotpatchableImage>true</CreateHotpatchableImage>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <EnableParallelCodeGeneration>false</EnableParallelCodeGeneration>
-      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <EnableParallelCodeGeneration>
+      </EnableParallelCodeGeneration>
+      <ControlFlowGuard>
+      </ControlFlowGuard>
       <BuildStlModules>false</BuildStlModules>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>shell32.lib;ole32.lib</AdditionalDependencies>
+      <AdditionalDependencies>shell32.lib;ole32.lib;</AdditionalDependencies>
       <EntryPointSymbol>DllEntryPoint</EntryPointSymbol>
       <LargeAddressAware>true</LargeAddressAware>
       <GenerateMapFile>true</GenerateMapFile>
@@ -349,35 +384,38 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;_HAS_EXCEPTIONS=0;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;WIN32_LEAN_AND_MEAN;WINVER=0x0601;_WIN32_WINNT=0x0601;WIN32;NDEBUG;OSIRIS_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;WIN32_LEAN_AND_MEAN;WINVER=0x0601;_WIN32_WINNT=0x0601;WIN32;OSIRIS_EXPORTS;_WINDOWS;_USRDLL;_HAS_EXCEPTIONS=0;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <StringPooling>true</StringPooling>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <FloatingPointExceptions>
+      </FloatingPointExceptions>
       <CreateHotpatchableImage>false</CreateHotpatchableImage>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <EnableEnhancedInstructionSet>
-      </EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <AdditionalOptions>/Gw /utf-8 /Ob3 /d2archSSE42 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /Gw /Ob3 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <ControlFlowGuard>false</ControlFlowGuard>
+      <ControlFlowGuard>
+      </ControlFlowGuard>
       <ExceptionHandling>false</ExceptionHandling>
       <CallingConvention>VectorCall</CallingConvention>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <EnableParallelCodeGeneration>
       </EnableParallelCodeGeneration>
-      <OpenMPSupport>true</OpenMPSupport>
+      <OpenMPSupport>
+      </OpenMPSupport>
       <SDLCheck>false</SDLCheck>
       <IntelJCCErratum>true</IntelJCCErratum>
-      <EnableModules>false</EnableModules>
+      <EnableModules>
+      </EnableModules>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <MinimalRebuild>false</MinimalRebuild>
       <BuildStlModules>false</BuildStlModules>
@@ -386,9 +424,8 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>
-      </GenerateDebugInformation>
-      <AdditionalDependencies>shell32.lib;ole32.lib</AdditionalDependencies>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+      <AdditionalDependencies>shell32.lib;ole32.lib;</AdditionalDependencies>
       <EntryPointSymbol>DllEntryPoint</EntryPointSymbol>
       <LinkStatus>
       </LinkStatus>

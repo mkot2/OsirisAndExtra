@@ -35,7 +35,6 @@
 #include "Hacks/Misc.h"
 #include "Hacks/Ragebot.h"
 #include "Hacks/resolver.h"
-#include "Hacks/SkinChanger.h"
 #include "Hacks/Sound.h"
 #include "Hacks/Tickbase.h"
 #include "Hacks/Triggerbot.h"
@@ -167,7 +166,6 @@ static HRESULT __stdcall present(IDirect3DDevice9* device, const RECT* src, cons
 static HRESULT __stdcall reset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* params) noexcept
 {
 	ImGui_ImplDX9_InvalidateDeviceObjects();
-	//SkinChanger::clearItemIconTextures();
 	GameData::clearTextures();
 	return hooks->originalReset(device, params);
 }
@@ -178,6 +176,7 @@ static bool __stdcall getUnverifiedFileHashes(void* thisPointer, int maxFiles)
 {
 	if (config->misc.svPureBypass)
 		return false;
+
 	return hooks->fileSystem.callOriginal<bool, 101>(thisPointer, maxFiles);
 }
 
@@ -279,10 +278,10 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 	const auto currentCmd{ *cmd };
 	auto angOldViewPoint{ cmd->viewangles };
 	const auto currentPredictedTick{ interfaces->prediction->split->commandsPredicted - 1 };
-	static const auto mouseSensitivity = interfaces->cvar->findVar("sensitivity");
-	static const auto mouseYaw = interfaces->cvar->findVar("m_yaw");
-	static const auto mousePitch = interfaces->cvar->findVar("m_pitch");
-	static const auto zoomModifier = interfaces->cvar->findVar("zoom_sensitivity_ratio_mouse");
+	static auto mouseSensitivity = interfaces->cvar->findVar("sensitivity");
+	static auto mouseYaw = interfaces->cvar->findVar("m_yaw");
+	static auto mousePitch = interfaces->cvar->findVar("m_pitch");
+	static auto zoomModifier = interfaces->cvar->findVar("zoom_sensitivity_ratio_mouse");
 
 	if (Tickbase::isShifting()) {
 		sendPacket = Tickbase::isFinalTick();
@@ -546,7 +545,7 @@ static void __stdcall drawModelExecute(void* ctx, void* state, const ModelRender
 
 static bool __fastcall svCheatsGetBool(void* _this) noexcept
 {
-	if (std::uintptr_t(_ReturnAddress()) == memory->cameraThink && (config->visuals.thirdperson || config->visuals.freeCam))
+	if (RETURN_ADDRESS() == memory->cameraThink && (config->visuals.thirdperson || config->visuals.freeCam))
 		return true;
 
 	return hooks->svCheats.getOriginal<bool, 13>()(_this);
@@ -585,7 +584,6 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
 		Visuals::disablePostProcessing(stage);
 		Visuals::removeVisualRecoil(stage);
 		Visuals::applyZoom(stage);
-		//SkinChanger::run(stage);
 		Misc::fixAnimationLOD(stage);
 		Animations::renderStart(stage);
 		Animations::handlePlayers(stage);
@@ -609,7 +607,7 @@ static int __stdcall emitSound(void* filter, int entityIndex, int channel, const
 static bool __stdcall shouldDrawFog() noexcept
 {
 	if constexpr (std::is_same_v<HookType, MinHook>) {
-		if ((std::uintptr_t)_ReturnAddress() != memory->shouldDrawFogReturnAddress)
+		if (RETURN_ADDRESS() != memory->shouldDrawFogReturnAddress)
 			return hooks->clientMode.callOriginal<bool, 17>();
 	}
 
@@ -632,7 +630,7 @@ static void __stdcall lockCursor() noexcept
 
 static void __stdcall setDrawColor(int r, int g, int b, int a) noexcept
 {
-	if (config->visuals.noScopeOverlay && (std::uintptr_t(_ReturnAddress()) == memory->scopeDust || std::uintptr_t(_ReturnAddress()) == memory->scopeArc))
+	if (config->visuals.noScopeOverlay && (RETURN_ADDRESS() == memory->scopeDust || RETURN_ADDRESS() == memory->scopeArc))
 		a = 0;
 	hooks->surface.callOriginal<void, 15>(r, g, b, a);
 }
@@ -689,7 +687,7 @@ struct RenderableInfo {
 
 static int __stdcall listLeavesInBox(const Vector& mins, const Vector& maxs, unsigned short* list, int listMax) noexcept
 {
-	if (config->misc.disableModelOcclusion && std::uintptr_t(_ReturnAddress()) == memory->insertIntoTree) {
+	if (config->misc.disableModelOcclusion && RETURN_ADDRESS() == memory->insertIntoTree) {
 		if (const auto info = *reinterpret_cast<RenderableInfo**>(std::uintptr_t(_AddressOfReturnAddress()) - sizeof(std::uintptr_t) + 0x18); info && info->renderable) {
 			if (const auto ent = VirtualMethod::call<Entity*, 7>(info->renderable - sizeof(std::uintptr_t)); ent && ent->isPlayer()) {
 				constexpr float maxCoord = 16384.0f;
@@ -724,7 +722,7 @@ static const DemoPlaybackParameters* __stdcall getDemoPlaybackParameters() noexc
 {
 	const auto params = hooks->engine.callOriginal<const DemoPlaybackParameters*, 218>();
 
-	if (params && config->misc.revealSuspect && std::uintptr_t(_ReturnAddress()) != memory->demoFileEndReached) {
+	if (params && config->misc.revealSuspect && RETURN_ADDRESS() != memory->demoFileEndReached) {
 		static DemoPlaybackParameters customParams;
 		customParams = *params;
 		customParams.anonymousPlayerIdentity = false;
@@ -808,7 +806,7 @@ static bool __fastcall canUnduck(void* thisPointer, void* edx) noexcept
 	if (!entity->groundEntity())
 		return original(thisPointer);
 
-	static auto mp_solid_teammates = interfaces->cvar->findVar("mp_solid_teammates");
+	const auto mp_solid_teammates = interfaces->cvar->findVar("mp_solid_teammates");
 	if (mp_solid_teammates->getInt() == 1)
 		return original(thisPointer);
 
@@ -922,7 +920,7 @@ static void __fastcall modifyEyePositionHook(void* thisPointer, void* edx, unsig
 		bonePos.z += 1.7f;
 
 		if (bonePos.z < eyePosition.z) {
-			float lerpFraction = Helpers::simpleSplineRemapValClamped(fabsf(eyePosition.z - bonePos.z),
+			float lerpFraction = Helpers::simpleSplineRemapValClamped(std::abs(eyePosition.z - bonePos.z),
 				FIRSTPERSON_TO_THIRDPERSON_VERTICAL_TOLERANCE_MIN,
 				FIRSTPERSON_TO_THIRDPERSON_VERTICAL_TOLERANCE_MAX,
 				0.0f, 1.0f);
@@ -1074,7 +1072,7 @@ static bool __fastcall setupBonesHook(void* thisPointer, void* edx, matrix3x4* b
 				i[1][3] += renderOrigin.y;
 				i[2][3] += renderOrigin.z;
 			}
-			memcpy(boneToWorldOut, realMatrix.data(), sizeof(matrix3x4) * maxBones);
+			std::memcpy(boneToWorldOut, realMatrix.data(), sizeof(matrix3x4) * maxBones);
 			renderOrigin = entity->getRenderOrigin();
 			for (auto& i : realMatrix) {
 				i[0][3] -= renderOrigin.x;
@@ -1369,7 +1367,7 @@ static bool __fastcall traceFilterForHeadCollisionHook(void* thisPointer, void* 
 	if (!player || !player->isPlayer() || player == localPlayer.get())
 		return original(thisPointer, player, traceParams);
 
-	if (fabsf(player->getAbsOrigin().z - localPlayer->getAbsOrigin().z) < 10.0f)
+	if (std::abs(player->getAbsOrigin().z - localPlayer->getAbsOrigin().z) < 10.0f)
 		return false;
 
 	return original(thisPointer, player, traceParams);
@@ -1441,7 +1439,7 @@ static bool __fastcall postNetworkDataReceivedHook(void* thisPointer, void* edx,
 	if (commandsAcknowledged <= 0)
 		return false;
 
-	static auto cl_showerror = interfaces->cvar->findVar("cl_showerror");
+	const auto cl_showerror = interfaces->cvar->findVar("cl_showerror");
 
 	bool haderrors = false;
 
@@ -1477,7 +1475,7 @@ static Vector* __fastcall eyeAnglesHook(void* thisPointer, void* edx) noexcept
 	if (!localPlayer || entity != localPlayer.get())
 		return original(thisPointer);
 
-	if (std::uintptr_t(_ReturnAddress()) != memory->eyePositionAndVectors)
+	if (RETURN_ADDRESS() != memory->eyePositionAndVectors)
 		return original(thisPointer);
 
 	if (Animations::buildTransformationsIndex() == -1 || Animations::buildTransformationsIndex() != entity->index())

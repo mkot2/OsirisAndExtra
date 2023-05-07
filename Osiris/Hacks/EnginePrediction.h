@@ -8,7 +8,7 @@
 struct UserCmd;
 struct Vector;
 
-static const float epsilon = 0.03125f;
+constexpr float epsilon = 0.03125f;
 
 namespace EnginePrediction
 {
