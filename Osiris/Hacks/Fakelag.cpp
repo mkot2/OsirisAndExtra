@@ -1,4 +1,5 @@
 #include <random>
+#include <PCG/pcg.h>
 
 #include "EnginePrediction.h"
 #include "Fakelag.h"
@@ -11,8 +12,6 @@
 #include "../SDK/NetworkChannel.h"
 #include "../SDK/UserCmd.h"
 #include "../SDK/Vector.h"
-
-#include "../PCG/pcg.h"
 
 void Fakelag::run(const UserCmd* cmd, bool& sendPacket) noexcept
 {

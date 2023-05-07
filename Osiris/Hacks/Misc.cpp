@@ -3,9 +3,10 @@
 #include <sstream>
 #include <string>
 
-#include "../imgui/imgui.h"
+#include <imgui/imgui.h>
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "../imgui/imgui_internal.h"
+#include <imgui/imgui_internal.h>
+#include <PCG/pcg.h>
 
 #include "../Config.h"
 #include "../Interfaces.h"
@@ -41,8 +42,6 @@
 #include "../SDK/WeaponData.h"
 #include "../SDK/WeaponSystem.h"
 
-#include "../PCG/pcg.h"
-
 bool Misc::isInChat() noexcept
 {
 	if (!localPlayer)
@@ -70,7 +69,7 @@ void Misc::gatherDataOnTick(UserCmd* cmd) noexcept
 
 void Misc::handleKeyEvent(int keynum, const char* currentBinding) noexcept
 {
-	if (!currentBinding || keynum <= 0 || keynum >= ButtonCodes.size())
+	if (!currentBinding || keynum <= 0 || keynum >= static_cast<int>(ButtonCodes.size()))
 		return;
 
 	const auto buttonName = ButtonCodes[keynum];

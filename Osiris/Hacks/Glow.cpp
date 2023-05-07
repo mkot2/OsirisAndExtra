@@ -1,6 +1,6 @@
 #include <array>
 
-#include "../nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 
 #include "../Config.h"
 #include "../Helpers.h"

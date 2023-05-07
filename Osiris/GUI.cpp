@@ -1970,7 +1970,7 @@ void GUI::renderConfigWindow() noexcept
 
 		if (ImGui::BeginPopup("Config to reset")) {
 			constexpr std::array names{ "Whole", "Legitbot", "Legit Anti Aim", "Ragebot", "Rage Anti aim", "Fake angle", "Fakelag", "Backtrack", "Triggerbot", "Glow", "Chams", "ESP", "Visuals", "Sound", "Misc" };
-			for (int i = 0; i < names.size(); i++) {
+			for (size_t i = 0; i < names.size(); i++) {
 				if (i == 1) ImGui::Separator();
 
 				if (ImGui::Selectable(names[i])) {

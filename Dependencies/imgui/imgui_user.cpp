@@ -4,7 +4,7 @@
 
 #include "imgui_user.h"
 
-#include "../ConfigStructs.h"
+#include "../../Osiris/ConfigStructs.h"
 
 void ImGuiCustom::colorPicker(const char* name, float color[3], float* alpha, bool* rainbow, float* rainbowSpeed, bool* enable, float* thickness, float* rounding, bool* outline) noexcept
 {
@@ -387,7 +387,7 @@ void ImGui::hotkey(const char* label, KeyBind& key, float samelineOffset, const 
 }
 
 
-#include "../InputUtil.h"
+#include "../../Osiris/InputUtil.h"
 #include "imgui.h"
 
 void ImGui::hotkey2(const char* label, KeyBind& key, float samelineOffset, const ImVec2& size) noexcept

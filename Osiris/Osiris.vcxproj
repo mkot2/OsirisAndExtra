@@ -11,24 +11,66 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Dependencies\freetype\src\autofit\autofit.c" />
+    <ClCompile Include="..\Dependencies\freetype\src\base\ftbase.c" />
+    <ClCompile Include="..\Dependencies\freetype\src\base\ftbitmap.c" />
+    <ClCompile Include="..\Dependencies\freetype\src\base\ftdebug.c" />
+    <ClCompile Include="..\Dependencies\freetype\src\base\ftglyph.c" />
+    <ClCompile Include="..\Dependencies\freetype\src\base\ftinit.c" />
+    <ClCompile Include="..\Dependencies\freetype\src\base\ftsynth.c" />
+    <ClCompile Include="..\Dependencies\freetype\src\base\ftsystem.c" />
+    <ClCompile Include="..\Dependencies\freetype\src\cff\cff.c" />
+    <ClCompile Include="..\Dependencies\freetype\src\psaux\psaux.c" />
+    <ClCompile Include="..\Dependencies\freetype\src\pshinter\pshinter.c" />
+    <ClCompile Include="..\Dependencies\freetype\src\psnames\psnames.c" />
+    <ClCompile Include="..\Dependencies\freetype\src\raster\raster.c" />
+    <ClCompile Include="..\Dependencies\freetype\src\sfnt\sfnt.c" />
+    <ClCompile Include="..\Dependencies\freetype\src\smooth\smooth.c" />
+    <ClCompile Include="..\Dependencies\freetype\src\truetype\truetype.c" />
+    <ClCompile Include="..\Dependencies\imgui\imgui.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IncludeInUnityFile>
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_draw.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IncludeInUnityFile>
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_freetype.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IncludeInUnityFile>
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_impl_dx9.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IncludeInUnityFile>
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_impl_win32.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IncludeInUnityFile>
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_stdlib.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IncludeInUnityFile>
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_tables.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IncludeInUnityFile>
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_user.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IncludeInUnityFile>
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_widgets.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IncludeInUnityFile>
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\MinHook\buffer.c" />
+    <ClCompile Include="..\Dependencies\MinHook\hde\hde32.c" />
+    <ClCompile Include="..\Dependencies\MinHook\hde\hde64.c" />
+    <ClCompile Include="..\Dependencies\MinHook\hook.c" />
+    <ClCompile Include="..\Dependencies\MinHook\trampoline.c" />
+    <ClCompile Include="..\Dependencies\PCG\pcg.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="EventListener.cpp" />
-    <ClCompile Include="freetype\src\autofit\autofit.c" />
-    <ClCompile Include="freetype\src\base\ftbase.c" />
-    <ClCompile Include="freetype\src\base\ftbitmap.c" />
-    <ClCompile Include="freetype\src\base\ftdebug.c" />
-    <ClCompile Include="freetype\src\base\ftglyph.c" />
-    <ClCompile Include="freetype\src\base\ftinit.c" />
-    <ClCompile Include="freetype\src\base\ftsynth.c" />
-    <ClCompile Include="freetype\src\base\ftsystem.c" />
-    <ClCompile Include="freetype\src\cff\cff.c" />
-    <ClCompile Include="freetype\src\psaux\psaux.c" />
-    <ClCompile Include="freetype\src\pshinter\pshinter.c" />
-    <ClCompile Include="freetype\src\psnames\psnames.c" />
-    <ClCompile Include="freetype\src\raster\raster.c" />
-    <ClCompile Include="freetype\src\sfnt\sfnt.c" />
-    <ClCompile Include="freetype\src\smooth\smooth.c" />
-    <ClCompile Include="freetype\src\truetype\truetype.c" />
     <ClCompile Include="GameData.cpp">
       <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IncludeInUnityFile>
       <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IncludeInUnityFile>
@@ -55,26 +97,8 @@
       <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <ClCompile Include="Hooks\MinHook.cpp" />
-    <ClCompile Include="imgui\imgui_freetype.cpp">
-      <IncludeInUnityFile>false</IncludeInUnityFile>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_stdlib.cpp">
-      <IncludeInUnityFile>false</IncludeInUnityFile>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_tables.cpp">
-      <IncludeInUnityFile>false</IncludeInUnityFile>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_user.cpp">
-      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IncludeInUnityFile>
-      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IncludeInUnityFile>
-    </ClCompile>
     <ClCompile Include="InputUtil.cpp" />
     <ClCompile Include="Logger.cpp" />
-    <ClCompile Include="MinHook\buffer.c" />
-    <ClCompile Include="MinHook\hde\hde32.c" />
-    <ClCompile Include="MinHook\hde\hde64.c" />
-    <ClCompile Include="MinHook\hook.c" />
-    <ClCompile Include="MinHook\trampoline.c" />
     <ClCompile Include="Netvars.cpp" />
     <ClCompile Include="Osiris.cpp" />
     <ClCompile Include="GUI.cpp" />
@@ -82,23 +106,7 @@
       <IncludeInUnityFile>false</IncludeInUnityFile>
     </ClCompile>
     <ClCompile Include="Hooks.cpp" />
-    <ClCompile Include="imgui\imgui.cpp">
-      <IncludeInUnityFile>false</IncludeInUnityFile>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_draw.cpp">
-      <IncludeInUnityFile>false</IncludeInUnityFile>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_dx9.cpp">
-      <IncludeInUnityFile>false</IncludeInUnityFile>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_win32.cpp">
-      <IncludeInUnityFile>false</IncludeInUnityFile>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_widgets.cpp">
-      <IncludeInUnityFile>false</IncludeInUnityFile>
-    </ClCompile>
     <ClCompile Include="Memory.cpp" />
-    <ClCompile Include="PCG\pcg.cpp" />
     <ClCompile Include="SDK\AnimState.cpp" />
     <ClCompile Include="SDK\BitBuffer.cpp" />
     <ClCompile Include="SDK\checksum_crc.cpp" />
@@ -111,12 +119,60 @@
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Dependencies\freetype\freetype\config\ftmodule.h" />
+    <ClInclude Include="..\Dependencies\freetype\freetype\config\ftoption.h" />
+    <ClInclude Include="..\Dependencies\imgui\imconfig.h" />
+    <ClInclude Include="..\Dependencies\imgui\imgui.h" />
+    <ClInclude Include="..\Dependencies\imgui\imgui_freetype.h" />
+    <ClInclude Include="..\Dependencies\imgui\imgui_impl_dx9.h" />
+    <ClInclude Include="..\Dependencies\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="..\Dependencies\imgui\imgui_internal.h" />
+    <ClInclude Include="..\Dependencies\imgui\imgui_stdlib.h" />
+    <ClInclude Include="..\Dependencies\imgui\imgui_user.h" />
+    <ClInclude Include="..\Dependencies\imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\Dependencies\imgui\imstb_sprintf.h" />
+    <ClInclude Include="..\Dependencies\imgui\imstb_textedit.h" />
+    <ClInclude Include="..\Dependencies\mem\aligned_alloc.h" />
+    <ClInclude Include="..\Dependencies\mem\arch.h" />
+    <ClInclude Include="..\Dependencies\mem\bitwise_enum.h" />
+    <ClInclude Include="..\Dependencies\mem\boyer_moore_scanner.h" />
+    <ClInclude Include="..\Dependencies\mem\char_queue.h" />
+    <ClInclude Include="..\Dependencies\mem\cmd_param-inl.h" />
+    <ClInclude Include="..\Dependencies\mem\cmd_param.h" />
+    <ClInclude Include="..\Dependencies\mem\data_buffer.h" />
+    <ClInclude Include="..\Dependencies\mem\defines.h" />
+    <ClInclude Include="..\Dependencies\mem\execution_handler.h" />
+    <ClInclude Include="..\Dependencies\mem\hasher.h" />
+    <ClInclude Include="..\Dependencies\mem\init_function.h" />
+    <ClInclude Include="..\Dependencies\mem\macros.h" />
+    <ClInclude Include="..\Dependencies\mem\mem.h" />
+    <ClInclude Include="..\Dependencies\mem\module.h" />
+    <ClInclude Include="..\Dependencies\mem\pattern.h" />
+    <ClInclude Include="..\Dependencies\mem\pattern_cache.h" />
+    <ClInclude Include="..\Dependencies\mem\protect.h" />
+    <ClInclude Include="..\Dependencies\mem\prot_flags.h" />
+    <ClInclude Include="..\Dependencies\mem\rtti.h" />
+    <ClInclude Include="..\Dependencies\mem\simd_scanner.h" />
+    <ClInclude Include="..\Dependencies\mem\slice.h" />
+    <ClInclude Include="..\Dependencies\mem\stub.h" />
+    <ClInclude Include="..\Dependencies\mem\utils.h" />
+    <ClInclude Include="..\Dependencies\MinHook\buffer.h" />
+    <ClInclude Include="..\Dependencies\MinHook\hde\hde32.h" />
+    <ClInclude Include="..\Dependencies\MinHook\hde\hde64.h" />
+    <ClInclude Include="..\Dependencies\MinHook\hde\pstdint.h" />
+    <ClInclude Include="..\Dependencies\MinHook\hde\table32.h" />
+    <ClInclude Include="..\Dependencies\MinHook\hde\table64.h" />
+    <ClInclude Include="..\Dependencies\MinHook\MinHook.h" />
+    <ClInclude Include="..\Dependencies\MinHook\trampoline.h" />
+    <ClInclude Include="..\Dependencies\nlohmann\json.hpp" />
+    <ClInclude Include="..\Dependencies\PCG\pcg.h" />
+    <ClInclude Include="..\Dependencies\PCG\pcg_extras.h" />
+    <ClInclude Include="..\Dependencies\PCG\pcg_random.h" />
+    <ClInclude Include="..\Dependencies\PCG\pcg_uint128.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="ConfigStructs.h" />
     <ClInclude Include="EventListener.h" />
     <ClInclude Include="fnv.h" />
-    <ClInclude Include="freetype\freetype\config\ftmodule.h" />
-    <ClInclude Include="freetype\freetype\config\ftoption.h" />
     <ClInclude Include="GameData.h" />
     <ClInclude Include="Hacks\AimbotFunctions.h" />
     <ClInclude Include="Hacks\Animations.h" />
@@ -139,50 +195,9 @@
     <ClInclude Include="Hacks\Visuals.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Hooks\MinHook.h" />
-    <ClInclude Include="imgui\imgui_freetype.h" />
-    <ClInclude Include="imgui\imgui_stdlib.h" />
-    <ClInclude Include="imgui\imgui_user.h" />
-    <ClInclude Include="imgui\imstb_sprintf.h" />
     <ClInclude Include="InputUtil.h" />
     <ClInclude Include="Logger.h" />
-    <ClInclude Include="mem\aligned_alloc.h" />
-    <ClInclude Include="mem\arch.h" />
-    <ClInclude Include="mem\bitwise_enum.h" />
-    <ClInclude Include="mem\boyer_moore_scanner.h" />
-    <ClInclude Include="mem\char_queue.h" />
-    <ClInclude Include="mem\cmd_param-inl.h" />
-    <ClInclude Include="mem\cmd_param.h" />
-    <ClInclude Include="mem\data_buffer.h" />
-    <ClInclude Include="mem\defines.h" />
-    <ClInclude Include="mem\execution_handler.h" />
-    <ClInclude Include="mem\hasher.h" />
-    <ClInclude Include="mem\init_function.h" />
-    <ClInclude Include="mem\macros.h" />
-    <ClInclude Include="mem\mem.h" />
-    <ClInclude Include="mem\module.h" />
-    <ClInclude Include="mem\pattern.h" />
-    <ClInclude Include="mem\pattern_cache.h" />
-    <ClInclude Include="mem\protect.h" />
-    <ClInclude Include="mem\prot_flags.h" />
-    <ClInclude Include="mem\rtti.h" />
-    <ClInclude Include="mem\simd_scanner.h" />
-    <ClInclude Include="mem\slice.h" />
-    <ClInclude Include="mem\stub.h" />
-    <ClInclude Include="mem\utils.h" />
-    <ClInclude Include="MinHook\buffer.h" />
-    <ClInclude Include="MinHook\hde\hde32.h" />
-    <ClInclude Include="MinHook\hde\hde64.h" />
-    <ClInclude Include="MinHook\hde\pstdint.h" />
-    <ClInclude Include="MinHook\hde\table32.h" />
-    <ClInclude Include="MinHook\hde\table64.h" />
-    <ClInclude Include="MinHook\MinHook.h" />
-    <ClInclude Include="MinHook\trampoline.h" />
     <ClInclude Include="Netvars.h" />
-    <ClInclude Include="nlohmann\json.hpp" />
-    <ClInclude Include="PCG\pcg.h" />
-    <ClInclude Include="PCG\pcg_extras.h" />
-    <ClInclude Include="PCG\pcg_random.h" />
-    <ClInclude Include="PCG\pcg_uint128.h" />
     <ClInclude Include="Resources\avatar_ct.h" />
     <ClInclude Include="Resources\avatar_tt.h" />
     <ClInclude Include="Resources\Resource.h" />
@@ -207,13 +222,6 @@
     <ClInclude Include="SDK\ClassId.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="Hooks.h" />
-    <ClInclude Include="imgui\imconfig.h" />
-    <ClInclude Include="imgui\imgui.h" />
-    <ClInclude Include="imgui\imgui_impl_dx9.h" />
-    <ClInclude Include="imgui\imgui_impl_win32.h" />
-    <ClInclude Include="imgui\imgui_internal.h" />
-    <ClInclude Include="imgui\imstb_rectpack.h" />
-    <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="Interfaces.h" />
     <ClInclude Include="Memory.h" />
     <ClInclude Include="SDK\FileSystem.h" />
@@ -275,7 +283,7 @@
     <ClInclude Include="Threading.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="mem\cpp.hint" />
+    <None Include="..\Dependencies\mem\cpp.hint" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -323,14 +331,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)\freetype;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LinkIncremental>
+    </LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\freetype</IncludePath>
     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>
+    </LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(ProjectDir)\freetype;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\freetype</IncludePath>
     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -366,10 +376,11 @@
       <BuildStlModules>false</BuildStlModules>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <MinimalRebuild />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <AdditionalDependencies>shell32.lib;ole32.lib;</AdditionalDependencies>
       <EntryPointSymbol>DllEntryPoint</EntryPointSymbol>
       <LargeAddressAware>true</LargeAddressAware>
@@ -417,14 +428,15 @@
       <EnableModules>
       </EnableModules>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <MinimalRebuild>false</MinimalRebuild>
+      <MinimalRebuild>
+      </MinimalRebuild>
       <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <AdditionalDependencies>shell32.lib;ole32.lib;</AdditionalDependencies>
       <EntryPointSymbol>DllEntryPoint</EntryPointSymbol>
       <LinkStatus>

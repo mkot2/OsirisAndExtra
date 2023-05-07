@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
 
-#include "../imgui/imgui.h"
+#include <imgui/imgui.h>
 
 #include "../SDK/EngineTrace.h"
 #include "../SDK/UserCmd.h"

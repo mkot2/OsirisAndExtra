@@ -6,10 +6,10 @@
 #include <utility>
 #include <Windows.h>
 #include <Psapi.h>
-#include <omp.h>
 
-#include "mem/module.h"
-#include "mem/pattern.h"
+#include <mem/module.h>
+#include <mem/pattern.h>
+
 #include "SDK/LocalPlayer.h"
 
 #include "Interfaces.h"
@@ -28,7 +28,7 @@ static std::uintptr_t findPattern(const char* moduleName, std::string_view patte
 
 	if (auto module = mem::module::named(moduleName); module != mem::module()) {
 		mem::pattern pattern(patternString.data());
-		mem::simd_scanner scanner(pattern);
+		mem::default_scanner scanner(pattern);
 		mem::region region(module);
 
 		if (const auto address = scanner.scan(region).as<std::uintptr_t>(); address != region.start.as<std::uintptr_t>() + region.size)

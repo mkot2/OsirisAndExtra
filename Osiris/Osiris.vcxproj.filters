@@ -9,55 +9,46 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="imgui">
-      <UniqueIdentifier>{8c56775f-e99a-4a14-b8c8-21f63aca4485}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Hacks">
       <UniqueIdentifier>{f60a2d6f-e07f-4f71-8db1-6ec82cf1f6d4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="MinHook">
-      <UniqueIdentifier>{d845b8dc-ce6b-48c5-b78d-1003a5a857e0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Hooks">
       <UniqueIdentifier>{8899dcd1-0468-4bfa-b60d-c2af1c97a39e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="nlohmann">
-      <UniqueIdentifier>{44d5d3e3-0072-4a5a-b725-1b9807c24a06}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resources">
       <UniqueIdentifier>{ad9f0ad1-ce71-4bc4-b5eb-dd6a018f4fae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="freetype">
-      <UniqueIdentifier>{15481d2e-5516-4ece-9b00-79e32710804c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PCG">
-      <UniqueIdentifier>{ae3ec954-1f35-4990-9186-47206f393084}</UniqueIdentifier>
     </Filter>
     <Filter Include="SDK">
       <UniqueIdentifier>{6cc612f0-86fb-4bf6-b64a-74e10f5b498a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="mem">
-      <UniqueIdentifier>{7566ce54-42de-4111-9732-6404f6ee387b}</UniqueIdentifier>
+    <Filter Include="Dependencies">
+      <UniqueIdentifier>{e71b2641-e467-4ebe-b16a-9c0d1c6ffc05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\PCG">
+      <UniqueIdentifier>{e2d87c46-7f80-4915-b868-0839cbf3b053}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\mem">
+      <UniqueIdentifier>{caf05fff-9e44-42c7-912c-cd23d08be08c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\nlohmann">
+      <UniqueIdentifier>{29c558b1-8996-4afa-85d7-3b7fbab618bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\MinHook">
+      <UniqueIdentifier>{a2a585a7-fe1d-4ff6-9d0b-3ecb58de16e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\MinHook\hde">
+      <UniqueIdentifier>{bfa2eacb-556e-45fb-a922-6d4e13eb03dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\imgui">
+      <UniqueIdentifier>{f3969c31-d80c-4902-85de-da85eee69e7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\freetype">
+      <UniqueIdentifier>{8e02f14f-7cae-437c-998d-aed2c3aa9ba6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUI.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_draw.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_dx9.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_win32.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_widgets.cpp">
-      <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="Hooks.cpp">
       <Filter>Source Files</Filter>
@@ -101,9 +92,6 @@
     <ClCompile Include="Hacks\AntiAim.cpp">
       <Filter>Hacks</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\imgui_stdlib.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
     <ClCompile Include="Hacks\EnginePrediction.cpp">
       <Filter>Hacks</Filter>
     </ClCompile>
@@ -115,21 +103,6 @@
     </ClCompile>
     <ClCompile Include="SDK\Entity.cpp">
       <Filter>SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="MinHook\hde\hde32.c">
-      <Filter>MinHook</Filter>
-    </ClCompile>
-    <ClCompile Include="MinHook\buffer.c">
-      <Filter>MinHook</Filter>
-    </ClCompile>
-    <ClCompile Include="MinHook\hde\hde64.c">
-      <Filter>MinHook</Filter>
-    </ClCompile>
-    <ClCompile Include="MinHook\hook.c">
-      <Filter>MinHook</Filter>
-    </ClCompile>
-    <ClCompile Include="MinHook\trampoline.c">
-      <Filter>MinHook</Filter>
     </ClCompile>
     <ClCompile Include="Hooks\MinHook.cpp">
       <Filter>Hooks</Filter>
@@ -149,62 +122,8 @@
     <ClCompile Include="InputUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\imgui_tables.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\autofit\autofit.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\cff\cff.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\base\ftbase.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\base\ftbitmap.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\base\ftdebug.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\base\ftglyph.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\base\ftinit.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\base\ftsynth.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\base\ftsystem.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\psaux\psaux.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\pshinter\pshinter.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\psnames\psnames.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\raster\raster.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\sfnt\sfnt.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\smooth\smooth.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="freetype\src\truetype\truetype.c">
-      <Filter>freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_freetype.cpp">
-      <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="Hacks\Sound.cpp">
       <Filter>Hacks</Filter>
@@ -251,37 +170,103 @@
     <ClCompile Include="SDK\BitBuffer.cpp">
       <Filter>SDK</Filter>
     </ClCompile>
-    <ClCompile Include="PCG\pcg.cpp">
-      <Filter>PCG</Filter>
+    <ClCompile Include="..\Dependencies\PCG\pcg.cpp">
+      <Filter>Dependencies\PCG</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\imgui_user.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="..\Dependencies\MinHook\buffer.c">
+      <Filter>Dependencies\MinHook</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\MinHook\hook.c">
+      <Filter>Dependencies\MinHook</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\MinHook\trampoline.c">
+      <Filter>Dependencies\MinHook</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\MinHook\hde\hde32.c">
+      <Filter>Dependencies\MinHook\hde</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\MinHook\hde\hde64.c">
+      <Filter>Dependencies\MinHook\hde</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui.cpp">
+      <Filter>Dependencies\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_draw.cpp">
+      <Filter>Dependencies\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_freetype.cpp">
+      <Filter>Dependencies\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_impl_dx9.cpp">
+      <Filter>Dependencies\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_impl_win32.cpp">
+      <Filter>Dependencies\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_stdlib.cpp">
+      <Filter>Dependencies\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_tables.cpp">
+      <Filter>Dependencies\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_user.cpp">
+      <Filter>Dependencies\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\imgui\imgui_widgets.cpp">
+      <Filter>Dependencies\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\autofit\autofit.c">
+      <Filter>Dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\cff\cff.c">
+      <Filter>Dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\base\ftbase.c">
+      <Filter>Dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\base\ftbitmap.c">
+      <Filter>Dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\base\ftdebug.c">
+      <Filter>Dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\base\ftglyph.c">
+      <Filter>Dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\base\ftinit.c">
+      <Filter>Dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\truetype\truetype.c">
+      <Filter>Dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\smooth\smooth.c">
+      <Filter>Dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\base\ftsynth.c">
+      <Filter>Dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\base\ftsystem.c">
+      <Filter>Dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\psaux\psaux.c">
+      <Filter>Dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\pshinter\pshinter.c">
+      <Filter>Dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\raster\raster.c">
+      <Filter>Dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\sfnt\sfnt.c">
+      <Filter>Dependencies\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\freetype\src\psnames\psnames.c">
+      <Filter>Dependencies\freetype</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUI.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imconfig.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_dx9.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_win32.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_internal.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_rectpack.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_textedit.h">
-      <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="Hooks.h">
       <Filter>Header Files</Filter>
@@ -445,9 +430,6 @@
     <ClInclude Include="SDK\RenderContext.h">
       <Filter>SDK</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\imgui_stdlib.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
     <ClInclude Include="SDK\GameMovement.h">
       <Filter>SDK</Filter>
     </ClInclude>
@@ -487,30 +469,6 @@
     <ClInclude Include="SDK\NetworkStringTable.h">
       <Filter>SDK</Filter>
     </ClInclude>
-    <ClInclude Include="MinHook\MinHook.h">
-      <Filter>MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="MinHook\hde\pstdint.h">
-      <Filter>MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="MinHook\hde\table32.h">
-      <Filter>MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="MinHook\hde\table64.h">
-      <Filter>MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="MinHook\trampoline.h">
-      <Filter>MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="MinHook\hde\hde32.h">
-      <Filter>MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="MinHook\hde\hde64.h">
-      <Filter>MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="MinHook\buffer.h">
-      <Filter>MinHook</Filter>
-    </ClInclude>
     <ClInclude Include="Hooks\MinHook.h">
       <Filter>Hooks</Filter>
     </ClInclude>
@@ -525,9 +483,6 @@
     </ClInclude>
     <ClInclude Include="Helpers.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="nlohmann\json.hpp">
-      <Filter>nlohmann</Filter>
     </ClInclude>
     <ClInclude Include="SDK\Panorama.h">
       <Filter>SDK</Filter>
@@ -567,15 +522,6 @@
     </ClInclude>
     <ClInclude Include="SDK\ClientMode.h">
       <Filter>SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="freetype\freetype\config\ftmodule.h">
-      <Filter>freetype</Filter>
-    </ClInclude>
-    <ClInclude Include="freetype\freetype\config\ftoption.h">
-      <Filter>freetype</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_freetype.h">
-      <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="Hacks\Sound.h">
       <Filter>Hacks</Filter>
@@ -655,100 +601,160 @@
     <ClInclude Include="SDK\BitBuffer.h">
       <Filter>SDK</Filter>
     </ClInclude>
-    <ClInclude Include="PCG\pcg_uint128.h">
-      <Filter>PCG</Filter>
+    <ClInclude Include="..\Dependencies\PCG\pcg.h">
+      <Filter>Dependencies\PCG</Filter>
     </ClInclude>
-    <ClInclude Include="PCG\pcg_extras.h">
-      <Filter>PCG</Filter>
+    <ClInclude Include="..\Dependencies\PCG\pcg_extras.h">
+      <Filter>Dependencies\PCG</Filter>
     </ClInclude>
-    <ClInclude Include="PCG\pcg_random.h">
-      <Filter>PCG</Filter>
+    <ClInclude Include="..\Dependencies\PCG\pcg_random.h">
+      <Filter>Dependencies\PCG</Filter>
     </ClInclude>
-    <ClInclude Include="PCG\pcg.h">
-      <Filter>PCG</Filter>
+    <ClInclude Include="..\Dependencies\PCG\pcg_uint128.h">
+      <Filter>Dependencies\PCG</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\imstb_sprintf.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="..\Dependencies\mem\aligned_alloc.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\imgui_user.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="..\Dependencies\mem\arch.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\arch.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\bitwise_enum.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\bitwise_enum.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\boyer_moore_scanner.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\boyer_moore_scanner.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\cmd_param.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\cmd_param.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\cmd_param-inl.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\cmd_param-inl.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\data_buffer.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\data_buffer.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\defines.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\defines.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\execution_handler.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\execution_handler.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\hasher.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\hasher.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\char_queue.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\char_queue.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\init_function.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\init_function.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\macros.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\macros.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\mem.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\mem.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\module.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\module.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\pattern.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\pattern.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\pattern_cache.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\pattern_cache.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\prot_flags.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\prot_flags.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\protect.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\protect.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\rtti.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\rtti.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\simd_scanner.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\simd_scanner.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\slice.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\slice.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\stub.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\stub.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\mem\utils.h">
+      <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="mem\utils.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\nlohmann\json.hpp">
+      <Filter>Dependencies\nlohmann</Filter>
     </ClInclude>
-    <ClInclude Include="mem\aligned_alloc.h">
-      <Filter>mem</Filter>
+    <ClInclude Include="..\Dependencies\MinHook\buffer.h">
+      <Filter>Dependencies\MinHook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\MinHook\MinHook.h">
+      <Filter>Dependencies\MinHook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\MinHook\trampoline.h">
+      <Filter>Dependencies\MinHook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\MinHook\hde\hde32.h">
+      <Filter>Dependencies\MinHook\hde</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\MinHook\hde\hde64.h">
+      <Filter>Dependencies\MinHook\hde</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\MinHook\hde\pstdint.h">
+      <Filter>Dependencies\MinHook\hde</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\MinHook\hde\table32.h">
+      <Filter>Dependencies\MinHook\hde</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\MinHook\hde\table64.h">
+      <Filter>Dependencies\MinHook\hde</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\imgui\imconfig.h">
+      <Filter>Dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\imgui\imgui.h">
+      <Filter>Dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\imgui\imgui_freetype.h">
+      <Filter>Dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\imgui\imgui_impl_dx9.h">
+      <Filter>Dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\imgui\imgui_impl_win32.h">
+      <Filter>Dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\imgui\imgui_internal.h">
+      <Filter>Dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\imgui\imgui_stdlib.h">
+      <Filter>Dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\imgui\imgui_user.h">
+      <Filter>Dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\imgui\imstb_rectpack.h">
+      <Filter>Dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\imgui\imstb_sprintf.h">
+      <Filter>Dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\imgui\imstb_textedit.h">
+      <Filter>Dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\freetype\freetype\config\ftmodule.h">
+      <Filter>Dependencies\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\freetype\freetype\config\ftoption.h">
+      <Filter>Dependencies\freetype</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="mem\cpp.hint">
-      <Filter>mem</Filter>
+    <None Include="..\Dependencies\mem\cpp.hint">
+      <Filter>Dependencies\mem</Filter>
     </None>
   </ItemGroup>
 </Project>

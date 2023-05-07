@@ -454,11 +454,12 @@ namespace mem
     }
 } // namespace mem
 
+#include "boyer_moore_scanner.h"
 #include "simd_scanner.h"
 
 namespace mem
 {
-    using default_scanner = class simd_scanner;
+    using default_scanner = class simd_scanner; // This can also be changed to boyer_moore_scanner
 
     inline mem::pointer scan(const mem::pattern& pattern, mem::region range)
     {

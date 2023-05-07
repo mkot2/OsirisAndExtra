@@ -1,8 +1,8 @@
+#include <PCG/pcg.h>
+
 #include "AnimState.h"
 #include "Entity.h"
 #include "UserCmd.h"
-
-#include "../PCG/pcg.h"
 
 void AnimState::setupVelocity() noexcept
 {

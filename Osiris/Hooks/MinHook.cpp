@@ -1,5 +1,5 @@
+#include <MinHook/MinHook.h>
 #include "MinHook.h"
-#include "../MinHook/MinHook.h"
 
 std::size_t calculateVmtLength(std::uintptr_t* vmt) noexcept
 {

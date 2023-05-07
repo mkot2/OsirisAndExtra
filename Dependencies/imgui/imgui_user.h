@@ -1,9 +1,8 @@
 #pragma once
 
 #include "imgui.h"
-
-#include "../Config.h"
-#include "../ConfigStructs.h"
+#include "../../Osiris/Config.h"
+#include "../../Osiris/ConfigStructs.h"
 
 struct Color4;
 struct ColorToggle;
