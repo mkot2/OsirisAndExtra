@@ -36,34 +36,6 @@ void traceHull(Vector& src, Vector& end, Trace& tr) noexcept
 
 void setup(Vector& vecSrc, Vector& vecThrow, Vector viewangles) noexcept
 {
-	auto AngleVectors = [](const Vector& angles, Vector* forward, Vector* right, Vector* up) {
-		float sr, sp, sy, cr, cp, cy;
-
-		sp = static_cast<float>(std::sin(double(angles.x) * 0.01745329251f));
-		cp = static_cast<float>(std::cos(double(angles.x) * 0.01745329251f));
-		sy = static_cast<float>(std::sin(double(angles.y) * 0.01745329251f));
-		cy = static_cast<float>(std::cos(double(angles.y) * 0.01745329251f));
-		sr = static_cast<float>(std::sin(double(angles.z) * 0.01745329251f));
-		cr = static_cast<float>(std::cos(double(angles.z) * 0.01745329251f));
-
-		if (forward) {
-			forward->x = cp * cy;
-			forward->y = cp * sy;
-			forward->z = -sp;
-		}
-
-		if (right) {
-			right->x = (-1 * sr * sp * cy + -1 * cr * -sy);
-			right->y = (-1 * sr * sp * sy + -1 * cr * cy);
-			right->z = -1 * sr * cp;
-		}
-
-		if (up) {
-			up->x = (cr * sp * cy + -sr * -sy);
-			up->y = (cr * sp * sy + -sr * cy);
-			up->z = cr * cp;
-		}
-	};
 	Vector angThrow = viewangles;
 	float pitch = angThrow.x;
 
@@ -75,22 +47,18 @@ void setup(Vector& vecSrc, Vector& vecThrow, Vector viewangles) noexcept
 		pitch -= 360.0f;
 	}
 
-	float a = pitch - (90.0f - std::abs(pitch)) * 10.0f / 90.0f;
+	const float a = pitch - (90.0f - std::abs(pitch)) * 10.0f / 90.0f;
 	angThrow.x = a;
 
-	float flVel = 750.0f * 0.9f;
-
 	constexpr float power[] = { 1.0f, 1.0f, 0.5f, 0.0f };
-	float b = power[grenadeAct];
-	b = b * 0.7f;
-	b = b + 0.3f;
-	flVel *= b;
+	const float b = power[grenadeAct] * .7f + .3f;
+	const float flVel = 750.f * .9f * b;
 
 	Vector vForward, vRight, vUp;
-	AngleVectors(angThrow, &vForward, &vRight, &vUp);
+	angThrow.fromAngle(vForward, vRight, vUp);
 
 	vecSrc = localPlayer->getEyePosition();
-	float off = (power[grenadeAct] * 12.0f) - 12.0f;
+	const float off = (power[grenadeAct] * 12.0f) - 12.0f;
 	vecSrc.z += off;
 
 	Trace tr;
@@ -321,49 +289,39 @@ void drawDamage(Vector position) noexcept
 
 void GrenadePrediction::run(UserCmd* cmd) noexcept
 {
-	renderMutex.lock();
-
 	screenPoints.clear();
 	endPoints.clear();
 	dmgPoints.clear();
 
-	if (!config->misc.nadePredict) {
-		renderMutex.unlock();
+	if (!config->misc.nadePredict)
 		return;
-	}
 
-	if (!localPlayer || !localPlayer->isAlive()) {
-		renderMutex.unlock();
+	if (!localPlayer || !localPlayer->isAlive())
 		return;
-	}
 
-	if (localPlayer->moveType() == MoveType::NOCLIP) {
-		renderMutex.unlock();
+	if (interfaces->engine->isHLTV())
 		return;
-	}
 
-	if (interfaces->engine->isHLTV()) {
-		renderMutex.unlock();
+	if (localPlayer->moveType() == MoveType::NOCLIP)
 		return;
-	}
-
-	tick(cmd->buttons);
 
 	auto activeWeapon = localPlayer->getActiveWeapon();
-	if (!activeWeapon || !activeWeapon->isGrenade()) {
-		renderMutex.unlock();
+	if (!activeWeapon || !activeWeapon->isGrenade())
 		return;
-	}
+
 	const auto itemDefinition = activeWeapon->itemDefinitionIndex2();
 	if (itemDefinition != WeaponId::SmokeGrenade
 		&& itemDefinition != WeaponId::Decoy
 		&& itemDefinition != WeaponId::Molotov
 		&& itemDefinition != WeaponId::IncGrenade
 		&& itemDefinition != WeaponId::Flashbang
-		&& itemDefinition != WeaponId::HeGrenade) {
-		renderMutex.unlock();
+		&& itemDefinition != WeaponId::HeGrenade)
 		return;
-	}
+
+	if (!renderMutex.try_lock())
+		return;
+
+	tick(cmd->buttons);
 
 	Vector vecSrc, vecThrow;
 	setup(vecSrc, vecThrow, cmd->viewangles);

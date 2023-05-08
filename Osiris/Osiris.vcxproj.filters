@@ -532,9 +532,6 @@
     <ClInclude Include="SDK\MemAlloc.h">
       <Filter>SDK</Filter>
     </ClInclude>
-    <ClInclude Include="SDK\Angle.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
     <ClInclude Include="Hacks\Ragebot.h">
       <Filter>Hacks</Filter>
     </ClInclude>
@@ -750,6 +747,12 @@
     </ClInclude>
     <ClInclude Include="..\Dependencies\freetype\freetype\config\ftoption.h">
       <Filter>Dependencies\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\ProtoField.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\ProtoWriter.h">
+      <Filter>SDK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

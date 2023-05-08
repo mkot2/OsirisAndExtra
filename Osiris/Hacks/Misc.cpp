@@ -36,6 +36,7 @@
 #include "../SDK/NetworkChannel.h"
 #include "../SDK/Panorama.h"
 #include "../SDK/Prediction.h"
+#include "../SDK/ProtoWriter.h"
 #include "../SDK/Surface.h"
 #include "../SDK/UserCmd.h"
 #include "../SDK/ViewSetup.h"
@@ -989,9 +990,8 @@ void Misc::freeCam(ViewSetup* setup) noexcept
 	if (newOrigin.null())
 		newOrigin = setup->origin;
 
-	Vector forward{ }, right{ }, up{ };
-
-	Vector::fromAngleAll(setup->angles, &forward, &right, &up);
+	Vector forward, right, up;
+	setup->angles.fromAngle(forward, right, up);
 
 	const bool backBtn = buttons & UserCmd::IN_BACK;
 	const bool forwardBtn = buttons & UserCmd::IN_FORWARD;
@@ -1316,7 +1316,7 @@ void Misc::updateClanTag(bool tagChanged) noexcept
 	static auto lastTime = 0.0f;
 
 	if (config->misc.customClanTag) {
-		if ((memory->globalVars->realtime - interfaces->engine->getNetworkChannel()->getLatency(0) - lastTime < config->misc.tagUpdateInterval) && (!tagChanged || origTag.empty()) && config->misc.tagType != 5)
+		if ((memory->globalVars->realtime - GameData::getNetOutgoingLatency() - lastTime < config->misc.tagUpdateInterval) && (!tagChanged || origTag.empty()) && config->misc.tagType != 5)
 			return;
 
 		auto offset = 0;
@@ -1370,12 +1370,8 @@ void Misc::updateClanTag(bool tagChanged) noexcept
 			const auto time = std::time(nullptr);
 			const auto localTime = std::localtime(&time);
 
-			char s[11];
-			s[0] = '\0';
-			snprintf(s, sizeof(s), "[%02d:%02d:%02d]", localTime->tm_hour, localTime->tm_min, localTime->tm_sec);
-			lastTime = memory->globalVars->realtime;
-			memory->setClanTag(s, s);
-			return;
+			clanTag = std::format("[{:02d}:{:02d}:{:02d}]", localTime->tm_hour, localTime->tm_min, localTime->tm_sec);
+			break;
 		}
 
 		lastTime = memory->globalVars->realtime;
@@ -2572,6 +2568,60 @@ void Misc::voteRevealer(GameEvent& event) noexcept
 	const char color = votedYes ? '\x06' : '\x07';
 
 	memory->clientMode->getHudChat()->printf(0, " \x0C\u2022Osiris\u2022 %c%s\x01 voted %c%s\x01", isLocal ? '\x01' : color, isLocal ? "You" : entity->getPlayerName().c_str(), color, votedYes ? "Yes" : "No");
+}
+
+void Misc::onVoteStart(void* data, int length) noexcept
+{
+	if (!config->misc.revealVotes)
+		return;
+
+	/*message CCSUsrMsg_VoteStart {
+	int32 team = 1;
+	int32 ent_idx = 2;
+	int32 vote_type = 3;
+	string disp_str = 4;
+	string details_str = 5;
+	string other_team_str = 6;
+	bool is_yes_no_vote = 7;
+	int32 entidx_target = 8;
+	}*/
+
+	constexpr auto voteName = [](int index) {
+		switch (index) {
+		case 0: return "Kick";
+		case 1: return "Change Level";
+		case 6: return "Surrender";
+		case 13: return "Start Timeout";
+		default: assert(0); return "ERROR";
+		}
+	};
+
+	ProtoWriter msg(data, length, 8);
+	if (msg.has(2) && msg.has(3)) {
+		const auto ent_idx = msg.get(2).UInt32();
+		const auto vote_type = msg.get(3).UInt32();
+
+		const auto entity = interfaces->entityList->getEntity(ent_idx);
+		const auto isLocal = localPlayer && entity == localPlayer.get();
+
+		memory->clientMode->getHudChat()->printf(0, " \x0C\u2022Osiris\u2022 %c%s\x01 call vote (\x06%s\x01)", isLocal ? '\x01' : '\x06', isLocal ? "You" : entity->getPlayerName().c_str(), voteName(vote_type));
+	}
+}
+
+void Misc::onVotePass() noexcept
+{
+	if (!config->misc.revealVotes)
+		return;
+
+	memory->clientMode->getHudChat()->printf(0, " \x0C\u2022Osiris\u2022\x01 vote\x06 PASSED");
+}
+
+void Misc::onVoteFail() noexcept
+{
+	if (!config->misc.revealVotes)
+		return;
+
+	memory->clientMode->getHudChat()->printf(0, " \x0C\u2022Osiris\u2022\x01 vote\x06 FAILED");
 }
 
 // ImGui::ShadeVertsLinearColorGradientKeepAlpha() modified to do interpolation in HSV

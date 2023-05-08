@@ -156,7 +156,7 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 					AimbotFunction::calculateArmorDamage(armorRatio, trace.entity->armor(), trace.entity->hasHeavyArmor(), damage);
 
 				if (damage >= (cfg.killshot ? trace.entity->health() : cfg.minDamage) &&
-					AimbotFunction::hitChance(localPlayer.get(), entity, set, player.matrix.data(), activeWeapon, AimbotFunction::calculateRelativeAngle(startPos, trace.endpos, cmd->viewangles + aimPunch), cmd, cfg.hitChance)) {
+					AimbotFunction::hitChance(localPlayer.get(), entity, set, player.matrix.data(), activeWeapon, AimbotFunction::calculateRelativeAngle(startPos, trace.endpos, cmd->viewangles + aimPunch), cmd, cfg.hitChance, j)) {
 					cmd->buttons |= UserCmd::IN_ATTACK;
 					cmd->tickCount = timeToTicks(player.simulationTime + Backtrack::getLerp());
 					lastTime = 0.0f;
@@ -243,7 +243,7 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 					AimbotFunction::calculateArmorDamage(armorRatio, trace.entity->armor(), trace.entity->hasHeavyArmor(), damage);
 
 				if (damage >= (cfg.killshot ? trace.entity->health() : cfg.minDamage) &&
-					AimbotFunction::hitChance(localPlayer.get(), entity, set, record.matrix, activeWeapon, AimbotFunction::calculateRelativeAngle(startPos, trace.endpos, cmd->viewangles + aimPunch), cmd, cfg.hitChance)) {
+					AimbotFunction::hitChance(localPlayer.get(), entity, set, record.matrix, activeWeapon, AimbotFunction::calculateRelativeAngle(startPos, trace.endpos, cmd->viewangles + aimPunch), cmd, cfg.hitChance, j)) {
 					cmd->buttons |= UserCmd::IN_ATTACK;
 					cmd->tickCount = timeToTicks(record.simulationTime + Backtrack::getLerp());
 					lastTime = 0.0f;

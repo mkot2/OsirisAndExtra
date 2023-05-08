@@ -78,9 +78,36 @@ struct Vector {
 		return *this;
 	}
 
-	constexpr auto operator-(const Vector& v) const noexcept
+	constexpr Vector& operator*=(const Vector& v) noexcept
 	{
-		return Vector{ x - v.x, y - v.y, z - v.z };
+		x *= v.x;
+		y *= v.y;
+		z *= v.z;
+		return *this;
+	}
+
+	constexpr Vector& operator*=(float f) noexcept
+	{
+		x *= f;
+		y *= f;
+		z *= f;
+		return *this;
+	}
+
+	constexpr Vector& operator/=(const Vector& v) noexcept
+	{
+		x /= v.x;
+		y /= v.y;
+		z /= v.z;
+		return *this;
+	}
+
+	constexpr Vector& operator/=(float f) noexcept
+	{
+		x /= f;
+		y /= f;
+		z /= f;
+		return *this;
 	}
 
 	constexpr auto operator+(const Vector& v) const noexcept
@@ -88,46 +115,41 @@ struct Vector {
 		return Vector{ x + v.x, y + v.y, z + v.z };
 	}
 
+	constexpr auto operator+(float f) const noexcept
+	{
+		return Vector{ x + f, y + f, z + f };
+	}
+
+	constexpr auto operator-(const Vector& v) const noexcept
+	{
+		return Vector{ x - v.x, y - v.y, z - v.z };
+	}
+
+	constexpr auto operator-(float f) const noexcept
+	{
+		return Vector{ x - f, y - f, z - f };
+	}
+
 	constexpr auto operator*(const Vector& v) const noexcept
 	{
 		return Vector{ x * v.x, y * v.y, z * v.z };
 	}
 
-	constexpr auto operator*=(float mul) noexcept
+	constexpr auto operator*(float f) const noexcept
 	{
-		x *= mul;
-		y *= mul;
-		z *= mul;
-		return *this;
+		return Vector{ x * f, y * f, z * f };
 	}
 
-	constexpr Vector& operator/=(float div) noexcept
+	constexpr auto operator/(const Vector& v) const noexcept
 	{
-		x /= div;
-		y /= div;
-		z /= div;
-		return *this;
+		return Vector{ x / v.x, y / v.y, z / v.z };
 	}
 
-	constexpr auto operator/(float div) const noexcept
+	constexpr auto operator/(float f) const noexcept
 	{
-		return Vector{ x / div, y / div, z / div };
+		return Vector{ x / f, y / f, z / f };
 	}
 
-	constexpr auto operator*(float mul) const noexcept
-	{
-		return Vector{ x * mul, y * mul, z * mul };
-	}
-
-	constexpr auto operator-(float sub) const noexcept
-	{
-		return Vector{ x - sub, y - sub, z - sub };
-	}
-
-	constexpr auto operator+(float add) const noexcept
-	{
-		return Vector{ x + add, y + add, z + add };
-	}
 
 	Vector normalized() noexcept
 	{
@@ -240,32 +262,18 @@ struct Vector {
 		}
 	}
 
-	static auto fromAngleAll(const Vector& angle, Vector* forward, Vector* right, Vector* up) noexcept
+	auto fromAngle(Vector& forward, Vector& right, Vector& up) const noexcept
 	{
-		float sr = std::sin(Helpers::deg2rad(angle.z))
-			, sp = std::sin(Helpers::deg2rad(angle.x))
-			, sy = std::sin(Helpers::deg2rad(angle.y))
-			, cr = std::cos(Helpers::deg2rad(angle.z))
-			, cp = std::cos(Helpers::deg2rad(angle.x))
-			, cy = std::cos(Helpers::deg2rad(angle.y));
+		float sr = std::sin(Helpers::deg2rad(z))
+			, sp = std::sin(Helpers::deg2rad(x))
+			, sy = std::sin(Helpers::deg2rad(y))
+			, cr = std::cos(Helpers::deg2rad(z))
+			, cp = std::cos(Helpers::deg2rad(x))
+			, cy = std::cos(Helpers::deg2rad(y));
 
-		if (forward) {
-			forward->x = cp * cy;
-			forward->y = cp * sy;
-			forward->z = -sp;
-		}
-
-		if (right) {
-			right->x = (-1 * sr * sp * cy + -1 * cr * -sy);
-			right->y = (-1 * sr * sp * sy + -1 * cr * cy);
-			right->z = -1 * sr * cp;
-		}
-
-		if (up) {
-			up->x = (cr * sp * cy + -sr * -sy);
-			up->y = (cr * sp * sy + -sr * cy);
-			up->z = cr * cp;
-		}
+		forward = Vector{ cp * cy, cp * sy, -sp };
+		right = Vector{ (-1 * sr * sp * cy + -1 * cr * -sy), (-1 * sr * sp * sy + -1 * cr * cy), -1 * sr * cp };
+		up = Vector{ (cr * sp * cy + -sr * -sy), (cr * sp * sy + -sr * cy), cr * cp };
 	}
 
 	constexpr auto dotProduct2D(const Vector& v) const noexcept

@@ -62,6 +62,7 @@
 #include "SDK/Platform.h"
 #include "SDK/Prediction.h"
 #include "SDK/PredictionCopy.h"
+#include "SDK/ProtoWriter.h"
 #include "SDK/RenderContext.h"
 #include "SDK/SoundInfo.h"
 #include "SDK/SoundEmitter.h"
@@ -1310,8 +1311,8 @@ static void __fastcall updateFlashBangEffectHook(void* thisPointer, void* edx) n
 		return;
 	}
 
-	static const float FLASH_BUILD_UP_PER_FRAME = 45.0f;
-	static const float FLASH_BUILD_UP_DURATION = (255.0f / FLASH_BUILD_UP_PER_FRAME) * (1.0f / 60.0f);
+	constexpr float FLASH_BUILD_UP_PER_FRAME = 45.0f;
+	constexpr float FLASH_BUILD_UP_DURATION = (255.0f / FLASH_BUILD_UP_PER_FRAME) * (1.0f / 60.0f);
 
 	const float flashTimeElapsed = entity->getFlashTimeElapsed();
 
@@ -1329,7 +1330,7 @@ static void __fastcall updateFlashBangEffectHook(void* thisPointer, void* edx) n
 		entity->flashScreenshotAlpha() = std::clamp(entity->flashScreenshotAlpha(), 0.0f, flashMaxAlpha);
 
 		float alphaPercentage = 1.0f;
-		const float certainBlindnessTimeThresh = 3.0f; // yes this is a magic number, necessary to match CS/CZ flashbang effectiveness cause the rendering system is completely different.
+		constexpr float certainBlindnessTimeThresh = 3.0f; // yes this is a magic number, necessary to match CS/CZ flashbang effectiveness cause the rendering system is completely different.
 
 		if (flashTimeLeft > certainBlindnessTimeThresh) {
 			// if we still have enough time of blindness left, make sure the player can't see anything yet.
@@ -1378,16 +1379,29 @@ static void* __stdcall getClientModelRenderableHook() noexcept
 	return nullptr;
 }
 
-static bool __fastcall dispatchUserMessage(void* thisPointer, void* edx, int messageType, int argument, int secondArgument, void* data) noexcept
+static bool __fastcall dispatchUserMessage(void* thisPointer, void* edx, int messageType, int argument, int length, void* data) noexcept
 {
-	static auto original = hooks->client.getOriginal<bool, 38>(messageType, argument, secondArgument, data);
+	static auto original = hooks->client.getOriginal<bool, 38>(messageType, argument, length, data);
 
-	if (messageType == CS_UM_TextMsg || messageType == CS_UM_HudMsg || messageType == CS_UM_SayText) {
+	switch (messageType) {
+	case CS_UM_TextMsg:
+	case CS_UM_HudMsg:
+	case CS_UM_SayText:
 		if (config->misc.adBlock && !(*(memory->gameRules))->isValveDS())
 			return true;
+		break;
+	case CS_UM_VoteStart:
+		Misc::onVoteStart(data, length);
+		break;
+	case CS_UM_VotePass:
+		Misc::onVotePass();
+		break;
+	case CS_UM_VoteFailed:
+		Misc::onVoteFail();
+		break;
 	}
 
-	return original(thisPointer, messageType, argument, secondArgument, data);
+	return original(thisPointer, messageType, argument, length, data);
 }
 
 static void __fastcall performScreenOverlayHook(void* thisPointer, void* edx, int x, int y, int width, int height) noexcept

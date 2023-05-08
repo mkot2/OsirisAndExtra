@@ -183,40 +183,6 @@ float Helpers::approachValueSmooth(float target, float value, float fraction) no
 	return value + delta;
 }
 
-void Helpers::angleVectors(Vector angles, Vector* forward, Vector* right, Vector* up)
-{
-	float angle;
-	static float sr, sp, sy, cr, cp, cy, cpi = (std::numbers::pi_v<float> * 2.f / 360.f);
-
-	angle = angles.x * cpi;
-	sy = std::sin(angle);
-	cy = std::cos(angle);
-	angle = angles.y * cpi;
-	sp = std::sin(angle);
-	cp = std::cos(angle);
-	angle = angles.z * cpi;
-	sr = std::sin(angle);
-	cr = std::cos(angle);
-
-	if (forward) {
-		forward->y = (cp * cy);
-		forward->x = cp * sy;
-		forward->z = -sp;
-	}
-
-	if (right) {
-		right->y = (-1 * sr * sp * cy + -1 * cr * -sy);
-		right->x = (-1 * sr * sp * sy + -1 * cr * cy);
-		right->z = -1 * sr * cp;
-	}
-
-	if (up) {
-		up->y = (cr * sp * cy + -sr * -sy);
-		up->x = (cr * sp * sy + -sr * cy);
-		up->z = cr * cp;
-	}
-}
-
 float Helpers::angleDiff(float destAngle, float srcAngle) noexcept
 {
 	float delta = std::fmod(destAngle - srcAngle, 360.0f);

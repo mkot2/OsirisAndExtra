@@ -119,7 +119,7 @@ void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const Ragebot::
 	}
 
 	if (bestTarget.notNull()) {
-		if (!AimbotFunction::hitChance(localPlayer.get(), entity, set, matrix, activeWeapon, bestAngle, cmd, cfg[weaponIndex].hitChance)) {
+		if (!AimbotFunction::hitChance(localPlayer.get(), entity, set, matrix, activeWeapon, bestAngle, cmd, cfg[weaponIndex].hitChance, hitboxId)) {
 			bestTarget = Vector{ };
 			bestAngle = Vector{ };
 			damageDiff = FLT_MAX;

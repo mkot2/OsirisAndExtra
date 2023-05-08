@@ -263,10 +263,9 @@ void AnimState::setupMovement() noexcept
 		poseParamMappings[PLAYER_POSE_PARAM_MOVE_BLEND_CROUCH_WALK].setValue(entity, animDuckAmount);
 	}
 
-	char weaponMoveSequenceString[MAX_ANIMSTATE_ANIMNAME_CHARS];
-	std::sprintf(weaponMoveSequenceString, "move_%s", memory->getWeaponPrefix(this));
+	auto weaponMoveSequenceString = std::format("move_{}", memory->getWeaponPrefix(this));
 
-	int weaponMoveSeq = entity->lookupSequence(weaponMoveSequenceString);
+	int weaponMoveSeq = entity->lookupSequence(weaponMoveSequenceString.c_str());
 	if (weaponMoveSeq == -1)
 		weaponMoveSeq = entity->lookupSequence("move");
 
@@ -319,9 +318,8 @@ void AnimState::setupMovement() noexcept
 	bool moveForward = (buttons & (UserCmd::IN_FORWARD)) != 0;
 	bool moveBackward = (buttons & (UserCmd::IN_BACK)) != 0;
 
-	Vector vecForward;
-	Vector vecRight;
-	Vector::fromAngleAll(Vector{ 0.f, footYaw, 0.f }, &vecForward, &vecRight, nullptr);
+	Vector vecForward, vecRight, up;
+	Vector{ 0.f, footYaw, 0.f }.fromAngle(vecForward, vecRight, up);
 	vecRight = vecRight.normalized();
 	float velToRightDot = vecVelocityNormalizedNonZero.dotProduct(vecRight);
 	float velToForwardDot = vecVelocityNormalizedNonZero.dotProduct(vecForward);
@@ -1066,10 +1064,9 @@ float AnimState::calculatePlaybackRate(Vector velocity) noexcept
 		walkToRunTransition = std::max(0.99f, walkToRunTransition);
 	}
 
-	char weaponMoveSequenceString[MAX_ANIMSTATE_ANIMNAME_CHARS];
-	std::sprintf(weaponMoveSequenceString, "move_%s", memory->getWeaponPrefix(this));
+	auto weaponMoveSequenceString = std::format("move_{}", memory->getWeaponPrefix(this));
 
-	int weaponMoveSeq = entity->lookupSequence(weaponMoveSequenceString);
+	int weaponMoveSeq = entity->lookupSequence(weaponMoveSequenceString.c_str());
 	if (weaponMoveSeq == -1)
 		weaponMoveSeq = entity->lookupSequence("move");
 

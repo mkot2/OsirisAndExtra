@@ -5,7 +5,6 @@
 #include "AimbotFunctions.h"
 #include "Animations.h"
 
-#include "../SDK/Angle.h"
 #include "../SDK/ConVar.h"
 #include "../SDK/Entity.h"
 #include "../SDK/UserCmd.h"
@@ -376,34 +375,8 @@ Vector vectorRotate(Vector& in1, Vector& in2) noexcept
 	return vector_rotate(in1, m);
 }
 
-void vectorITransform(const Vector& in1, const matrix3x4& in2, Vector& out) noexcept
-{
-	out.x = (in1.x - in2[0][3]) * in2[0][0] + (in1.y - in2[1][3]) * in2[1][0] + (in1.z - in2[2][3]) * in2[2][0];
-	out.y = (in1.x - in2[0][3]) * in2[0][1] + (in1.y - in2[1][3]) * in2[1][1] + (in1.z - in2[2][3]) * in2[2][1];
-	out.z = (in1.x - in2[0][3]) * in2[0][2] + (in1.y - in2[1][3]) * in2[1][2] + (in1.z - in2[2][3]) * in2[2][2];
-}
-
-void vectorIRotate(Vector in1, matrix3x4 in2, Vector& out) noexcept
-{
-	out.x = in1.x * in2[0][0] + in1.y * in2[1][0] + in1.z * in2[2][0];
-	out.y = in1.x * in2[0][1] + in1.y * in2[1][1] + in1.z * in2[2][1];
-	out.z = in1.x * in2[0][2] + in1.y * in2[1][2] + in1.z * in2[2][2];
-}
-
 bool AimbotFunction::hitboxIntersection(const matrix3x4 matrix[MAXSTUDIOBONES], int iHitbox, StudioHitboxSet* set, const Vector& start, const Vector& end) noexcept
 {
-	auto VectorTransform_Wrapper = [](const Vector& in1, const matrix3x4 in2, Vector& out) {
-		auto VectorTransform = [](const float* in1, const matrix3x4 in2, float* out) {
-			auto DotProducts = [](const float* v1, const float* v2) {
-				return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
-			};
-			out[0] = DotProducts(in1, in2[0]) + in2[0][3];
-			out[1] = DotProducts(in1, in2[1]) + in2[1][3];
-			out[2] = DotProducts(in1, in2[2]) + in2[2][3];
-		};
-		VectorTransform(&in1.x, in2, &out.x);
-	};
-
 	StudioBbox* hitbox = set->getHitbox(iHitbox);
 	if (!hitbox)
 		return false;
@@ -414,18 +387,18 @@ bool AimbotFunction::hitboxIntersection(const matrix3x4 matrix[MAXSTUDIOBONES], 
 	Vector mins, maxs;
 	const auto isCapsule = hitbox->capsuleRadius != -1.f;
 	if (isCapsule) {
-		VectorTransform_Wrapper(hitbox->bbMin, matrix[hitbox->bone], mins);
-		VectorTransform_Wrapper(hitbox->bbMax, matrix[hitbox->bone], maxs);
+		mins = hitbox->bbMin.transform(matrix[hitbox->bone]);
+		maxs = hitbox->bbMax.transform(matrix[hitbox->bone]);
 		const auto dist = segmentToSegment(start, end, mins, maxs);
 
 		if (dist < hitbox->capsuleRadius)
 			return true;
 	} else {
-		VectorTransform_Wrapper(vectorRotate(hitbox->bbMin, hitbox->offsetOrientation), matrix[hitbox->bone], mins);
-		VectorTransform_Wrapper(vectorRotate(hitbox->bbMax, hitbox->offsetOrientation), matrix[hitbox->bone], maxs);
+		mins = vectorRotate(hitbox->bbMin, hitbox->offsetOrientation).transform(matrix[hitbox->bone]);
+		maxs = vectorRotate(hitbox->bbMax, hitbox->offsetOrientation).transform(matrix[hitbox->bone]);
 
-        vectorITransform(start, matrix[hitbox->bone], mins);
-        vectorITransform(end, matrix[hitbox->bone], maxs);
+		mins = start.transform(matrix[hitbox->bone]);
+		maxs = end.transform(matrix[hitbox->bone]);
 
 		if (intersectLineWithBb(mins, maxs, hitbox->bbMin, hitbox->bbMax))
 			return true;
@@ -435,21 +408,9 @@ bool AimbotFunction::hitboxIntersection(const matrix3x4 matrix[MAXSTUDIOBONES], 
 
 std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 matrix[MAXSTUDIOBONES], StudioBbox* hitbox, Vector localEyePos, int _hitbox, int _headMultiPoint, int _bodyMultiPoint)
 {
-	auto VectorTransformWrapper = [](const Vector& in1, const matrix3x4 in2, Vector& out) {
-		auto VectorTransform = [](const float* in1, const matrix3x4 in2, float* out) {
-			auto dotProducts = [](const float* v1, const float* v2) {
-				return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
-			};
-			out[0] = dotProducts(in1, in2[0]) + in2[0][3];
-			out[1] = dotProducts(in1, in2[1]) + in2[1][3];
-			out[2] = dotProducts(in1, in2[2]) + in2[2][3];
-		};
-		VectorTransform(&in1.x, in2, &out.x);
-	};
-
 	Vector min, max, center;
-	VectorTransformWrapper(hitbox->bbMin, matrix[hitbox->bone], min);
-	VectorTransformWrapper(hitbox->bbMax, matrix[hitbox->bone], max);
+	min = hitbox->bbMin.transform(matrix[hitbox->bone]);
+	max = hitbox->bbMax.transform(matrix[hitbox->bone]);
 	center = (min + max) * 0.5f;
 
 	std::vector<Vector> vecArray;
@@ -471,8 +432,8 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 	Vector top = Vector{ 0, 0, 1 };
 	Vector bottom = Vector{ 0, 0, -1 };
 
-	float headMultiPoint = std::min(_headMultiPoint, 95) * 0.01f;
-	float bodyMultiPoint = std::min(_bodyMultiPoint, 95) * 0.01f;
+	float headMultiPoint = _headMultiPoint  * 0.01f;
+	float bodyMultiPoint = _bodyMultiPoint * 0.01f;
 	static auto frameRate = 1.0f;
 	frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
 	// linear scaling 0 - 15 based on how low our fps is compared to the server's tickrate
@@ -502,7 +463,7 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 	return vecArray;
 }
 
-bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitboxSet* set, const matrix3x4 matrix[MAXSTUDIOBONES], Entity* activeWeapon, const Vector& destination, const UserCmd* cmd, const int hitChance) noexcept
+bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitboxSet* set, const matrix3x4 matrix[MAXSTUDIOBONES], Entity* activeWeapon, const Vector& destination, const UserCmd* cmd, const int hitChance, const int hitbox) noexcept
 {
 	static auto isSpreadEnabled = interfaces->cvar->findVar("weapon_accuracy_nospread");
 	if (!hitChance || isSpreadEnabled->getInt() >= 1)
@@ -510,7 +471,8 @@ bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitbox
 
 	constexpr int maxSeed = 256;
 
-	const Angle angles(destination + cmd->viewangles);
+	Vector forward, right, up;
+	(destination + cmd->viewangles).fromAngle(forward, right, up);
 
 	int hits = 0;
 	const int hitsNeed = static_cast<int>(static_cast<float>(maxSeed) * (static_cast<float>(hitChance) / 100.f));
@@ -528,17 +490,15 @@ bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitbox
 
 		Vector spreadView{ std::cos(spreadX) * inaccuracy + std::cos(spreadY) * spread,
 						   std::sin(spreadX) * inaccuracy + std::sin(spreadY) * spread };
-		Vector direction{ (angles.forward + (angles.right * spreadView.x) + (angles.up * spreadView.y)) * range };
+		Vector direction{ (forward + (right * spreadView.x) + (up * spreadView.y)) * range };
 
-		for (int hitbox = 0; hitbox < Max; hitbox++) {
-			if (hitboxIntersection(matrix, hitbox, set, localEyePosition, localEyePosition + direction)) {
-				hits++;
-				break;
-			}
-		}
+		if (hitboxIntersection(matrix, hitbox, set, localEyePosition, localEyePosition + direction))
+			hits++;
 
 		if (hits >= hitsNeed)
 			return true;
+		if (maxSeed - i + hits < hitsNeed)
+			return false;
 	}
 	return false;
 }

@@ -53,7 +53,7 @@ void Visuals::shadowChanger() noexcept
 	cl_csm_rot_y->setValue(config->visuals.shadowsChanger.y);
 }
 
-#define SMOKEGRENADE_LIFETIME 17.5f
+constexpr float smokeLifetime = 17.5f;
 
 struct smokeData {
 	float destructionTime;
@@ -68,7 +68,7 @@ void Visuals::drawSmokeTimerEvent(GameEvent* event) noexcept
 		return;
 
 	smokeData data{};
-	const auto time = memory->globalVars->realtime + SMOKEGRENADE_LIFETIME;
+	const auto time = memory->globalVars->realtime + smokeLifetime;
 	const auto pos = Vector(event->getFloat("x"), event->getFloat("y"), event->getFloat("z"));
 	data.destructionTime = time;
 	data.pos = pos;
@@ -101,7 +101,7 @@ void Visuals::drawSmokeTimer(ImDrawList* drawList) noexcept
 					pos.y - (textSize.y / 2) - 2.f);
 
 				ImRect rect_in(
-					(pos.x + (textSize.x / 2)) - (textSize.x * (1.0f - (time / SMOKEGRENADE_LIFETIME))),
+					(pos.x + (textSize.x / 2)) - (textSize.x * (1.0f - (time / smokeLifetime))),
 					pos.y + (textSize.y / 2),
 					pos.x - (textSize.x / 2),
 					pos.y + (textSize.y));
@@ -115,7 +115,7 @@ void Visuals::drawSmokeTimer(ImDrawList* drawList) noexcept
 	}
 }
 
-#define MOLOTOV_LIFETIME 7.0f
+constexpr float molotovLifetime = 7.0f;
 
 struct molotovData {
 	float destructionTime;
@@ -130,7 +130,7 @@ void Visuals::drawMolotovTimerEvent(GameEvent* event) noexcept
 		return;
 
 	molotovData data{};
-	const auto time = memory->globalVars->realtime + MOLOTOV_LIFETIME;
+	const auto time = memory->globalVars->realtime + molotovLifetime;
 	const auto pos = Vector(event->getFloat("x"), event->getFloat("y"), event->getFloat("z"));
 	data.destructionTime = time;
 	data.pos = pos;
@@ -175,7 +175,7 @@ void Visuals::drawMolotovTimer(ImDrawList* drawList) noexcept
 					pos.y - (textSize.y / 2) - 2.f);
 
 				ImRect rect_in(
-					(pos.x + (textSize.x / 2)) - (textSize.x * (1.0f - (time / MOLOTOV_LIFETIME))),
+					(pos.x + (textSize.x / 2)) - (textSize.x * (1.0f - (time / molotovLifetime))),
 					pos.y + (textSize.y / 2),
 					pos.x - (textSize.x / 2),
 					pos.y + (textSize.y));
@@ -506,10 +506,6 @@ void Visuals::removeGrass(FrameStage stage) noexcept
 		switch (fnv::hashRuntime(interfaces->engine->getLevelName())) {
 		case fnv::hash("dz_blacksite"): return "detail/detailsprites_survival";
 		case fnv::hash("dz_sirocco"): return "detail/dust_massive_detail_sprites";
-		case fnv::hash("coop_autumn"): return "detail/autumn_detail_sprites";
-		case fnv::hash("dz_frostbite"): return "ski/detail/detailsprites_overgrown_ski";
-			// dz_junglety has been removed in 7/23/2020 patch
-			// case fnv::hash("dz_junglety"): return "detail/tropical_grass";
 		default: return nullptr;
 		}
 	};
@@ -721,10 +717,8 @@ void Visuals::motionBlur(ViewSetup* setup) noexcept
 		const float currentPitch = Helpers::normalizeYaw(viewangles.x);
 		const float currentYaw = Helpers::normalizeYaw(viewangles.y);
 
-		Vector currentSideVector;
-		Vector currentForwardVector;
-		Vector currentUpVector;
-		Vector::fromAngleAll(setup->angles, &currentForwardVector, &currentSideVector, &currentUpVector);
+		Vector currentForwardVector, currentSideVector, currentUpVector;
+		setup->angles.fromAngle(currentForwardVector, currentSideVector, currentUpVector);
 
 		Vector currentPosition = setup->origin;
 		Vector positionChange = history.previousPositon - currentPosition;

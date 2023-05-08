@@ -393,11 +393,9 @@ float build_server_abs_yaw(Entity* entity, const float angle)
 void resolver::detect_side(Entity* entity, int* side)
 {
 	/* externals */
-	Vector forward{};
-	Vector right{};
-	Vector up{};
+	Vector forward, right, up;
+	Vector(0, get_backward_side(entity), 0).fromAngle(forward, right, up);
 	Trace tr;
-	Helpers::angleVectors(Vector(0, get_backward_side(entity), 0), &forward, &right, &up);
 	/* filtering */
 
 	const Vector src_3d = entity->getEyePosition();

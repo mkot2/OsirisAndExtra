@@ -202,7 +202,6 @@
     <ClInclude Include="Resources\avatar_tt.h" />
     <ClInclude Include="Resources\Resource.h" />
     <ClInclude Include="Resources\skillgroups.h" />
-    <ClInclude Include="SDK\Angle.h" />
     <ClInclude Include="SDK\AnimState.h" />
     <ClInclude Include="SDK\BitBuffer.h" />
     <ClInclude Include="SDK\checksum_crc.h" />
@@ -257,6 +256,8 @@
     <ClInclude Include="SDK\PlayerResource.h" />
     <ClInclude Include="SDK\Prediction.h" />
     <ClInclude Include="SDK\PredictionCopy.h" />
+    <ClInclude Include="SDK\ProtoField.h" />
+    <ClInclude Include="SDK\ProtoWriter.h" />
     <ClInclude Include="SDK\Recv.h" />
     <ClInclude Include="SDK\RenderContext.h" />
     <ClInclude Include="SDK\RenderView.h" />
