@@ -1316,7 +1316,7 @@ void Misc::updateClanTag(bool tagChanged) noexcept
 	static auto lastTime = 0.0f;
 
 	if (config->misc.customClanTag) {
-		if ((memory->globalVars->realtime - GameData::getNetOutgoingLatency() - lastTime < config->misc.tagUpdateInterval) && (!tagChanged || origTag.empty()) && config->misc.tagType != 5)
+		if ((memory->globalVars->realtime - interfaces->engine->getNetworkChannel()->getLatency(0) - lastTime < config->misc.tagUpdateInterval) && (!tagChanged || origTag.empty()) && config->misc.tagType != 5)
 			return;
 
 		auto offset = 0;

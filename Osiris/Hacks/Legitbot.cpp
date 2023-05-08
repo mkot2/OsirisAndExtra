@@ -1,5 +1,6 @@
 #include "AimbotFunctions.h"
 #include "Animations.h"
+#include "Backtrack.h"
 #include "Legitbot.h"
 
 #include "../SDK/UserCmd.h"
@@ -74,126 +75,167 @@ void Legitbot::run(UserCmd* cmd) noexcept
 	if (!cfg[weaponIndex].ignoreFlash && localPlayer->isFlashed())
 		return;
 
-	if (cfg[weaponIndex].enabled && (cmd->buttons & UserCmd::IN_ATTACK || cfg[weaponIndex].aimlock)) {
+	if (!(cfg[weaponIndex].enabled && (cmd->buttons & UserCmd::IN_ATTACK || cfg[weaponIndex].aimlock)))
+		return;
 
-		auto bestFov = cfg[weaponIndex].fov;
-		Vector bestTarget{ };
-		const auto localPlayerEyePosition = localPlayer->getEyePosition();
+	float bestFov = cfg[weaponIndex].fov;
+	Vector bestTarget{ };
+	const auto localPlayerEyePosition = localPlayer->getEyePosition();
 
-		std::array<bool, Max> hitbox{ false };
+	std::array<bool, Max> hitbox{ false };
 
-		// Head
-		hitbox[Head] = (cfg[weaponIndex].hitboxes & 1 << 0) == 1 << 0;
-		// Chest
-		hitbox[Neck] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
-		hitbox[UpperChest] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
-		hitbox[Thorax] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
-		hitbox[LowerChest] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
-		// Stomach
-		hitbox[Belly] = (cfg[weaponIndex].hitboxes & 1 << 2) == 1 << 2;
-		hitbox[Pelvis] = (cfg[weaponIndex].hitboxes & 1 << 2) == 1 << 2;
-		// Arms
-		hitbox[RightUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
-		hitbox[RightForearm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
-		hitbox[RightHand] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
-		hitbox[LeftUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
-		hitbox[LeftForearm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
-		hitbox[LeftHand] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
-		// Legs
-		hitbox[RightCalf] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
-		hitbox[RightThigh] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
-		hitbox[LeftCalf] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
-		hitbox[LeftThigh] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
-		// Feet
-		hitbox[LeftFoot] = (cfg[weaponIndex].hitboxes & 1 << 5) == 1 << 5;
-		hitbox[RightFoot] = (cfg[weaponIndex].hitboxes & 1 << 5) == 1 << 5;
+	// Head
+	hitbox[Head] = (cfg[weaponIndex].hitboxes & 1 << 0) == 1 << 0;
+	// Chest
+	hitbox[Neck] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
+	hitbox[UpperChest] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
+	hitbox[Thorax] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
+	hitbox[LowerChest] = (cfg[weaponIndex].hitboxes & 1 << 1) == 1 << 1;
+	// Stomach
+	hitbox[Belly] = (cfg[weaponIndex].hitboxes & 1 << 2) == 1 << 2;
+	hitbox[Pelvis] = (cfg[weaponIndex].hitboxes & 1 << 2) == 1 << 2;
+	// Arms
+	hitbox[RightUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+	hitbox[RightForearm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+	hitbox[RightHand] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+	hitbox[LeftUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+	hitbox[LeftForearm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+	hitbox[LeftHand] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+	// Legs
+	hitbox[RightCalf] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
+	hitbox[RightThigh] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
+	hitbox[LeftCalf] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
+	hitbox[LeftThigh] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
+	// Feet
+	hitbox[LeftFoot] = (cfg[weaponIndex].hitboxes & 1 << 5) == 1 << 5;
+	hitbox[RightFoot] = (cfg[weaponIndex].hitboxes & 1 << 5) == 1 << 5;
 
-		for (int i = 1; i <= interfaces->engine->getMaxClients(); i++) {
-			auto entity = interfaces->entityList->getEntity(i);
-			if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive()
-				|| !entity->isOtherEnemy(localPlayer.get()) && !cfg[weaponIndex].friendlyFire || entity->gunGameImmunity())
+	std::vector<AimbotFunction::Enemies> enemies;
+	const auto& localPlayerOrigin{ localPlayer->getAbsOrigin() };
+	for (int i = 1; i <= interfaces->engine->getMaxClients(); ++i) {
+		const auto player = Animations::getPlayer(i);
+		if (!player.gotMatrix)
+			continue;
+
+		const auto entity{ interfaces->entityList->getEntity(i) };
+		if (!entity || entity == localPlayer.get() || entity->isDormant() || !entity->isAlive()
+			|| !entity->isOtherEnemy(localPlayer.get()) && !cfg[weaponIndex].friendlyFire || entity->gunGameImmunity())
+			continue;
+
+		const auto angle{ AimbotFunction::calculateRelativeAngle(localPlayerEyePosition, player.matrix[8].origin(), cmd->viewangles + aimPunch) };
+		const auto fov{ angle.length2D() }; //fov
+		const auto health{ entity->health() }; //health
+		const auto& origin{ entity->getAbsOrigin() };
+		const auto distance{ localPlayerOrigin.distTo(origin) }; //distance
+		enemies.emplace_back(i, health, distance, fov);
+	}
+
+	if (enemies.empty())
+		return;
+
+	std::ranges::sort(enemies, AimbotFunction::fovSort);
+
+	for (const auto& target : enemies) {
+		auto entity{ interfaces->entityList->getEntity(target.id) };
+		auto player = Animations::getPlayer(target.id);
+		int minDamage = cfg[weaponIndex].killshot ? entity->health() : cfg[weaponIndex].minDamage;
+
+		matrix3x4* backupBoneCache = entity->getBoneCache().memory;
+		Vector backupMins = entity->getCollideable()->obbMins();
+		Vector backupMaxs = entity->getCollideable()->obbMaxs();
+		Vector backupOrigin = entity->getAbsOrigin();
+		Vector backupAbsAngle = entity->getAbsAngle();
+
+		for (int cycle = 0; cycle < 2; cycle++) {
+			float currentSimulationTime = -1.0f;
+			if (cycle == 1)
 				continue;
 
-			const Model* model = entity->getModel();
-			if (!model)
+			std::memcpy(entity->getBoneCache().memory, player.matrix.data(), std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
+			memory->setAbsOrigin(entity, player.origin);
+			memory->setAbsAngle(entity, Vector{ 0.f, player.absAngle.y, 0.f });
+			memory->setCollisionBounds(entity->getCollideable(), player.mins, player.maxs);
+
+			currentSimulationTime = player.simulationTime;
+		}
+
+		const Model* model = entity->getModel();
+		if (!model)
+			continue;
+
+		StudioHdr* hdr = interfaces->modelInfo->getStudioModel(model);
+		if (!hdr)
+			continue;
+
+		StudioHitboxSet* set = hdr->getHitboxSet(0);
+		if (!set)
+			continue;
+
+		for (size_t j = 0; j < hitbox.size(); j++) {
+			if (!hitbox[j])
 				continue;
 
-			StudioHdr* hdr = interfaces->modelInfo->getStudioModel(model);
-			if (!hdr)
+			StudioBbox* hitbox = set->getHitbox(j);
+			if (!hitbox)
 				continue;
 
-			StudioHitboxSet* set = hdr->getHitboxSet(0);
-			if (!set)
-				continue;
-
-			const auto player = Animations::getPlayer(i);
-			if (!player.gotMatrix)
-				continue;
-
-			for (size_t j = 0; j < hitbox.size(); j++) {
-				if (!hitbox[j])
+			for (auto& bonePosition : AimbotFunction::multiPoint(entity, player.matrix.data(), hitbox, localPlayerEyePosition, j, 50, 50)) {
+				const auto angle{ AimbotFunction::calculateRelativeAngle(localPlayerEyePosition, bonePosition, cmd->viewangles + aimPunch) };
+				const auto fov{ angle.length2D() };
+				if (fov > bestFov)
 					continue;
 
-				StudioBbox* hitbox = set->getHitbox(j);
-				if (!hitbox)
+				if (!cfg[weaponIndex].ignoreSmoke && memory->lineGoesThroughSmoke(localPlayerEyePosition, bonePosition, 1))
 					continue;
 
-				for (auto& bonePosition : AimbotFunction::multiPoint(entity, player.matrix.data(), hitbox, localPlayerEyePosition, j, 50, 50)) {
-					const auto angle{ AimbotFunction::calculateRelativeAngle(localPlayerEyePosition, bonePosition, cmd->viewangles + aimPunch) };
-					const auto fov{ angle.length2D() };
-					if (fov > bestFov)
-						continue;
+				if (!entity->isVisible(bonePosition) && (cfg[weaponIndex].visibleOnly || !AimbotFunction::canScan(entity, bonePosition, activeWeapon->getWeaponData(), cfg[weaponIndex].killshot ? entity->health() : cfg[weaponIndex].minDamage, cfg[weaponIndex].friendlyFire)))
+					continue;
 
-					if (!cfg[weaponIndex].ignoreSmoke && memory->lineGoesThroughSmoke(localPlayerEyePosition, bonePosition, 1))
-						continue;
-
-					if (!entity->isVisible(bonePosition) && (cfg[weaponIndex].visibleOnly || !AimbotFunction::canScan(entity, bonePosition, activeWeapon->getWeaponData(), cfg[weaponIndex].killshot ? entity->health() : cfg[weaponIndex].minDamage, cfg[weaponIndex].friendlyFire)))
-						continue;
-
-					if (fov < bestFov) {
-						bestFov = fov;
-						bestTarget = bonePosition;
-					}
-				}
+				bestFov = fov;
+				bestTarget = bonePosition;
 			}
 		}
 
-		static float lastTime = 0.f;
-		if (bestTarget.notNull()) {
-			if (memory->globalVars->realtime - lastTime <= static_cast<float>(cfg[weaponIndex].reactionTime) / 1000.f)
-				return;
-
-			static Vector lastAngles{ cmd->viewangles };
-			static int lastCommand{ };
-
-			if (lastCommand == cmd->commandNumber - 1 && lastAngles.notNull() && cfg[weaponIndex].silent)
-				cmd->viewangles = lastAngles;
-
-			auto angle = AimbotFunction::calculateRelativeAngle(localPlayerEyePosition, bestTarget, cmd->viewangles + aimPunch);
-			bool clamped{ false };
-
-			if (std::abs(angle.x) > config->misc.maxAngleDelta || std::abs(angle.y) > config->misc.maxAngleDelta) {
-				angle.x = std::clamp(angle.x, -config->misc.maxAngleDelta, config->misc.maxAngleDelta);
-				angle.y = std::clamp(angle.y, -config->misc.maxAngleDelta, config->misc.maxAngleDelta);
-				clamped = true;
-			}
-
-			if (cfg[weaponIndex].autoScope && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !(cmd->buttons & (UserCmd::IN_JUMP)) && !clamped)
-				cmd->buttons |= UserCmd::IN_ATTACK2;
-
-			if (cfg[weaponIndex].scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped())
-				return;
-
-			angle /= cfg[weaponIndex].smooth;
-			cmd->viewangles += angle;
-			if (!cfg[weaponIndex].silent)
-				interfaces->engine->setViewAngles(cmd->viewangles);
-
-			if (clamped || cfg[weaponIndex].smooth > 1.0f) lastAngles = cmd->viewangles;
-			else lastAngles = Vector{ };
-
-			lastCommand = cmd->commandNumber;
-		} else
-			lastTime = memory->globalVars->realtime;
+		resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
+		if (bestTarget.notNull())
+			break;
 	}
+
+	static float lastTime = 0.f;
+	if (bestTarget.notNull()) {
+		if (memory->globalVars->realtime - lastTime <= static_cast<float>(cfg[weaponIndex].reactionTime) / 1000.f)
+			return;
+
+		static Vector lastAngles{ cmd->viewangles };
+		static int lastCommand{ };
+
+		if (lastCommand == cmd->commandNumber - 1 && lastAngles.notNull() && cfg[weaponIndex].silent)
+			cmd->viewangles = lastAngles;
+
+		auto angle = AimbotFunction::calculateRelativeAngle(localPlayerEyePosition, bestTarget, cmd->viewangles + aimPunch);
+		bool clamped{ false };
+
+		if (std::abs(angle.x) > config->misc.maxAngleDelta || std::abs(angle.y) > config->misc.maxAngleDelta) {
+			angle.x = std::clamp(angle.x, -config->misc.maxAngleDelta, config->misc.maxAngleDelta);
+			angle.y = std::clamp(angle.y, -config->misc.maxAngleDelta, config->misc.maxAngleDelta);
+			clamped = true;
+		}
+
+		if (cfg[weaponIndex].autoScope && activeWeapon->isSniperRifle() && !localPlayer->isScoped() && !(cmd->buttons & (UserCmd::IN_JUMP)) && !clamped)
+			cmd->buttons |= UserCmd::IN_ATTACK2;
+
+		if (cfg[weaponIndex].scopedOnly && activeWeapon->isSniperRifle() && !localPlayer->isScoped())
+			return;
+
+		angle /= cfg[weaponIndex].smooth;
+		cmd->viewangles += angle;
+		if (!cfg[weaponIndex].silent)
+			interfaces->engine->setViewAngles(cmd->viewangles);
+
+		if (clamped || cfg[weaponIndex].smooth > 1.0f) lastAngles = cmd->viewangles;
+		else lastAngles = Vector{ };
+
+		lastCommand = cmd->commandNumber;
+	} else
+		lastTime = memory->globalVars->realtime;
 }

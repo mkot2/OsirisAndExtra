@@ -26,7 +26,7 @@ void Ragebot::updateInput() noexcept
 	config->minDamageOverrideKey.handleToggle();
 }
 
-void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const Ragebot::Enemies target, const std::array<bool,
+void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const AimbotFunction::Enemies target, const std::array<bool,
 	Max> hitbox, Entity* activeWeapon, const int weaponIndex, const Vector localPlayerEyePosition, const Vector aimPunch, const int headMultiPoint, const int bodyMultiPoint, const int minDamage, float& damageDiff, Vector& bestAngle, Vector& bestTarget, int& bestIndex, float& bestSimulationTime) noexcept
 {
 	Ragebot::latest_player = entity->getPlayerName();
@@ -205,7 +205,7 @@ void Ragebot::run(UserCmd* cmd) noexcept
 	}
 
 
-	std::vector<Enemies> enemies;
+	std::vector<AimbotFunction::Enemies> enemies;
 	const auto& localPlayerOrigin{ localPlayer->getAbsOrigin() };
 	for (int i = 1; i <= interfaces->engine->getMaxClients(); ++i) {
 		const auto player = Animations::getPlayer(i);
@@ -230,13 +230,13 @@ void Ragebot::run(UserCmd* cmd) noexcept
 
 	switch (cfg[weaponIndex].priority) {
 	case 0:
-		std::ranges::sort(enemies, healthSort);
+		std::ranges::sort(enemies, AimbotFunction::healthSort);
 		break;
 	case 1:
-		std::ranges::sort(enemies, distanceSort);
+		std::ranges::sort(enemies, AimbotFunction::distanceSort);
 		break;
 	case 2:
-		std::ranges::sort(enemies, fovSort);
+		std::ranges::sort(enemies, AimbotFunction::fovSort);
 		break;
 	default:
 		break;
