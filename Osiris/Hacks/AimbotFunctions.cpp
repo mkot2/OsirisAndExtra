@@ -415,7 +415,7 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 
 	std::vector<Vector> vecArray;
 
-	if (_headMultiPoint <= 0 && _hitbox == 0 || _bodyMultiPoint <= 0 && _hitbox != 0) {
+	if ((_headMultiPoint <= 0 && _hitbox == 0) || (_bodyMultiPoint <= 0 && _hitbox != 0)) {
 		vecArray.emplace_back(center);
 		return vecArray;
 	}
@@ -426,7 +426,7 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 	Vector forward;
 	Vector::fromAngle(currentAngles, &forward);
 
-	Vector right = forward.cross(Vector{ 0, 0, 1 });
+	Vector right = forward.crossProduct(Vector{ 0, 0, 1 });
 	Vector left = Vector{ -right.x, -right.y, right.z };
 
 	Vector top = Vector{ 0, 0, 1 };

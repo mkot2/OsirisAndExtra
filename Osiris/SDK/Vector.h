@@ -8,12 +8,12 @@
 class matrix3x4;
 
 struct Vector {
-	constexpr auto notNull() const noexcept
+	constexpr bool notNull() const noexcept
 	{
 		return x || y || z;
 	}
 
-	constexpr auto null() const noexcept
+	constexpr bool null() const noexcept
 	{
 		return !notNull();
 	}
@@ -28,12 +28,12 @@ struct Vector {
 		return ((float*)this)[i];
 	}
 
-	constexpr auto operator==(const Vector& v) const noexcept
+	constexpr bool operator==(const Vector& v) const noexcept
 	{
 		return x == v.x && y == v.y && z == v.z;
 	}
 
-	constexpr auto operator!=(const Vector& v) const noexcept
+	constexpr bool operator!=(const Vector& v) const noexcept
 	{
 		return !(*this == v);
 	}
@@ -110,46 +110,45 @@ struct Vector {
 		return *this;
 	}
 
-	constexpr auto operator+(const Vector& v) const noexcept
+	constexpr Vector operator+(const Vector& v) const noexcept
 	{
 		return Vector{ x + v.x, y + v.y, z + v.z };
 	}
 
-	constexpr auto operator+(float f) const noexcept
+	constexpr Vector operator+(float f) const noexcept
 	{
 		return Vector{ x + f, y + f, z + f };
 	}
 
-	constexpr auto operator-(const Vector& v) const noexcept
+	constexpr Vector operator-(const Vector& v) const noexcept
 	{
 		return Vector{ x - v.x, y - v.y, z - v.z };
 	}
 
-	constexpr auto operator-(float f) const noexcept
+	constexpr Vector operator-(float f) const noexcept
 	{
 		return Vector{ x - f, y - f, z - f };
 	}
 
-	constexpr auto operator*(const Vector& v) const noexcept
+	constexpr Vector operator*(const Vector& v) const noexcept
 	{
 		return Vector{ x * v.x, y * v.y, z * v.z };
 	}
 
-	constexpr auto operator*(float f) const noexcept
+	constexpr Vector operator*(float f) const noexcept
 	{
 		return Vector{ x * f, y * f, z * f };
 	}
 
-	constexpr auto operator/(const Vector& v) const noexcept
+	constexpr Vector operator/(const Vector& v) const noexcept
 	{
 		return Vector{ x / v.x, y / v.y, z / v.z };
 	}
 
-	constexpr auto operator/(float f) const noexcept
+	constexpr Vector operator/(float f) const noexcept
 	{
 		return Vector{ x / f, y / f, z / f };
 	}
-
 
 	Vector normalized() noexcept
 	{
@@ -166,15 +165,15 @@ struct Vector {
 		return v;
 	}
 
-	Vector clamp() noexcept
+	constexpr Vector& clamp() noexcept
 	{
-		this->x = std::clamp(this->x, -89.f, 89.f);
-		this->y = std::clamp(this->y, -180.f, 180.f);
-		this->z = std::clamp(this->z, -50.f, 50.f);
+		x = std::clamp(x, -89.f, 89.f);
+		y = std::clamp(y, -180.f, 180.f);
+		z = std::clamp(z, -50.f, 50.f);
 		return *this;
 	}
 
-	Vector& normalize() noexcept
+	constexpr Vector& normalize() noexcept
 	{
 		x = std::isfinite(x) ? std::remainder(x, 360.0f) : 0.0f;
 		y = std::isfinite(y) ? std::remainder(y, 360.0f) : 0.0f;
@@ -192,12 +191,12 @@ struct Vector {
 		return std::sqrt(x * x + y * y);
 	}
 
-	constexpr auto squareLength() const noexcept
+	constexpr float squareLength() const noexcept
 	{
 		return x * x + y * y + z * z;
 	}
 
-	constexpr auto dotProduct(const Vector& v) const noexcept
+	constexpr float dotProduct(const Vector& v) const noexcept
 	{
 		return x * v.x + y * v.y + z * v.z;
 	}
@@ -284,27 +283,6 @@ struct Vector {
 	constexpr auto crossProduct(const Vector& v) const noexcept
 	{
 		return Vector{ y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x };
-	}
-
-	void vectorCrossProduct(const Vector& a, const Vector& b, Vector& result) noexcept
-	{
-		result.x = a.y * b.z - a.z * b.y;
-		result.y = a.z * b.x - a.x * b.z;
-		result.z = a.x * b.y - a.y * b.x;
-	}
-
-	static void vectorSubtract(const Vector& a, const Vector& b, Vector& c) noexcept
-	{
-		c.x = a.x - b.x;
-		c.y = a.y - b.y;
-		c.z = a.z - b.z;
-	}
-
-	Vector cross(const Vector& other) noexcept
-	{
-		Vector v;
-		vectorCrossProduct(*this, other, v);
-		return v;
 	}
 
 	constexpr static auto up() noexcept

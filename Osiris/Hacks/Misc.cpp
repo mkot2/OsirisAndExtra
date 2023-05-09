@@ -1034,7 +1034,7 @@ void Misc::viewModelChanger(ViewSetup* setup) noexcept
 		if (viewModel) {
 			Vector forward = Vector::fromAngle(angles);
 			Vector up = Vector::fromAngle(angles - Vector{ 90.0f, 0.0f, 0.0f });
-			Vector side = forward.cross(up);
+			Vector side = forward.crossProduct(up);
 			Vector offset = side * config->visuals.viewModel.x + forward * config->visuals.viewModel.y + up * config->visuals.viewModel.z;
 			memory->setAbsOrigin(viewModel, viewModel->getRenderOrigin() + offset);
 			memory->setAbsAngle(viewModel, angles + Vector{ 0.0f, 0.0f, config->visuals.viewModel.roll });

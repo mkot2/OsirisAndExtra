@@ -76,7 +76,7 @@ struct Box : ColorToggleRounding {
 
 	int type = _2d;
 	std::array<float, 3> scale{ 0.25f, 0.25f, 0.25f };
-	ColorToggle fill{ 1.0f, 1.0f, 1.0f, 0.4f };
+	ColorToggle fill{ {1.0f, 1.0f, 1.0f, 0.4f} };
 };
 
 struct Shared {
@@ -179,7 +179,7 @@ struct KillfeedChanger {
 };
 
 struct OffscreenEnemies : ColorToggle {
-	OffscreenEnemies() : ColorToggle{ { 1.0f, 0.26f, 0.21f, 1.0f } } {}
+	OffscreenEnemies() : ColorToggle{ { {1.0f, 0.26f, 0.21f, 1.0f} } } {}
 	HealthBar healthBar;
 };
 
@@ -194,7 +194,7 @@ struct AutoBuy {
 };
 
 struct BulletTracers : ColorToggle {
-	BulletTracers() : ColorToggle{ { 0.0f, 0.75f, 1.0f, 1.0f } } {}
+	BulletTracers() : ColorToggle{ { {0.0f, 0.75f, 1.0f, 1.0f} } } {}
 };
 
 enum class Yaw {

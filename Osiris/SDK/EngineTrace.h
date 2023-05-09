@@ -14,13 +14,13 @@ class matrix3x4;
 
 struct Ray {
 	Ray(const Vector& src, const Vector& dest)
-		: start(src), delta(dest - src), extents(Vector{ }), startOffset(Vector{ }), worldAxisTransform(NULL), isRay(true)
+		: start(src), delta(dest - src), startOffset(Vector{ }), extents(Vector{ }), worldAxisTransform(NULL), isRay(true)
 	{
 		isSwept = delta.x || delta.y || delta.z;
 	}
 
 	Ray(const Vector& src, const Vector& dest, const Vector& mins, const Vector& maxs)
-		: delta(dest - src), extents(maxs - mins), startOffset(maxs + mins), worldAxisTransform(NULL)
+		: delta(dest - src), startOffset(maxs + mins), extents(maxs - mins), worldAxisTransform(NULL)
 	{
 		isSwept = delta.x || delta.y || delta.z;
 		extents *= 0.5f;

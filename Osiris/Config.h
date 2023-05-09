@@ -149,7 +149,7 @@ public:
 	};
 	std::array<Legitbot, 40> legitbot;
 	KeyBind legitbotKey{ std::string("legitbot") };
-	ColorToggle legitbotFov{ 1.0f, 1.0f, 1.0f, 1.0f };
+	ColorToggle legitbotFov{ {1.0f, 1.0f, 1.0f, 1.0f} };
 
 	struct RecoilControlSystem {
 		bool enabled{ false };
@@ -292,7 +292,7 @@ public:
 		} motionBlur;
 
 		struct FootstepESP {
-			ColorToggle footstepBeams{ 0.2f, 0.5f, 1.f, 1.0f };
+			ColorToggle footstepBeams{ {0.2f, 0.5f, 1.f, 1.0f} };
 			int footstepBeamRadius = 0;
 			int footstepBeamThickness = 0;
 		} footsteps;
@@ -301,21 +301,21 @@ public:
 		float hitEffectTime{ 0.6f };
 		int hitMarker{ 0 };
 		float hitMarkerTime{ 0.6f };
-		ColorToggle bulletImpacts{ 0.0f, 0.0f, 1.f, 0.5f };
+		ColorToggle bulletImpacts{ {0.0f, 0.0f, 1.f, 0.5f} };
 		float bulletImpactsTime{ 4.f };
 		int playerModelT{ 0 };
 		int playerModelCT{ 0 };
 		char playerModel[256]{ };
 		bool disableJiggleBones{ false };
 		BulletTracers bulletTracers;
-		ColorToggle molotovHull{ 1.0f, 0.27f, 0.0f, 0.3f };
-		ColorToggle smokeHull{ 0.5f, 0.5f, 0.5f, 0.3f };
-		ColorToggle nadeBlast{ 1.0f, 0.0f, 0.0f, 0.3f };
+		ColorToggle molotovHull{ {1.0f, 0.27f, 0.0f, 0.3f} };
+		ColorToggle smokeHull{ {0.5f, 0.5f, 0.5f, 0.3f} };
+		ColorToggle nadeBlast{ {1.0f, 0.0f, 0.0f, 0.3f} };
 		struct MolotovPolygon {
 			bool enabled{ false };
-			Color4 enemy{ 1.f, 0.27f, 0.f, 0.3f };
-			Color4 team{ 0.37f, 1.f, 0.37f, 0.3f };
-			Color4 self{ 1.f, 0.09f, 0.96f, 0.3f };
+			Color4 enemy{ {1.f, 0.27f, 0.f, 0.3f} };
+			Color4 team{ {0.37f, 1.f, 0.37f, 0.3f} };
+			Color4 self{ {1.f, 0.09f, 0.96f, 0.3f} };
 		} molotovPolygon;
 		struct Viewmodel {
 			bool enabled{ false };
@@ -326,20 +326,20 @@ public:
 			float roll{ 0.0f };
 		} viewModel;
 		struct OnHitHitbox {
-			ColorToggle color{ 1.f, 1.f, 1.f, 1.f };
+			ColorToggle color{ {1.f, 1.f, 1.f, 1.f} };
 			float duration = 2.f;
 		} onHitHitbox;
-		ColorToggleOutline spreadCircle{ 1.0f, 1.0f, 1.0f, 0.25f };
+		ColorToggleOutline spreadCircle{ {1.0f, 1.0f, 1.0f, 0.25f} };
 		int asusWalls = 100;
 		int asusProps = 100;
 		bool smokeTimer{ false };
-		Color4 smokeTimerBG{ 1.0f, 1.0f, 1.0f, 0.5f };
-		Color4 smokeTimerTimer{ 0.0f, 0.0f, 1.0f, 1.0f };
-		Color4 smokeTimerText{ 0.0f, 0.0f, 0.0f, 1.0f };
+		Color4 smokeTimerBG{ {1.0f, 1.0f, 1.0f, 0.5f} };
+		Color4 smokeTimerTimer{ {0.0f, 0.0f, 1.0f, 1.0f} };
+		Color4 smokeTimerText{ {0.0f, 0.0f, 0.0f, 1.0f} };
 		bool molotovTimer{ false };
-		Color4 molotovTimerBG{ 1.0f, 1.0f, 1.0f, 0.5f };
-		Color4 molotovTimerTimer{ 0.0f, 0.0f, 1.0f, 1.0f };
-		Color4 molotovTimerText{ 0.0f, 0.0f, 0.0f, 1.0f };
+		Color4 molotovTimerBG{ {1.0f, 1.0f, 1.0f, 0.5f} };
+		Color4 molotovTimerTimer{ {0.0f, 0.0f, 1.0f, 1.0f} };
+		Color4 molotovTimerText{ {0.0f, 0.0f, 0.0f, 1.0f} };
 		float glowOutlineWidth{ 6.0f };
 	} visuals;
 
@@ -382,7 +382,7 @@ public:
 		KeyBind slowwalkKey{ std::string("slowwalk") };
 		bool fakeduck{ false };
 		KeyBind fakeduckKey{ std::string("fakeduck") };
-		ColorToggle autoPeek{ 1.0f, 1.0f, 1.0f, 1.0f };
+		ColorToggle autoPeek{ {1.0f, 1.0f, 1.0f, 1.0f} };
 		KeyBind autoPeekKey{ std::string("autopeek") };
 		bool autoPistol{ false };
 		bool autoReload{ false };
@@ -414,7 +414,7 @@ public:
 		bool recoilCrosshair{ false };
 		ColorToggleThickness nadeDamagePredict;
 		Color4 nadeTrailPredict;
-		Color4 nadeCirclePredict{ 0.f, 0.5f, 1.f, 1.f };
+		Color4 nadeCirclePredict{ {0.f, 0.5f, 1.f, 1.f} };
 
 		struct SpectatorList {
 			bool enabled = false;
@@ -447,9 +447,9 @@ public:
 		};
 		Watermark watermark;
 		float aspectratio{ 0 };
-		ColorToggle3 bombTimer{ 0.3f, 0.1f, 0.3f };
-		ColorToggle3 hurtIndicator{ 0.0f, 0.8f, 0.7f };
-		ColorToggle yawIndicator{ 0.47f, 0.32f, 0.66f, 0.8f };
+		ColorToggle3 bombTimer{ {0.3f, 0.1f, 0.3f} };
+		ColorToggle3 hurtIndicator{ {0.0f, 0.8f, 0.7f} };
+		ColorToggle yawIndicator{ {0.47f, 0.32f, 0.66f, 0.8f} };
 		KeyBind prepareRevolverKey{ std::string("prepare revolver") };
 		int hitSound{ 0 };
 		int quickHealthshotKey{ 0 };
@@ -498,14 +498,14 @@ public:
 			bool enabled = false;
 			float position{ 0.9f };
 			float alpha{ 1.0f };
-			ColorToggle color{ 1.0f, 1.0f, 1.0f, 1.0f };
+			ColorToggle color{ {1.0f, 1.0f, 1.0f, 1.0f} };
 		} velocity;
 
 		struct KeyBoardDisplay {
 			bool enabled = false;
 			float position{ 0.8f };
 			bool showKeyTiles = false;
-			Color4 color{ 1.0f, 1.0f, 1.0f, 1.0f };
+			Color4 color{ {1.0f, 1.0f, 1.0f, 1.0f} };
 		} keyBoardDisplay;
 	} misc;
 

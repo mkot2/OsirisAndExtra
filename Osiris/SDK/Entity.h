@@ -103,8 +103,7 @@ public:
 		vecMins = mins;
 		vecMaxs = maxs;
 
-		Vector vecSize;
-		Vector::vectorSubtract(maxs, mins, vecSize);
+		Vector vecSize{ maxs - mins };
 		radius = vecSize.length() * 0.5f;
 
 		memory->markSurroundingBoundsDirty(this);

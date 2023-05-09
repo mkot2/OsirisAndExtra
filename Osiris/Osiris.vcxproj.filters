@@ -610,37 +610,10 @@
     <ClInclude Include="..\Dependencies\PCG\pcg_uint128.h">
       <Filter>Dependencies\PCG</Filter>
     </ClInclude>
-    <ClInclude Include="..\Dependencies\mem\aligned_alloc.h">
-      <Filter>Dependencies\mem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Dependencies\mem\arch.h">
-      <Filter>Dependencies\mem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Dependencies\mem\bitwise_enum.h">
-      <Filter>Dependencies\mem</Filter>
-    </ClInclude>
     <ClInclude Include="..\Dependencies\mem\boyer_moore_scanner.h">
       <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="..\Dependencies\mem\cmd_param.h">
-      <Filter>Dependencies\mem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Dependencies\mem\cmd_param-inl.h">
-      <Filter>Dependencies\mem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Dependencies\mem\data_buffer.h">
-      <Filter>Dependencies\mem</Filter>
-    </ClInclude>
     <ClInclude Include="..\Dependencies\mem\defines.h">
-      <Filter>Dependencies\mem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Dependencies\mem\execution_handler.h">
-      <Filter>Dependencies\mem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Dependencies\mem\hasher.h">
-      <Filter>Dependencies\mem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Dependencies\mem\char_queue.h">
       <Filter>Dependencies\mem</Filter>
     </ClInclude>
     <ClInclude Include="..\Dependencies\mem\init_function.h">
@@ -658,9 +631,6 @@
     <ClInclude Include="..\Dependencies\mem\pattern.h">
       <Filter>Dependencies\mem</Filter>
     </ClInclude>
-    <ClInclude Include="..\Dependencies\mem\pattern_cache.h">
-      <Filter>Dependencies\mem</Filter>
-    </ClInclude>
     <ClInclude Include="..\Dependencies\mem\prot_flags.h">
       <Filter>Dependencies\mem</Filter>
     </ClInclude>
@@ -671,15 +641,6 @@
       <Filter>Dependencies\mem</Filter>
     </ClInclude>
     <ClInclude Include="..\Dependencies\mem\simd_scanner.h">
-      <Filter>Dependencies\mem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Dependencies\mem\slice.h">
-      <Filter>Dependencies\mem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Dependencies\mem\stub.h">
-      <Filter>Dependencies\mem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Dependencies\mem\utils.h">
       <Filter>Dependencies\mem</Filter>
     </ClInclude>
     <ClInclude Include="..\Dependencies\nlohmann\json.hpp">
