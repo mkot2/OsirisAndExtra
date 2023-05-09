@@ -153,15 +153,25 @@ void ImGuiCustom::multiCombo(const char* name, int& flagValue, const char* items
 		count++;
 	}
 
-	const char* preview = "";
+	void* data = (void*)items;
+
+	// This is probably not the right way to do this
+	std::string preview = "";
 	if (flagValue == (1 << count) - 1)
 		preview = "All";
 	else if (!flagValue)
 		preview = "None";
+	else {
+		for (int i = 0, j = 0; i < count; i++) {
+			if (flagValue & (1 << i)) {
+				const char* item;
+				singleStringGetter(data, i, &item);
+				preview.append(std::format("{}{}", j++ != 0 ? ", " : "", item));
+			}
+		}
+	}
 
-	void* data = (void*)items;
-
-	if (ImGui::BeginCombo(name, preview)) {
+	if (ImGui::BeginCombo(name, preview.c_str())) {
 		for (int i = 0; i < count; i++) {
 			bool selected = flagValue & (1 << i);
 
