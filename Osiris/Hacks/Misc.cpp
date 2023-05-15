@@ -606,7 +606,7 @@ void Misc::edgeBug(UserCmd* cmd, Vector& angView) noexcept
 	if (localPlayer->flags() & 1)
 		return;
 
-	shouldEdgebug = zVelBackup < -bugSpeed && round(localPlayer->velocity().z) == -round(bugSpeed) && localPlayer->moveType() != MoveType::LADDER;
+	shouldEdgebug = zVelBackup < -bugSpeed && std::round(localPlayer->velocity().z) == -std::round(bugSpeed) && localPlayer->moveType() != MoveType::LADDER;
 	if (shouldEdgebug)
 		return;
 
@@ -628,7 +628,6 @@ void Misc::edgeBug(UserCmd* cmd, Vector& angView) noexcept
 		angViewLastStrafe = angView;
 		vecMoveLastStrafe = vecMoveOriginal;
 		angViewDeltaStrafe = (angView - angViewOld);
-		angViewDeltaStrafe;
 	}
 	appliedStrafeLast = false;
 	angViewOld = angView;
@@ -664,7 +663,7 @@ void Misc::edgeBug(UserCmd* cmd, Vector& angView) noexcept
 				cmd->forwardmove = 0.f;
 			}
 			EnginePrediction::run(cmd);
-			shouldEdgebug = zVelBackup < -bugSpeed && round(localPlayer->velocity().z) == -round(bugSpeed) && localPlayer->moveType() != MoveType::LADDER;
+			shouldEdgebug = zVelBackup < -bugSpeed && std::round(localPlayer->velocity().z) == -std::round(bugSpeed) && localPlayer->moveType() != MoveType::LADDER;
 			zVelBackup = localPlayer->velocity().z;
 			if (shouldEdgebug) {
 				edgebugButtons = cmd->buttons;
@@ -711,7 +710,7 @@ void Misc::prePrediction(UserCmd* cmd) noexcept
 	static auto gravity = interfaces->cvar->findVar("sv_gravity");
 	bugSpeed = (gravity->getFloat() * 0.5f * memory->globalVars->intervalPerTick);
 
-	shouldEdgebug = zVelBackup < -bugSpeed && round(localPlayer->velocity().z) == -round(bugSpeed) && localPlayer->moveType() != MoveType::LADDER;
+	shouldEdgebug = zVelBackup < -bugSpeed && std::round(localPlayer->velocity().z) == -std::round(bugSpeed) && localPlayer->moveType() != MoveType::LADDER;
 }
 
 void Misc::drawPlayerList() noexcept
@@ -891,7 +890,7 @@ void Misc::blockBot(UserCmd* cmd) noexcept
 		const auto z2 = target->getEyePosition().z - localPlayer->getAbsOrigin().z;
 		if (z1 >= 0.0f || z2 <= 0.0f) {
 			Vector fwd = Vector::fromAngle2D(cmd->viewangles.y);
-			Vector side = fwd.crossProduct(Vector::up());
+			Vector side = fwd.crossProduct(Vector{ 0.0f, 0.0f, 1.0f });
 			Vector move = Vector{ fwd.dotProduct2D(targetVec), side.dotProduct2D(targetVec), 0.0f };
 			move *= 45.0f;
 
@@ -903,8 +902,8 @@ void Misc::blockBot(UserCmd* cmd) noexcept
 			cmd->sidemove = move.y;
 		} else {
 			Vector fwd = Vector::fromAngle2D(cmd->viewangles.y);
-			Vector side = fwd.crossProduct(Vector::up());
-			Vector tar = (targetVec / targetVec.length2D()).crossProduct(Vector::up());
+			Vector side = fwd.crossProduct(Vector{ 0.0f, 0.0f, 1.0f });
+			Vector tar = (targetVec / targetVec.length2D()).crossProduct(Vector{ 0.0f, 0.0f, 1.0f });
 			tar = tar.snapTo4();
 			tar *= tar.dotProduct2D(targetVec);
 			Vector move = Vector{ fwd.dotProduct2D(tar), side.dotProduct2D(tar), 0.0f };
@@ -1212,9 +1211,12 @@ void Misc::fakeDuck(UserCmd* cmd, bool& sendPacket) noexcept
 	if (!config->misc.fakeduck || !config->misc.fakeduckKey.isActive())
 		return;
 
-	if (const auto gameRules = (*memory->gameRules); gameRules)
-		if (getGameMode() != GameMode::Competitive && gameRules->isValveDS())
+	if (const auto gameRules = *memory->gameRules; gameRules) {
+		static auto gameType = interfaces->cvar->findVar("game_type");
+		static auto gameMode = interfaces->cvar->findVar("game_mode");
+		if ((gameType->getInt() != 0 || gameMode->getInt() != 1) && gameRules->isValveDS())
 			return;
+	}
 
 	if (!localPlayer || !localPlayer->isAlive() || !(localPlayer->flags() & 1))
 		return;
@@ -1489,8 +1491,6 @@ void Misc::showKeybinds() noexcept
 		config->misc.edgeBugKey.showKeybind();
 	if (config->misc.autoPixelSurf)
 		config->misc.autoPixelSurfKey.showKeybind();
-	if (config->misc.jumpBug)
-		config->misc.jumpBugKey.showKeybind();
 	if (config->misc.slowwalk)
 		config->misc.slowwalkKey.showKeybind();
 	if (config->misc.fakeduck)
@@ -1771,31 +1771,31 @@ void Misc::drawBombTimer() noexcept
 		const double armorValue = static_cast<double>(targetEntity->armor());
 		const int health = targetEntity->health();
 
-		double finalBombDamage = 0.;
+		double calculatedBombDamage = 0.;
 		double distanceToLocalPlayer = (bombEntity->origin() - targetEntity->origin()).length();
 		double gaussianFalloff = std::exp(-distanceToLocalPlayer * distanceToLocalPlayer / (2. * sigma * sigma));
 
-		finalBombDamage = bombDamage * gaussianFalloff;
+		calculatedBombDamage = bombDamage * gaussianFalloff;
 
 		if (armorValue > 0) {
-			double newRatio = finalBombDamage * armorRatio;
-			double armor = (finalBombDamage - newRatio) * armorBonus;
+			double newRatio = calculatedBombDamage * armorRatio;
+			double armor = (calculatedBombDamage - newRatio) * armorBonus;
 
 			if (armor > armorValue) {
 				armor = armorValue * (1.f / armorBonus);
-				newRatio = finalBombDamage - armor;
+				newRatio = calculatedBombDamage - armor;
 			}
-			finalBombDamage = newRatio;
+			calculatedBombDamage = newRatio;
 		}
 
-		int displayBombDamage = static_cast<int>(std::floor(finalBombDamage));
+		int finalBombDamage = static_cast<int>(std::floor(calculatedBombDamage));
 
-		if (health <= (std::trunc(finalBombDamage * 10) / 10)) {
+		if (health <= finalBombDamage) {
 			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
 			ImGui::textUnformattedCentered("Lethal");
 			ImGui::PopStyleColor();
 		} else {
-			std::ostringstream text; text << "Damage: " << std::clamp(displayBombDamage, 0, health - 1);
+			std::ostringstream text; text << "Damage: " << std::clamp(finalBombDamage, 0, health - 1);
 			const auto color = Helpers::healthColor(static_cast<float>(std::clamp(1. - (finalBombDamage / static_cast<double>(health)), 0., 1.)));
 			ImGui::PushStyleColor(ImGuiCol_Text, color);
 			ImGui::textUnformattedCentered(text.str().c_str());
@@ -1878,23 +1878,23 @@ void Misc::hurtIndicator() noexcept
 
 void Misc::yawIndicator(ImDrawList* drawList) noexcept
 {
-    if (!config->misc.yawIndicator.enabled)
-        return;
-    {
-        GameData::Lock lock;
-        if (const auto& [exists, alive, inReload, shooting, noScope, nextWeaponAttack, fov, handle, flashDuration, aimPunch, origin, inaccuracy, team, velocityModifier] { GameData::local() }; !exists || !alive)
-            return;
-    }
-    const ImVec2 pos{ ImGui::GetIO().DisplaySize / 2 };
-    const ImU32 col{ Helpers::calculateColor(static_cast<Color4>(config->misc.yawIndicator)) };
-    if (config->manualForward.isToggled())
-        drawList->AddTriangleFilled(pos + ImVec2{ -20, -20 }, pos + ImVec2{ 20, -20 }, pos + ImVec2{ 0, -50 }, col);
-    if (config->manualBackward.isToggled())
-        drawList->AddTriangleFilled(pos + ImVec2{ -20, 20 }, pos + ImVec2{ 20, 20 }, pos + ImVec2{ 0, 50 }, col);
-    if (config->manualRight.isToggled() || (AntiAim::auto_direction_yaw == 1 && config->autoDirection.isToggled()))
-        drawList->AddTriangleFilled(pos + ImVec2{ 20, 20 }, pos + ImVec2{ 20, -20 }, pos + ImVec2{ 50, 0 }, col);
-    if (config->manualLeft.isToggled() || (AntiAim::auto_direction_yaw == -1 && config->autoDirection.isToggled()))
-        drawList->AddTriangleFilled(pos + ImVec2{ -20, 20 }, pos + ImVec2{ -20, -20 }, pos + ImVec2{ -50, 0 }, col);
+	if (!config->misc.yawIndicator.enabled)
+		return;
+	{
+		GameData::Lock lock;
+		if (const auto& [exists, alive, inReload, shooting, noScope, nextWeaponAttack, fov, handle, flashDuration, aimPunch, origin, inaccuracy, team, velocityModifier] { GameData::local() }; !exists || !alive)
+			return;
+	}
+	const ImVec2 pos{ ImGui::GetIO().DisplaySize / 2 };
+	const ImU32 col{ Helpers::calculateColor(static_cast<Color4>(config->misc.yawIndicator)) };
+	if (config->manualForward.isToggled())
+		drawList->AddTriangleFilled(pos + ImVec2{ -20, -20 }, pos + ImVec2{ 20, -20 }, pos + ImVec2{ 0, -50 }, col);
+	if (config->manualBackward.isToggled())
+		drawList->AddTriangleFilled(pos + ImVec2{ -20, 20 }, pos + ImVec2{ 20, 20 }, pos + ImVec2{ 0, 50 }, col);
+	if (config->manualRight.isToggled() || (AntiAim::auto_direction_yaw == 1 && config->autoDirection.isToggled()))
+		drawList->AddTriangleFilled(pos + ImVec2{ 20, 20 }, pos + ImVec2{ 20, -20 }, pos + ImVec2{ 50, 0 }, col);
+	if (config->manualLeft.isToggled() || (AntiAim::auto_direction_yaw == -1 && config->autoDirection.isToggled()))
+		drawList->AddTriangleFilled(pos + ImVec2{ -20, 20 }, pos + ImVec2{ -20, -20 }, pos + ImVec2{ -50, 0 }, col);
 }
 
 void Misc::stealNames() noexcept
@@ -1971,7 +1971,6 @@ void Misc::bunnyHop(UserCmd* cmd) noexcept
 
 	static auto lastJumped = false;
 	static auto shouldFake = false;
-	static int noHops = 0;
 
 	if (!localPlayer || !localPlayer->isAlive() || !config->misc.bunnyHop)
 		return;
@@ -1984,7 +1983,6 @@ void Misc::bunnyHop(UserCmd* cmd) noexcept
 		cmd->buttons |= UserCmd::IN_JUMP;
 	} else if (cmd->buttons & UserCmd::IN_JUMP) {
 		if (localPlayer->flags() & 1) {
-			noHops++;
 			lastJumped = true;
 			shouldFake = true;
 		} else {
@@ -1992,7 +1990,6 @@ void Misc::bunnyHop(UserCmd* cmd) noexcept
 			lastJumped = false;
 		}
 	} else {
-		noHops = 0;
 		lastJumped = false;
 		shouldFake = false;
 	}
@@ -2128,60 +2125,61 @@ void Misc::autoStrafe(UserCmd* cmd, Vector& currentViewAngles) noexcept
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
 
+	if ((EnginePrediction::getFlags() & 1) || localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
+		return;
+
 	const float speed = localPlayer->velocity().length2D();
 	if (speed < 5.0f)
 		return;
 
-	static float angle = 0.f;
+	constexpr auto angleDiffRad = [](float a1, float a2) noexcept {
+		constexpr float pi = std::numbers::pi_v<float>;
+		float delta = std::isfinite(a1 - a2) ? std::remainder(a1 - a2, 360.0f) : 0.0f;
+		if (a1 > a2) {
+			if (delta >= pi)
+				delta -= pi * 2;
+		} else {
+			if (delta <= -pi)
+				delta += pi * 2;
+		}
 
-	const bool back = cmd->buttons & UserCmd::IN_BACK;
-	const bool forward = cmd->buttons & UserCmd::IN_FORWARD;
-	const bool right = cmd->buttons & UserCmd::IN_MOVERIGHT;
-	const bool left = cmd->buttons & UserCmd::IN_MOVELEFT;
+		return delta;
+	};
 
-	if (back) {
-		angle = -180.f;
-		if (left)
-			angle -= 45.f;
-		else if (right)
-			angle += 45.f;
-	} else if (left) {
-		angle = 90.f;
-		if (back)
-			angle += 45.f;
-		else if (forward)
-			angle -= 45.f;
-	} else if (right) {
-		angle = -90.f;
-		if (back)
-			angle -= 45.f;
-		else if (forward)
-			angle += 45.f;
-	} else {
-		angle = 0.f;
+	constexpr auto perfectDelta = [](float speed) noexcept {
+		static auto speedVar = interfaces->cvar->findVar("sv_maxspeed");
+		static auto airVar = interfaces->cvar->findVar("sv_airaccelerate");
+		static auto wishVar = interfaces->cvar->findVar("sv_air_max_wishspeed");
+
+		const auto term = wishVar->getFloat() / airVar->getFloat() / speedVar->getFloat() * 100.0f / speed;
+
+		if (term < 1.0f && term > -1.0f)
+			return std::acos(term);
+
+		return 0.0f;
+	};
+
+	if (const float pDelta = perfectDelta(speed); pDelta) {
+		const float yaw = Helpers::deg2rad(cmd->viewangles.y);
+		const float velDir = std::atan2(EnginePrediction::getVelocity().y, EnginePrediction::getVelocity().x) - yaw;
+		const float wishAng = std::atan2(-cmd->sidemove, cmd->forwardmove);
+		const float delta = angleDiffRad(velDir, wishAng);
+
+		float moveDir = delta < 0.0f ? velDir + pDelta : velDir - pDelta;
+
+		cmd->forwardmove = std::cos(moveDir) * 450.0f;
+		cmd->sidemove = -std::sin(moveDir) * 450.0f;
 	}
-
-	//If we are on ground, noclip or in a ladder return
-	if ((EnginePrediction::getFlags() & 1) || localPlayer->moveType() == MoveType::NOCLIP || localPlayer->moveType() == MoveType::LADDER)
-		return;
-
-	currentViewAngles.y += angle;
-
-	cmd->forwardmove = 0.f;
-	cmd->sidemove = 0.f;
-
-	const auto delta = Helpers::normalizeYaw(currentViewAngles.y - Helpers::rad2deg(std::atan2(EnginePrediction::getVelocity().y, EnginePrediction::getVelocity().x)));
-
-	cmd->sidemove = delta > 0.f ? -450.f : 450.f;
-
-	currentViewAngles.y = Helpers::normalizeYaw(currentViewAngles.y - delta);
 }
 
 void Misc::removeCrouchCooldown(UserCmd* cmd) noexcept
 {
-	if (const auto gameRules = (*memory->gameRules); gameRules)
-		if (getGameMode() != GameMode::Competitive && gameRules->isValveDS())
+	if (const auto gameRules = *memory->gameRules; gameRules) {
+		static auto gameType = interfaces->cvar->findVar("game_type");
+		static auto gameMode = interfaces->cvar->findVar("game_mode");
+		if ((gameType->getInt() != 0 || gameMode->getInt() != 1) && gameRules->isValveDS())
 			return;
+	}
 
 	if (config->misc.fastDuck)
 		cmd->buttons |= UserCmd::IN_BULLRUSH;
@@ -2554,6 +2552,13 @@ void Misc::preserveKillfeed(bool roundStart) noexcept
 	}
 }
 
+// TODO: Display map name on change map vote
+
+static short yesVoteCountTT = 0;
+static short noVoteCountTT = 0;
+static short yesVoteCountCT = 0;
+static short noVoteCountCT = 0;
+
 void Misc::voteRevealer(GameEvent& event) noexcept
 {
 	if (!config->misc.revealVotes)
@@ -2565,9 +2570,15 @@ void Misc::voteRevealer(GameEvent& event) noexcept
 
 	const auto votedYes = event.getInt("vote_option") == 0;
 	const auto isLocal = localPlayer && entity == localPlayer.get();
+	const auto team = entity->getTeamNumber();
 	const char color = votedYes ? '\x06' : '\x07';
 
-	memory->clientMode->getHudChat()->printf(0, " \x0C\u2022Osiris\u2022 %c%s\x01 voted %c%s\x01", isLocal ? '\x01' : color, isLocal ? "You" : entity->getPlayerName().c_str(), color, votedYes ? "Yes" : "No");
+	short* const yes = team == Team::TT ? &yesVoteCountTT : &yesVoteCountCT;
+	short* const no = team == Team::TT ? &noVoteCountTT : &noVoteCountCT;
+
+	(votedYes ? *yes : *no)++; // cpp.cn/tip/1222
+
+	memory->clientMode->getHudChat()->printf(0, " \x0C\u2022Osiris\u2022 %c%s\x01 voted %c%s\x01 (%hd/%hd)", isLocal ? '\x01' : color, isLocal ? "You" : entity->getPlayerName().c_str(), color, votedYes ? "Yes" : "No", *yes, *no);
 }
 
 void Misc::onVoteStart(void* data, int length) noexcept
@@ -2576,23 +2587,23 @@ void Misc::onVoteStart(void* data, int length) noexcept
 		return;
 
 	/*message CCSUsrMsg_VoteStart {
-	int32 team = 1;
-	int32 ent_idx = 2;
-	int32 vote_type = 3;
-	string disp_str = 4;
-	string details_str = 5;
-	string other_team_str = 6;
-	bool is_yes_no_vote = 7;
-	int32 entidx_target = 8;
+		int32 team = 1;
+		int32 ent_idx = 2;
+		int32 vote_type = 3;
+		string disp_str = 4;
+		string details_str = 5;
+		string other_team_str = 6;
+		bool is_yes_no_vote = 7;
+		int32 entidx_target = 8;
 	}*/
 
 	constexpr auto voteName = [](int index) {
 		switch (index) {
-		case 0: return "Kick";
-		case 1: return "Change Level";
-		case 6: return "Surrender";
-		case 13: return "Start Timeout";
-		default: assert(0); return "ERROR";
+		case 0: return "kick";
+		case 1: return "change the map";
+		case 6: return "surrender";
+		case 13: return "start a timeout";
+		default: return "?";
 		}
 	};
 
@@ -2600,28 +2611,58 @@ void Misc::onVoteStart(void* data, int length) noexcept
 	if (msg.has(2) && msg.has(3)) {
 		const auto ent_idx = msg.get(2).UInt32();
 		const auto vote_type = msg.get(3).UInt32();
+		const auto targetEntityIndex = msg.has(8) ? msg.get(8).UInt32() : 0;
+		const auto targetEntity = targetEntityIndex ? interfaces->entityList->getEntity(targetEntityIndex) : nullptr;
 
 		const auto entity = interfaces->entityList->getEntity(ent_idx);
+		const auto team = entity->getTeamNumber();
 		const auto isLocal = localPlayer && entity == localPlayer.get();
 
-		memory->clientMode->getHudChat()->printf(0, " \x0C\u2022Osiris\u2022 %c%s\x01 call vote (\x06%s\x01)", isLocal ? '\x01' : '\x06', isLocal ? "You" : entity->getPlayerName().c_str(), voteName(vote_type));
+		(team == Team::TT ? yesVoteCountTT : yesVoteCountCT) = 0;
+		(team == Team::TT ? noVoteCountTT : noVoteCountCT) = 0;
+
+		memory->clientMode->getHudChat()->printf(0, " \x0C\u2022Osiris\u2022 %c%s\x01 called a vote to \x06%s\x01 %s", isLocal ? '\x01' : '\x06', isLocal ? "You" : entity->getPlayerName().c_str(), voteName(vote_type), targetEntity ? targetEntity->getPlayerName().c_str() : "");
 	}
 }
 
-void Misc::onVotePass() noexcept
+void Misc::onVotePass(void* data, int length) noexcept
 {
 	if (!config->misc.revealVotes)
 		return;
 
-	memory->clientMode->getHudChat()->printf(0, " \x0C\u2022Osiris\u2022\x01 vote\x06 PASSED");
+	/*message CCSUsrMsg_VotePass {
+		optional int32 team = 1;
+		optional int32 vote_type = 2;
+		optional string disp_str = 3;
+		optional string details_str = 4;
+	}*/
+
+	ProtoWriter msg(data, length, 4);
+	if (msg.has(1)) {
+		const auto team = static_cast<Team>(msg.get(1).UInt32());
+		const short yes = team == Team::TT ? yesVoteCountTT : yesVoteCountCT;
+		const short no = team == Team::TT ? noVoteCountTT : noVoteCountCT;
+		memory->clientMode->getHudChat()->printf(0, " \x0C\u2022Osiris\u2022\x01 Vote\x06 PASSED\x01 (%hd/%hd)", yes, no);
+	}
 }
 
-void Misc::onVoteFail() noexcept
+void Misc::onVoteFail(void* data, int length) noexcept
 {
 	if (!config->misc.revealVotes)
 		return;
 
-	memory->clientMode->getHudChat()->printf(0, " \x0C\u2022Osiris\u2022\x01 vote\x06 FAILED");
+	/*message CCSUsrMsg_VoteFailed {
+		optional int32 team = 1;
+		optional int32 reason = 2;
+	}*/
+
+	ProtoWriter msg(data, length, 2);
+	if (msg.has(1)) {
+		const auto team = static_cast<Team>(msg.get(1).UInt32());
+		const short yes = team == Team::TT ? yesVoteCountTT : yesVoteCountCT;
+		const short no = team == Team::TT ? noVoteCountTT : noVoteCountCT;
+		memory->clientMode->getHudChat()->printf(0, " \x0C\u2022Osiris\u2022\x01 Vote\x07 FAILED\x01 (%hd/%hd)", yes, no);
+	}
 }
 
 // ImGui::ShadeVertsLinearColorGradientKeepAlpha() modified to do interpolation in HSV

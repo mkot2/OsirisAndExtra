@@ -115,55 +115,6 @@ void AimbotFunction::calculateArmorDamage(float armorRatio, int armorValue, bool
 	damage = newDamage;
 }
 
-bool AimbotFunction::canScan(Entity* entity, const Vector& destination, const WeaponInfo* weaponData, int minDamage, bool allowFriendlyFire) noexcept
-{
-	if (!localPlayer)
-		return false;
-
-	float damage{ static_cast<float>(weaponData->damage) };
-
-	Vector start{ localPlayer->getEyePosition() };
-	Vector direction{ destination - start };
-	float maxDistance{ direction.length() };
-	float curDistance{ 0.0f };
-	direction /= maxDistance;
-
-	int hitsLeft = 4;
-
-	while (damage >= 1.0f && hitsLeft) {
-		Trace trace;
-		interfaces->engineTrace->traceRay({ start, destination }, 0x4600400B, localPlayer.get(), trace);
-
-		if (!allowFriendlyFire && trace.entity && trace.entity->isPlayer() && !localPlayer->isOtherEnemy(trace.entity))
-			return false;
-
-		if (trace.fraction == 1.0f)
-			break;
-
-		curDistance += trace.fraction * (maxDistance - curDistance);
-		damage *= std::pow(weaponData->rangeModifier, curDistance / 500.0f);
-
-		if (trace.entity == entity && trace.hitgroup > HitGroup::Generic && trace.hitgroup <= HitGroup::RightLeg) {
-			damage *= HitGroup::getDamageMultiplier(trace.hitgroup, weaponData, trace.entity->hasHeavyArmor(), static_cast<int>(trace.entity->getTeamNumber()));
-
-			if (float armorRatio{ weaponData->armorRatio / 2.0f }; HitGroup::isArmored(trace.hitgroup, trace.entity->hasHelmet(), trace.entity->armor(), trace.entity->hasHeavyArmor()))
-				calculateArmorDamage(armorRatio, trace.entity->armor(), trace.entity->hasHeavyArmor(), damage);
-
-			if (damage >= minDamage)
-				return damage;
-			return 0.f;
-		}
-		const auto surfaceData = interfaces->physicsSurfaceProps->getSurfaceData(trace.surface.surfaceProps);
-
-		if (surfaceData->penetrationmodifier < 0.1f)
-			break;
-
-		damage = handleBulletPenetration(surfaceData, trace, direction, start, weaponData->penetration, damage);
-		hitsLeft--;
-	}
-	return false;
-}
-
 float AimbotFunction::getScanDamage(Entity* entity, const Vector& destination, const WeaponInfo* weaponData, int minDamage, bool allowFriendlyFire) noexcept
 {
 	if (!localPlayer)
@@ -211,6 +162,11 @@ float AimbotFunction::getScanDamage(Entity* entity, const Vector& destination, c
 		hitsLeft--;
 	}
 	return 0.f;
+}
+
+bool AimbotFunction::canScan(Entity* entity, const Vector& destination, const WeaponInfo* weaponData, int minDamage, bool allowFriendlyFire) noexcept
+{
+	return getScanDamage(entity, destination, weaponData, minDamage, allowFriendlyFire) != 0.f;
 }
 
 float segmentToSegment(const Vector& s1, const Vector& s2, const Vector& k1, const Vector& k2) noexcept
@@ -331,50 +287,6 @@ bool intersectLineWithBb(Vector& start, Vector& end, Vector& min, Vector& max) n
 	return start_solid || (t1 < t2 && t1 >= 0.0f);
 }
 
-void sinCos(float radians, float& sine, float& cosine)
-{
-	sine = std::sin(radians);
-	cosine = std::cos(radians);
-}
-
-Vector vectorRotate(Vector& in1, Vector& in2) noexcept
-{
-	auto vector_rotate = [](const Vector& in1, const matrix3x4& in2) {
-		return Vector(in1.dotProduct(in2[0]), in1.dotProduct(in2[1]), in1.dotProduct(in2[2]));
-	};
-	auto angleMatrix = [](const Vector& angles, matrix3x4& matrix) {
-		float sr, sp, sy, cr, cp, cy;
-
-		sinCos(Helpers::deg2rad(angles[1]), sy, cy);
-		sinCos(Helpers::deg2rad(angles[0]), sp, cp);
-		sinCos(Helpers::deg2rad(angles[2]), sr, cr);
-
-		// matrix = (YAW * PITCH) * ROLL
-		matrix[0][0] = cp * cy;
-		matrix[1][0] = cp * sy;
-		matrix[2][0] = -sp;
-
-		const float crcy = cr * cy;
-		const float crsy = cr * sy;
-		const float srcy = sr * cy;
-		const float srsy = sr * sy;
-		matrix[0][1] = sp * srcy - crsy;
-		matrix[1][1] = sp * srsy + crcy;
-		matrix[2][1] = sr * cp;
-
-		matrix[0][2] = (sp * crcy + srsy);
-		matrix[1][2] = (sp * crsy - srcy);
-		matrix[2][2] = cr * cp;
-
-		matrix[0][3] = 0.0f;
-		matrix[1][3] = 0.0f;
-		matrix[2][3] = 0.0f;
-	};
-	matrix3x4 m;
-	angleMatrix(in2, m);
-	return vector_rotate(in1, m);
-}
-
 bool AimbotFunction::hitboxIntersection(const matrix3x4 matrix[MAXSTUDIOBONES], int iHitbox, StudioHitboxSet* set, const Vector& start, const Vector& end) noexcept
 {
 	StudioBbox* hitbox = set->getHitbox(iHitbox);
@@ -394,9 +306,6 @@ bool AimbotFunction::hitboxIntersection(const matrix3x4 matrix[MAXSTUDIOBONES], 
 		if (dist < hitbox->capsuleRadius)
 			return true;
 	} else {
-		mins = vectorRotate(hitbox->bbMin, hitbox->offsetOrientation).transform(matrix[hitbox->bone]);
-		maxs = vectorRotate(hitbox->bbMax, hitbox->offsetOrientation).transform(matrix[hitbox->bone]);
-
 		mins = start.transform(matrix[hitbox->bone]);
 		maxs = end.transform(matrix[hitbox->bone]);
 
@@ -424,7 +333,7 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 	Vector currentAngles = calculateRelativeAngle(center, localEyePos, Vector{});
 
 	Vector forward;
-	Vector::fromAngle(currentAngles, &forward);
+	currentAngles.fromAngle(forward, {}, {});
 
 	Vector right = forward.crossProduct(Vector{ 0, 0, 1 });
 	Vector left = Vector{ -right.x, -right.y, right.z };

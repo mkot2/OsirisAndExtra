@@ -3,7 +3,6 @@
 #include <functional>
 #include <tuple>
 
-#include "Utils.h"
 #include "VirtualMethod.h"
 
 class Surface {

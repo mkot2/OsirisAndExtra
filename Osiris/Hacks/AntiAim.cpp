@@ -83,11 +83,6 @@ bool autoDirection(Vector eyeAngle) noexcept
 	return true;
 }
 
-float random_float(const float a, const float b, const float multiplier)
-{
-	return a + std::uniform_real_distribution<float>(RAND_MAX)(PCG::generator) / static_cast<float>(RAND_MAX) * (b - a) * multiplier;
-}
-
 void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector& currentViewAngles, bool& sendPacket) noexcept
 {
 	const auto moving_flag{ get_moving_flag(cmd) };
@@ -166,7 +161,7 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
 				constexpr std::array positions = { -35.0f, 0.0f, 35.0f };
 				std::array active = { false, false, false };
 				const auto fwd = Vector::fromAngle2D(cmd->viewangles.y);
-				const auto side = fwd.crossProduct(Vector::up());
+				const auto side = fwd.crossProduct(Vector{ 0.0f, 0.0f, 1.0f });
 
 				for (std::size_t i{}; i < positions.size(); i++) {
 					const auto start = localPlayer->getEyePosition() + side * positions[i];
@@ -253,9 +248,13 @@ void AntiAim::rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector&
 					cmd->viewangles.z += invert ? roll_offset_angle : roll_offset_angle * -1.f;
 			} else
 				cmd->viewangles.z = 0.f;
-			if (const auto game_rules{ *memory->gameRules }; game_rules)
-				if (getGameMode() != GameMode::Competitive && game_rules->isValveDS())
+			if (const auto gameRules = *memory->gameRules; gameRules) {
+				static auto gameType = interfaces->cvar->findVar("game_type");
+				static auto gameMode = interfaces->cvar->findVar("game_mode");
+				if ((gameType->getInt() != 0 || gameMode->getInt() != 1) && gameRules->isValveDS())
 					return;
+			}
+
 			if (config->tickbase.disabledTickbase && config->tickbase.onshotFl && config->tickbase.lastFireShiftTick > memory->globalVars->tickCount)
 				return;
 			float left_desync_angle = static_cast<float>(config->fakeAngle[moving_flag].leftLimit) * 2.f;

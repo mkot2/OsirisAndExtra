@@ -135,7 +135,7 @@ void knifeBotRage(UserCmd* cmd) noexcept
 		cmd->buttons |= UserCmd::IN_ATTACK;
 
 	cmd->viewangles += angle;
-	cmd->tickCount = timeToTicks(bestSimulationTime + Backtrack::getLerp());
+	cmd->tickCount = Helpers::timeToTicks(bestSimulationTime + Backtrack::getLerp());
 }
 
 void knifeTrigger(UserCmd* cmd) noexcept
@@ -231,7 +231,7 @@ void knifeTrigger(UserCmd* cmd) noexcept
 	else
 		cmd->buttons |= UserCmd::IN_ATTACK;
 
-	cmd->tickCount = timeToTicks(player.simulationTime + Backtrack::getLerp());
+	cmd->tickCount = Helpers::timeToTicks(player.simulationTime + Backtrack::getLerp());
 }
 
 void Knifebot::run(UserCmd* cmd) noexcept

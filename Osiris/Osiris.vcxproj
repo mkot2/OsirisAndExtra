@@ -115,7 +115,7 @@
     <ClCompile Include="SDK\GlobalVars.cpp" />
     <ClCompile Include="SDK\KeyValues.cpp" />
     <ClCompile Include="SDK\PredictionCopy.cpp" />
-    <ClCompile Include="SDK\Utils.cpp" />
+    <ClCompile Include="SDK\UserCmd.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -156,6 +156,7 @@
     <ClInclude Include="..\Dependencies\PCG\pcg_extras.h" />
     <ClInclude Include="..\Dependencies\PCG\pcg_random.h" />
     <ClInclude Include="..\Dependencies\PCG\pcg_uint128.h" />
+    <ClInclude Include="..\Dependencies\toml++\toml.hpp" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="ConfigStructs.h" />
     <ClInclude Include="EventListener.h" />
@@ -259,7 +260,6 @@
     <ClInclude Include="SDK\UtlVector.h" />
     <ClInclude Include="SDK\VarMapping.h" />
     <ClInclude Include="SDK\Vector.h" />
-    <ClInclude Include="SDK\Utils.h" />
     <ClInclude Include="SDK\ViewRenderBeams.h" />
     <ClInclude Include="SDK\ViewSetup.h" />
     <ClInclude Include="SDK\VirtualMethod.h" />
@@ -323,6 +323,7 @@
     </LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\freetype</IncludePath>
     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+    <SourcePath>$(ProjectDir);$(ProjectDir)Hacks;$(ProjectDir)SDK;$(ProjectDir)Hooks;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>
@@ -330,6 +331,7 @@
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)Dependencies;$(SolutionDir)Dependencies\freetype</IncludePath>
     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+    <SourcePath>$(ProjectDir);$(ProjectDir)Hacks;$(ProjectDir)SDK;$(ProjectDir)Hooks;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

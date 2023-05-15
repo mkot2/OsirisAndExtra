@@ -18,33 +18,6 @@ namespace AntiAim
 		fake_ducking
 	};
 
-	constexpr std::array moving_flag_text
-	{
-		"Freestanding",
-		"Moving",
-		"Jumping",
-		"Ducking",
-		"Duck-jumping",
-		"Slow-walking",
-		"Fake-ducking"
-	};
-
-	constexpr std::array peek_mode_text
-	{
-		"Off",
-		"Peek Real",
-		"Peek Fake",
-		"Jitter",
-		"Switch"
-	};
-
-	constexpr std::array lby_mode_text
-	{
-		"Normal",
-		"Opposite",
-		"Sway"
-	};
-
 	void rage(UserCmd* cmd, const Vector& previousViewAngles, const Vector& currentViewAngles, bool& sendPacket) noexcept;
 	void legit(UserCmd* cmd, const Vector& previousViewAngles, const Vector& currentViewAngles, bool& sendPacket) noexcept;
 

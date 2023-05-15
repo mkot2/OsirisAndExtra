@@ -8,6 +8,8 @@
 #include "imgui/imgui.h"
 
 #include "Config.h"
+#include "Memory.h"
+#include "SDK/GlobalVars.h"
 
 struct Color4;
 struct Vector;
@@ -77,4 +79,6 @@ namespace Helpers
 
 	constexpr auto deg2rad(float degrees) noexcept { return degrees * (std::numbers::pi_v<float> / 180.0f); }
 	constexpr auto rad2deg(float radians) noexcept { return radians * (180.0f / std::numbers::pi_v<float>); }
+	static auto timeToTicks(float time) noexcept { return static_cast<int>(0.5f + time / memory->globalVars->intervalPerTick); }
+	static auto ticksToTime(int ticks) noexcept { return static_cast<float>(ticks * memory->globalVars->intervalPerTick); }
 }

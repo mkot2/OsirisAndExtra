@@ -77,8 +77,8 @@ namespace Misc
 	void preserveKillfeed(bool roundStart = false) noexcept;
 	void voteRevealer(GameEvent& event) noexcept;
 	void onVoteStart(void* data, int length) noexcept;
-	void onVotePass() noexcept;
-	void onVoteFail() noexcept;
+	void onVotePass(void* data, int length) noexcept;
+	void onVoteFail(void* data, int length) noexcept;
 	void drawOffscreenEnemies(ImDrawList* drawList) noexcept;
 	void autoAccept(const char* soundEntry) noexcept;
 

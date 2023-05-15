@@ -45,6 +45,9 @@
     <Filter Include="Dependencies\freetype">
       <UniqueIdentifier>{8e02f14f-7cae-437c-998d-aed2c3aa9ba6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Dependencies\toml++">
+      <UniqueIdentifier>{807e5673-bb7e-415e-a67b-5a6953768dc0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUI.cpp">
@@ -106,9 +109,6 @@
     </ClCompile>
     <ClCompile Include="Hooks\MinHook.cpp">
       <Filter>Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="SDK\Utils.cpp">
-      <Filter>SDK</Filter>
     </ClCompile>
     <ClCompile Include="GameData.cpp">
       <Filter>Source Files</Filter>
@@ -263,6 +263,9 @@
     <ClCompile Include="..\Dependencies\freetype\src\psnames\psnames.c">
       <Filter>Dependencies\freetype</Filter>
     </ClCompile>
+    <ClCompile Include="SDK\UserCmd.cpp">
+      <Filter>SDK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUI.h">
@@ -317,9 +320,6 @@
       <Filter>SDK</Filter>
     </ClInclude>
     <ClInclude Include="SDK\MaterialSystem.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="SDK\Utils.h">
       <Filter>SDK</Filter>
     </ClInclude>
     <ClInclude Include="Hacks\Chams.h">
@@ -714,6 +714,9 @@
     </ClInclude>
     <ClInclude Include="SDK\ProtoWriter.h">
       <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\toml++\toml.hpp">
+      <Filter>Dependencies\toml++</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

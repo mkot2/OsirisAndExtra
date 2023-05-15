@@ -156,7 +156,7 @@ void Logger::console() noexcept
 		color.at(1) = static_cast<uint8_t>(config->misc.logger.color.at(1) * 255.0f);
 		color.at(2) = static_cast<uint8_t>(config->misc.logger.color.at(2) * 255.0f);
 	} else {
-		const auto [colorR, colorG, colorB] { rainbowColor(config->misc.logger.rainbowSpeed) };
+		const auto [colorR, colorG, colorB] { Helpers::rainbowColor(config->misc.logger.rainbowSpeed) };
 		color.at(0) = static_cast<uint8_t>(colorR * 255.0f);
 		color.at(1) = static_cast<uint8_t>(colorG * 255.0f);
 		color.at(2) = static_cast<uint8_t>(colorB * 255.0f);

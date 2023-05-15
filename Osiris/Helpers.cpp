@@ -80,15 +80,6 @@ std::array<float, 4U> Helpers::rainbowColor(float speed, float alpha) noexcept
 	return { r, g, b, alpha };
 }
 
-static auto rainbowColor(float time, float speed, float alpha) noexcept
-{
-	constexpr float pi = std::numbers::pi_v<float>;
-	return std::array{ std::sin(speed* time) * 0.5f + 0.5f,
-		std::sin(speed* time + 2 * pi / 3) * 0.5f + 0.5f,
-		std::sin(speed* time + 4 * pi / 3) * 0.5f + 0.5f,
-		alpha };
-}
-
 void Helpers::logConsole(std::string_view msg, const std::array<std::uint8_t, 4> color) noexcept
 {
 	static constexpr int LS_MESSAGE = 0;

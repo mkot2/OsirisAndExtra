@@ -93,7 +93,7 @@ void Backtrack::run(UserCmd* cmd) noexcept
 
 	if (bestRecord) {
 		const auto& record = player.backtrackRecords[bestRecord];
-		cmd->tickCount = timeToTicks(record.simulationTime + getLerp());
+		cmd->tickCount = Helpers::timeToTicks(record.simulationTime + getLerp());
 	}
 }
 
@@ -143,7 +143,7 @@ bool Backtrack::valid(float simtime) noexcept
 	if (simtime < deadTime)
 		return false;
 
-	const auto extraTickbaseDelta = Tickbase::canShift(Tickbase::getTargetTickShift()) ? ticksToTime(Tickbase::getTargetTickShift()) : 0.0f;
+	const auto extraTickbaseDelta = Tickbase::canShift(Tickbase::getTargetTickShift()) ? Helpers::ticksToTime(Tickbase::getTargetTickShift()) : 0.0f;
 	const auto delta = std::clamp(network->getLatency(0) + network->getLatency(1) + getLerp(), 0.f, cvars.maxUnlag->getFloat()) - (memory->globalVars->serverTime() - extraTickbaseDelta - simtime);
 	return std::abs(delta) <= 0.2f;
 }

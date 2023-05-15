@@ -122,19 +122,19 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 
 		const Model* model = entity->getModel();
 		if (!model) {
-			resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
+			Animations::resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 			continue;
 		}
 
 		StudioHdr* hdr = interfaces->modelInfo->getStudioModel(model);
 		if (!hdr) {
-			resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
+			Animations::resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 			continue;
 		}
 
 		StudioHitboxSet* set = hdr->getHitboxSet(0);
 		if (!set) {
-			resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
+			Animations::resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 			continue;
 		}
 
@@ -146,7 +146,7 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 				Trace trace;
 				interfaces->engineTrace->traceRay({ startPos, endPos }, 0x46004009, localPlayer.get(), trace);
 				if (trace.entity != entity) {
-					resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
+					Animations::resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 					break;
 				}
 
@@ -158,16 +158,16 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 				if (damage >= (cfg.killshot ? trace.entity->health() : cfg.minDamage) &&
 					AimbotFunction::hitChance(localPlayer.get(), entity, set, player.matrix.data(), activeWeapon, AimbotFunction::calculateRelativeAngle(startPos, trace.endpos, cmd->viewangles + aimPunch), cmd, cfg.hitChance, j)) {
 					cmd->buttons |= UserCmd::IN_ATTACK;
-					cmd->tickCount = timeToTicks(player.simulationTime + Backtrack::getLerp());
+					cmd->tickCount = Helpers::timeToTicks(player.simulationTime + Backtrack::getLerp());
 					lastTime = 0.0f;
 					lastContact = now;
 				}
-				resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
+				Animations::resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 				break;
 			}
 		}
 
-		resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
+		Animations::resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 
 		if (!config->backtrack.enabled)
 			continue;
@@ -209,19 +209,19 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 
 		model = entity->getModel();
 		if (!model) {
-			resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
+			Animations::resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 			continue;
 		}
 
 		hdr = interfaces->modelInfo->getStudioModel(model);
 		if (!hdr) {
-			resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
+			Animations::resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 			continue;
 		}
 
 		set = hdr->getHitboxSet(0);
 		if (!set) {
-			resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
+			Animations::resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 			continue;
 		}
 
@@ -233,7 +233,7 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 				Trace trace;
 				interfaces->engineTrace->traceRay({ startPos, endPos }, 0x46004009, localPlayer.get(), trace);
 				if (trace.entity != entity) {
-					resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
+					Animations::resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 					break;
 				}
 
@@ -245,16 +245,16 @@ void Triggerbot::run(UserCmd* cmd) noexcept
 				if (damage >= (cfg.killshot ? trace.entity->health() : cfg.minDamage) &&
 					AimbotFunction::hitChance(localPlayer.get(), entity, set, record.matrix, activeWeapon, AimbotFunction::calculateRelativeAngle(startPos, trace.endpos, cmd->viewangles + aimPunch), cmd, cfg.hitChance, j)) {
 					cmd->buttons |= UserCmd::IN_ATTACK;
-					cmd->tickCount = timeToTicks(record.simulationTime + Backtrack::getLerp());
+					cmd->tickCount = Helpers::timeToTicks(record.simulationTime + Backtrack::getLerp());
 					lastTime = 0.0f;
 					lastContact = now;
 				}
 
-				resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
+				Animations::resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 				break;
 			}
 		}
-		resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
+		Animations::resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 	}
 }
 

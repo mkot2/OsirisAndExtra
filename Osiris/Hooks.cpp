@@ -1266,7 +1266,7 @@ static void __fastcall getColorModulationHook(void* thisPointer, void* edx, floa
 
 	if (config->visuals.world.enabled && std::strstr(mat->getTextureGroupName(), "World")) {
 		if (config->visuals.world.rainbow) {
-			const auto [colorR, colorG, colorB] { rainbowColor(config->visuals.world.rainbowSpeed) };
+			const auto [colorR, colorG, colorB] { Helpers::rainbowColor(config->visuals.world.rainbowSpeed) };
 			*r *= colorR;
 			*g *= colorG;
 			*b *= colorB;
@@ -1277,7 +1277,7 @@ static void __fastcall getColorModulationHook(void* thisPointer, void* edx, floa
 		}
 	} else if (config->visuals.props.enabled && std::strstr(mat->getTextureGroupName(), "StaticProp")) {
 		if (config->visuals.props.rainbow) {
-			const auto [colorR, colorG, colorB] { rainbowColor(config->visuals.props.rainbowSpeed) };
+			const auto [colorR, colorG, colorB] { Helpers::rainbowColor(config->visuals.props.rainbowSpeed) };
 			*r *= colorR;
 			*g *= colorG;
 			*b *= colorB;
@@ -1288,7 +1288,7 @@ static void __fastcall getColorModulationHook(void* thisPointer, void* edx, floa
 		}
 	} else if (config->visuals.sky.enabled && std::strstr(mat->getTextureGroupName(), "SkyBox")) {
 		if (config->visuals.sky.rainbow) {
-			const auto [colorR, colorG, colorB] { rainbowColor(config->visuals.sky.rainbowSpeed) };
+			const auto [colorR, colorG, colorB] { Helpers::rainbowColor(config->visuals.sky.rainbowSpeed) };
 			*r *= colorR;
 			*g *= colorG;
 			*b *= colorB;
@@ -1394,10 +1394,10 @@ static bool __fastcall dispatchUserMessage(void* thisPointer, void* edx, int mes
 		Misc::onVoteStart(data, length);
 		break;
 	case CS_UM_VotePass:
-		Misc::onVotePass();
+		Misc::onVotePass(data, length);
 		break;
 	case CS_UM_VoteFailed:
-		Misc::onVoteFail();
+		Misc::onVoteFail(data, length);
 		break;
 	}
 

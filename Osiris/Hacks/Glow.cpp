@@ -13,7 +13,6 @@
 #include "../SDK/ClientClass.h"
 #include "../SDK/GlowObjectManager.h"
 #include "../SDK/GlobalVars.h"
-#include "../SDK/Utils.h"
 #include "../SDK/Sound.h"
 
 static std::vector<std::pair<int, int>> customGlowEntities;
@@ -74,7 +73,7 @@ void Glow::render() noexcept
 				if (glow.healthBased && health) {
 					Helpers::healthColor(std::clamp(health / 100.0f, 0.0f, 1.0f), glowobject.glowColor.x, glowobject.glowColor.y, glowobject.glowColor.z);
 				} else if (glow.rainbow) {
-					const auto [r, g, b] { rainbowColor(glow.rainbowSpeed) };
+					const auto [r, g, b] { Helpers::rainbowColor(glow.rainbowSpeed) };
 					glowobject.glowColor = { r, g, b };
 				} else {
 					glowobject.glowColor = { glow.color[0], glow.color[1], glow.color[2] };

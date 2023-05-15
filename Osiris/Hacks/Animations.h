@@ -138,4 +138,5 @@ namespace Animations
 	std::array<Players, 65> getPlayers() noexcept;
 	std::array<Players, 65>* setPlayers() noexcept;
 	const std::deque<Players::Record>* getBacktrackRecords(int index) noexcept;
+	void resetMatrix(Entity* entity, matrix3x4* boneCacheData, Vector origin, Vector absAngle, Vector mins, Vector maxs) noexcept;
 }

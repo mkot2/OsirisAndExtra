@@ -288,7 +288,7 @@ void Chams::applyChams(const std::array<Config::Chams::Material, 7>& chams, int 
 		if (cham.healthBased && health) {
 			Helpers::healthColor(std::clamp(health / 100.0f, 0.0f, 1.0f), r, g, b);
 		} else if (cham.rainbow) {
-			std::tie(r, g, b) = rainbowColor(cham.rainbowSpeed);
+			std::tie(r, g, b) = std::tuple_cat(Helpers::rainbowColor(cham.rainbowSpeed));
 		} else {
 			r = cham.color[0];
 			g = cham.color[1];
@@ -326,7 +326,7 @@ void Chams::applyChams(const std::array<Config::Chams::Material, 7>& chams, int 
 		if (cham.healthBased && health) {
 			Helpers::healthColor(std::clamp(health / 100.0f, 0.0f, 1.0f), r, g, b);
 		} else if (cham.rainbow) {
-			std::tie(r, g, b) = rainbowColor(cham.rainbowSpeed);
+			std::tie(r, g, b) = std::tuple_cat(Helpers::rainbowColor(cham.rainbowSpeed));
 		} else {
 			r = cham.color[0];
 			g = cham.color[1];

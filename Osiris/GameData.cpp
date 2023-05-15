@@ -198,7 +198,7 @@ void GameData::update() noexcept
 					unsigned char _color[3];
 
 					if (config->visuals.fog.rainbow) {
-						const auto [colorR, colorG, colorB] { rainbowColor(config->visuals.fog.rainbowSpeed) };
+						const auto [colorR, colorG, colorB] { Helpers::rainbowColor(config->visuals.fog.rainbowSpeed) };
 						_color[0] = std::clamp(static_cast<int>(colorR * 255.0f), 0, 255);
 						_color[1] = std::clamp(static_cast<int>(colorG * 255.0f), 0, 255);
 						_color[2] = std::clamp(static_cast<int>(colorB * 255.0f), 0, 255);

@@ -122,7 +122,7 @@ void Animations::update(UserCmd* cmd, bool& _sendPacket) noexcept
 		localPlayer->getAnimstate()->lastUpdateFrame -= 1;
 
 	if (localPlayer->getAnimstate()->lastUpdateTime == memory->globalVars->currenttime)
-		localPlayer->getAnimstate()->lastUpdateTime += ticksToTime(1);
+		localPlayer->getAnimstate()->lastUpdateTime += Helpers::ticksToTime(1);
 
 	localPlayer->getEFlags() &= ~0x1000;
 	localPlayer->getAbsVelocity() = EnginePrediction::getVelocity();
@@ -379,7 +379,7 @@ void Animations::handlePlayers(FrameStage stage) noexcept
 						}
 					}
 				}
-				player.velocity.z -= gravity->getFloat() * 0.5f * ticksToTime(player.chokedPackets);
+				player.velocity.z -= gravity->getFloat() * 0.5f * Helpers::ticksToTime(player.chokedPackets);
 			}
 
 			if (entity->flags() & 1
@@ -421,7 +421,7 @@ void Animations::handlePlayers(FrameStage stage) noexcept
 					entity->getAnimstate()->lastUpdateFrame -= 1;
 
 				if (entity->getAnimstate()->lastUpdateTime == memory->globalVars->currenttime)
-					entity->getAnimstate()->lastUpdateTime += ticksToTime(1);
+					entity->getAnimstate()->lastUpdateTime += Helpers::ticksToTime(1);
 
 				entity->getEFlags() &= ~0x1000;
 				entity->getAbsVelocity() = player.velocity;
@@ -445,7 +445,7 @@ void Animations::handlePlayers(FrameStage stage) noexcept
 						entity->getAnimstate()->lastUpdateFrame -= 1;
 
 					if (entity->getAnimstate()->lastUpdateTime == memory->globalVars->currenttime)
-						entity->getAnimstate()->lastUpdateTime += ticksToTime(1);
+						entity->getAnimstate()->lastUpdateTime += Helpers::ticksToTime(1);
 
 					entity->updateClientSideAnimation();
 
@@ -537,7 +537,7 @@ void Animations::handlePlayers(FrameStage stage) noexcept
 
 			player.backtrackRecords.push_front(record);
 
-			while (player.backtrackRecords.size() > 3 && player.backtrackRecords.size() > static_cast<size_t>(timeToTicks(timeLimit)))
+			while (player.backtrackRecords.size() > 3 && player.backtrackRecords.size() > static_cast<size_t>(Helpers::timeToTicks(timeLimit)))
 				player.backtrackRecords.pop_back();
 		}
 	}
@@ -733,4 +733,12 @@ std::array<Animations::Players, 65>* Animations::setPlayers() noexcept
 const std::deque<Animations::Players::Record>* Animations::getBacktrackRecords(int index) noexcept
 {
 	return &players.at(index).backtrackRecords;
+}
+
+void Animations::resetMatrix(Entity* entity, matrix3x4* boneCacheData, Vector origin, Vector absAngle, Vector mins, Vector maxs) noexcept
+{
+	std::memcpy(entity->getBoneCache().memory, boneCacheData, std::clamp(entity->getBoneCache().size, 0, MAXSTUDIOBONES) * sizeof(matrix3x4));
+	memory->setAbsOrigin(entity, origin);
+	memory->setAbsAngle(entity, Vector{ 0.f, absAngle.y, 0.f });
+	entity->getCollideable()->setCollisionBounds(mins, maxs);
 }

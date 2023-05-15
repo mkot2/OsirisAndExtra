@@ -67,3 +67,7 @@ public:
 	UserCmd cmd;
 	unsigned long crc;
 };
+
+int getMaxUserCmdProcessTicks() noexcept;
+
+#define maxUserCmdProcessTicks getMaxUserCmdProcessTicks()

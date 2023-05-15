@@ -13,14 +13,14 @@ void AnimState::setupVelocity() noexcept
 	Vector vecAbsVelocity = entity->getAbsVelocity();
 
 	// We should call this only if the entity isnt the localPlayer, since we cant figure out other players velocity
-	/*
+	
 	if (localPlayer && localPlayer.get() != player)
 	{
 		// prevent the client input velocity vector from exceeding a reasonable magnitude
 		if (vecAbsVelocity.squareLength() > std::sqrt(CS_PLAYER_SPEED_RUN * CSGO_ANIM_MAX_VEL_LIMIT))
 			vecAbsVelocity = vecAbsVelocity.normalized() * (CS_PLAYER_SPEED_RUN * CSGO_ANIM_MAX_VEL_LIMIT);
 	}
-	*/
+	
 
 	//this is a hack to fix shuffling animations due to rounding errors, not part of actual game code
 	if (std::abs(vecAbsVelocity.x) < 0.001f)
@@ -285,7 +285,7 @@ void AnimState::setupMovement() noexcept
 	}
 
 	Vector vecMoveYawDir;
-	Vector::fromAngle(Vector{ 0.f, Helpers::angleNormalize(footYaw + moveYaw + 180.f), 0.f }, &vecMoveYawDir);
+	Vector{ 0.f, Helpers::angleNormalize(footYaw + moveYaw + 180.f), 0.f }.fromAngle(vecMoveYawDir, {}, {});
 	float yawDeltaAbsDot = std::abs(vecVelocityNormalizedNonZero.dotProduct(vecMoveYawDir));
 	moveWeight *= Helpers::bias(yawDeltaAbsDot, 0.2f);
 

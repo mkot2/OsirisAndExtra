@@ -22,7 +22,6 @@
 #include "MDLCache.h"
 #include "ModelInfo.h"
 #include "ModelRender.h"
-#include "Utils.h"
 #include "UtlVector.h"
 #include "VarMapping.h"
 #include "Vector.h"

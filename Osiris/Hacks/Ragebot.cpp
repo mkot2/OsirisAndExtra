@@ -11,7 +11,6 @@
 
 #include "../SDK/Entity.h"
 #include "../SDK/UserCmd.h"
-#include "../SDK/Utils.h"
 #include "../SDK/Vector.h"
 #include "../SDK/WeaponId.h"
 #include "../SDK/GlobalVars.h"
@@ -59,7 +58,7 @@ void runRagebot(UserCmd* cmd, Entity* entity, matrix3x4* matrix, const AimbotFun
 			const auto angle{ AimbotFunction::calculateRelativeAngle(localPlayerEyePosition, bonePosition, cmd->viewangles + aimPunch) };
 			const auto fov{ angle.length2D() };
 			const auto extrapolatedPoint{ bonePosition + entity->velocity() * memory->globalVars->intervalPerTick };
-			
+
 
 			if (fov > cfg[weaponIndex].fov)
 				continue;
@@ -301,7 +300,7 @@ void Ragebot::run(UserCmd* cmd) noexcept
 			}
 
 			runRagebot(cmd, entity, entity->getBoneCache().memory, target, hitbox, activeWeapon, weaponIndex, localPlayerEyePosition, aimPunch, cfg[weaponIndex].headMultiPoint, cfg[weaponIndex].bodyMultiPoint, minDamage, damageDiff, bestAngle, bestTarget, bestIndex, bestSimulationTime);
-			resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
+			Animations::resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 			if (bestTarget.notNull()) {
 				bestSimulationTime = currentSimulationTime;
 				bestIndex = target.id;
@@ -356,7 +355,7 @@ void Ragebot::run(UserCmd* cmd) noexcept
 			cmd->buttons &= ~UserCmd::IN_ATTACK;
 
 		if (cmd->buttons & UserCmd::IN_ATTACK) {
-			cmd->tickCount = timeToTicks(bestSimulationTime + Backtrack::getLerp());
+			cmd->tickCount = Helpers::timeToTicks(bestSimulationTime + Backtrack::getLerp());
 			resolver::save_record(bestIndex, bestSimulationTime);
 		}
 

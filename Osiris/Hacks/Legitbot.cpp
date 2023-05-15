@@ -196,7 +196,7 @@ void Legitbot::run(UserCmd* cmd) noexcept
 			}
 		}
 
-		resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
+		Animations::resetMatrix(entity, backupBoneCache, backupOrigin, backupAbsAngle, backupMins, backupMaxs);
 		if (bestTarget.notNull())
 			break;
 	}

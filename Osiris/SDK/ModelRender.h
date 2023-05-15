@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Utils.h"
 #include "Vector.h"
 
 class matrix3x4;
