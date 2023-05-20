@@ -70,18 +70,19 @@ public:
 	HookType newFunctionStudioRenderDLL;
 	HookType newFunctionMaterialSystemDLL;
 
-	HookType fileSystem;
-	HookType bspQuery;
-	HookType client;
-	HookType clientMode;
-	HookType clientState;
-	HookType engine;
-	HookType gameMovement;
-	HookType modelRender;
-	HookType sound;
-	HookType surface;
-	HookType viewRender;
-	HookType svCheats;
+    HookType fileSystem;
+    HookType bspQuery;
+    HookType client;
+    HookType clientMode;
+    HookType clientState;
+    HookType engine;
+    HookType gameMovement;
+    HookType modelRender;
+    HookType sound;
+    HookType surface;
+    HookType viewRender;
+    HookType svCheats;
+    HookType particleCollectionSimulate;
 private:
 	HMODULE moduleHandle;
 	HWND window;

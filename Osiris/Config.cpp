@@ -438,6 +438,7 @@ static void from_json(const json& j, Config::Visuals& v)
 	read(j, "No sleeves", v.noSleeves);
 	read(j, "No weapons", v.noWeapons);
 	read(j, "No smoke", v.noSmoke);
+	read(j, "Smoke circle", v.smokeCircle);
 	read(j, "Wireframe smoke", v.wireframeSmoke);
 	read(j, "No molotov", v.noMolotov);
 	read(j, "Wireframe molotov", v.wireframeMolotov);
@@ -451,6 +452,7 @@ static void from_json(const json& j, Config::Visuals& v)
 	read(j, "Full bright", v.fullBright);
 	read(j, "Zoom", v.zoom);
 	read(j, "Zoom key", v.zoomKey);
+	read(j, "Thirdperson Transparency", v.thirdpersonTransparency);
 	read(j, "Thirdperson", v.thirdperson);
 	read(j, "Thirdperson key", v.thirdpersonKey);
 	read(j, "Thirdperson distance", v.thirdpersonDistance);
@@ -497,6 +499,9 @@ static void from_json(const json& j, Config::Visuals& v)
 	read<value_t::object>(j, "Molotov timer background", v.molotovTimerBG);
 	read<value_t::object>(j, "Molotov timer timer", v.molotovTimerTimer);
 	read<value_t::object>(j, "Molotov timer text", v.molotovTimerText);
+	read<value_t::object>(j, "Console Color", v.console);
+    read<value_t::object>(j, "Smoke Color", v.smokeColor);
+    read<value_t::object>(j, "Molotov Color", v.molotovColor);
 	read<value_t::object>(j, "Footstep", v.footsteps);
 }
 
@@ -1454,6 +1459,7 @@ static void to_json(json& j, const Config::Visuals& o)
 	WRITE("No sleeves", noSleeves);
 	WRITE("No weapons", noWeapons);
 	WRITE("No smoke", noSmoke);
+	WRITE("Smoke circle", smokeCircle);
 	WRITE("Wireframe smoke", wireframeSmoke);
 	WRITE("No molotov", noMolotov);
 	WRITE("Wireframe molotov", wireframeMolotov);
@@ -1467,6 +1473,7 @@ static void to_json(json& j, const Config::Visuals& o)
 	WRITE("Full bright", fullBright);
 	WRITE("Zoom", zoom);
 	WRITE("Zoom key", zoomKey);
+	WRITE("Thirdperson Transparency", thirdpersonTransparency);
 	WRITE("Thirdperson", thirdperson);
 	WRITE("Thirdperson key", thirdpersonKey);
 	WRITE("Thirdperson distance", thirdpersonDistance);
@@ -1514,6 +1521,9 @@ static void to_json(json& j, const Config::Visuals& o)
 	WRITE("Molotov timer background", molotovTimerBG);
 	WRITE("Molotov timer timer", molotovTimerTimer);
 	WRITE("Molotov timer text", molotovTimerText);
+	WRITE("Console Color", console);
+    WRITE("Smoke Color", smokeColor);
+    WRITE("Molotov Color", molotovColor);
 	WRITE("Footstep", footsteps);
 }
 

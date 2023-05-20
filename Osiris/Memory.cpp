@@ -111,6 +111,8 @@ Memory::Memory() noexcept
 	accumulateLayersAddress = *(reinterpret_cast<void**>(findPattern(CLIENT_DLL, "84 C0 75 0D F6 87")));
 	standardBlendingRules = findPattern(CLIENT_DLL, "55 8B EC 83 E4 F0 B8 F8 10");
 
+	smokeCount = *reinterpret_cast<int**>(findPattern(CLIENT_DLL, "A3 ? ? ? ? 57 8B CB") + 1);
+
 	buildTransformations = findPattern(CLIENT_DLL, "55 8B EC 83 E4 F0 81 EC ? ? ? ? 56 57 8B F9 8B 0D ? ? ? ? 89 7C 24 28 8B");
 	doExtraBoneProcessing = findPattern(CLIENT_DLL, "55 8B EC 83 E4 F8 81 EC ? ? ? ? 53 56 8B F1 57 89 74 24 1C 80");
 	shouldSkipAnimationFrame = findPattern(CLIENT_DLL, "57 8B F9 8B 07 8B 80 ? ? ? ? FF D0 84 C0 75 02");
@@ -118,6 +120,8 @@ Memory::Memory() noexcept
 
 	checkForSequenceChange = findPattern(CLIENT_DLL, "55 8B EC 51 53 8B 5D 08 56 8B F1 57 85");
 
+	particleCollection = relativeToAbsolute<decltype(particleCollection)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 8B 0E 83 C1 10") + 1);
+	
 	sendDatagram = findPattern(ENGINE_DLL, "55 8B EC 83 E4 F0 B8 ? ? ? ? E8 ? ? ? ? 56 57 8B F9 89 7C 24 14");
 
 	modifyEyePosition = relativeToAbsolute<decltype(modifyEyePosition)>(findPattern(CLIENT_DLL, "E8 ? ? ? ? 8B 06 8B CE FF 90 ? ? ? ? 85 C0 74 50") + 1);

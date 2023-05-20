@@ -133,13 +133,15 @@ public:
 	void* setupVelocityAddress;
 	void* accumulateLayersAddress;
 
-	std::uintptr_t buildTransformations;
-	std::uintptr_t doExtraBoneProcessing;
-	std::uintptr_t standardBlendingRules;
-	std::uintptr_t shouldSkipAnimationFrame;
-	std::uintptr_t updateClientSideAnimation;
-	std::uintptr_t checkForSequenceChange;
-	std::uintptr_t sendDatagram;
+    int* smokeCount;
+
+    std::uintptr_t buildTransformations;
+    std::uintptr_t doExtraBoneProcessing;
+    std::uintptr_t standardBlendingRules;
+    std::uintptr_t shouldSkipAnimationFrame;
+    std::uintptr_t updateClientSideAnimation;
+    std::uintptr_t checkForSequenceChange;
+    std::uintptr_t sendDatagram;
 
 	std::uintptr_t modifyEyePosition;
 
@@ -176,6 +178,8 @@ public:
 	void(__thiscall* markSurroundingBoundsDirty)(void*);
 	bool(__thiscall* isBreakableEntity)(void*);
 
+	std::uintptr_t particleCollection;
+	
 	std::uintptr_t clSendMove;
 	void(__thiscall* clMsgMoveSetData)(void*, unsigned char*, std::size_t);
 	void(__thiscall* clMsgMoveDescontructor)(void*);

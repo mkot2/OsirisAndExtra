@@ -251,6 +251,7 @@ public:
 		bool noWeapons{ false };
 		bool noSmoke{ false };
 		bool wireframeSmoke{ false };
+		bool smokeCircle{ false };
 		bool noMolotov{ false };
 		bool wireframeMolotov{ false };
 		bool noBlur{ false };
@@ -279,6 +280,8 @@ public:
 		ColorToggle3 world;
 		ColorToggle3 props;
 		ColorToggle3 sky;
+        ColorToggle molotovColor{ 1.0f, 0.27f, 0.0f, 0.5f };
+        ColorToggle smokeColor{ .75f, .75f, .75f, 0.5f };
 		std::string customSkybox;
 		bool deagleSpinner{ false };
 		struct MotionBlur {
@@ -296,6 +299,7 @@ public:
 			int footstepBeamRadius = 0;
 			int footstepBeamThickness = 0;
 		} footsteps;
+		float thirdpersonTransparency = 0.f;
 		int screenEffect{ 0 };
 		int hitEffect{ 0 };
 		float hitEffectTime{ 0.6f };
@@ -340,6 +344,7 @@ public:
 		Color4 molotovTimerBG{ {1.0f, 1.0f, 1.0f, 0.5f} };
 		Color4 molotovTimerTimer{ {0.0f, 0.0f, 1.0f, 1.0f} };
 		Color4 molotovTimerText{ {0.0f, 0.0f, 0.0f, 1.0f} };
+		ColorToggle console{ 1.0f, 1.0f, 1.0f, 1.0f };
 		float glowOutlineWidth{ 6.0f };
 	} visuals;
 
