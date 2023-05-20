@@ -184,24 +184,21 @@ void Ragebot::run(UserCmd* cmd) noexcept
 	// Stomach
 	hitbox[Belly] = (cfg[weaponIndex].hitboxes & 1 << 2) == 1 << 2;
 	hitbox[Pelvis] = (cfg[weaponIndex].hitboxes & 1 << 2) == 1 << 2;
-	// Limbs will only be scanned when we can afford it, unless they are the only selected hitboxes
-	if ((static_cast<int>(1 / frameRate) > 1 / memory->globalVars->intervalPerTick && !((cfg[weaponIndex].hitboxes & 1 << 2) == (cfg[weaponIndex].hitboxes & 1 << 0) == (cfg[weaponIndex].hitboxes & 1 << 1) == 0)) || !config->optimizations.lowPerformanceMode) {
-		// Arms
-		hitbox[RightUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
-		hitbox[RightForearm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
-		hitbox[RightHand] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
-		hitbox[LeftUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
-		hitbox[LeftForearm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
-		hitbox[LeftHand] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
-		// Legs
-		hitbox[RightCalf] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
-		hitbox[RightThigh] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
-		hitbox[LeftCalf] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
-		hitbox[LeftThigh] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
-		// Feet
-		hitbox[RightFoot] = (cfg[weaponIndex].hitboxes & 1 << 5) == 1 << 5;
-		hitbox[LeftFoot] = (cfg[weaponIndex].hitboxes & 1 << 5) == 1 << 5;
-	}
+	// Arms
+	hitbox[RightUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+	hitbox[RightForearm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+	hitbox[RightHand] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+	hitbox[LeftUpperArm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+	hitbox[LeftForearm] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+	hitbox[LeftHand] = (cfg[weaponIndex].hitboxes & 1 << 3) == 1 << 3;
+	// Legs
+	hitbox[RightCalf] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
+	hitbox[RightThigh] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
+	hitbox[LeftCalf] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
+	hitbox[LeftThigh] = (cfg[weaponIndex].hitboxes & 1 << 4) == 1 << 4;
+	// Feet
+	hitbox[RightFoot] = (cfg[weaponIndex].hitboxes & 1 << 5) == 1 << 5;
+	hitbox[LeftFoot] = (cfg[weaponIndex].hitboxes & 1 << 5) == 1 << 5;
 
 
 	std::vector<AimbotFunction::Enemies> enemies;

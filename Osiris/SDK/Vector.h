@@ -197,19 +197,19 @@ struct Vector {
 
 	constexpr auto transform(const matrix3x4& mat) const noexcept;
 
-	auto distTo(const Vector& v) const noexcept
+	float distTo(const Vector& v) const noexcept
 	{
 		return (*this - v).length();
 	}
 
-	auto toAngle() const noexcept
+	Vector toAngle() const noexcept
 	{
 		return Vector{ Helpers::rad2deg(std::atan2(-z, std::hypot(x, y))),
 					   Helpers::rad2deg(std::atan2(y, x)),
 					   0.0f };
 	}
 
-	auto snapTo4() const noexcept
+	Vector snapTo4() const noexcept
 	{
 		const float l = length2D();
 		bool xp = x >= 0.0f;
@@ -227,7 +227,7 @@ struct Vector {
 		return Vector{};
 	}
 
-	auto fromAngle(std::optional<std::reference_wrapper<Vector>> forward, std::optional<std::reference_wrapper<Vector>> right, std::optional<std::reference_wrapper<Vector>> up) const noexcept
+	void fromAngle(std::optional<std::reference_wrapper<Vector>> forward, std::optional<std::reference_wrapper<Vector>> right, std::optional<std::reference_wrapper<Vector>> up) const noexcept
 	{
 		const float sr = std::sin(Helpers::deg2rad(z))
 				  , sp = std::sin(Helpers::deg2rad(x))
@@ -241,19 +241,19 @@ struct Vector {
 		if (up) up->get() = Vector{(cr * sp * cy + -sr * -sy), (cr * sp * sy + -sr * cy), cr * cp};
 	}
 
-	static auto fromAngle(const Vector& angle) noexcept
+	static Vector fromAngle(const Vector& angle) noexcept
 	{
 		Vector forward; angle.fromAngle(forward, {}, {});
 		return forward;
 	}
 
-	static auto fromAngle2D(float angle) noexcept
+	static Vector fromAngle2D(float angle) noexcept
 	{
 		Vector forward; Vector{angle, angle, 0.f}.fromAngle(forward, {}, {});
 		return forward;
 	}
 
-	Vector normalized() noexcept
+	Vector normalized() const noexcept
 	{
 		return *this * (1.f / (length() + std::numeric_limits<float>::epsilon()));
 	}

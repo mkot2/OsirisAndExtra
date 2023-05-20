@@ -149,9 +149,6 @@
     <ClCompile Include="Hacks\Knifebot.cpp">
       <Filter>Hacks</Filter>
     </ClCompile>
-    <ClCompile Include="SDK\checksum_crc.cpp">
-      <Filter>SDK</Filter>
-    </ClCompile>
     <ClCompile Include="SDK\PredictionCopy.cpp">
       <Filter>SDK</Filter>
     </ClCompile>
@@ -568,9 +565,6 @@
     <ClInclude Include="SDK\ViewSetup.h">
       <Filter>SDK</Filter>
     </ClInclude>
-    <ClInclude Include="SDK\checksum_crc.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
     <ClInclude Include="SDK\PredictionCopy.h">
       <Filter>SDK</Filter>
     </ClInclude>
@@ -717,6 +711,12 @@
     </ClInclude>
     <ClInclude Include="..\Dependencies\toml++\toml.hpp">
       <Filter>Dependencies\toml++</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\ParticleCollection.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\CRC.h">
+      <Filter>Dependencies</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

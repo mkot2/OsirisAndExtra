@@ -247,15 +247,12 @@ static void from_json(const json& j, Config::Legitbot& a)
 	read(j, "Min damage", a.minDamage);
 	read(j, "Killshot", a.killshot);
 	read(j, "Between shots", a.betweenShots);
-}
-
-static void from_json(const json& j, Config::RecoilControlSystem& r)
-{
-	read(j, "Enabled", r.enabled);
-	read(j, "Silent", r.silent);
-	read(j, "Ignore Shots", r.shotsFired);
-	read(j, "Horizontal", r.horizontal);
-	read(j, "Vertical", r.vertical);
+	read(j, "RCS enable", a.rcs.enabled);
+	read(j, "RCS silent", a.rcs.silent);
+	read(j, "RCS randomize", a.rcs.randomize);
+	read(j, "RCS ignore shots", a.rcs.ignoredShots);
+	read(j, "RCS X", a.rcs.x);
+	read(j, "RCS Y", a.rcs.y);
 }
 
 static void from_json(const json& j, Config::Ragebot& r)
@@ -284,11 +281,6 @@ static void from_json(const json& j, Config::Ragebot& r)
 	read(j, "Body Multipoint", r.bodyMultiPoint);
 	read(j, "Min damage", r.minDamage);
 	read(j, "Min damage override", r.minDamageOverride);
-}
-
-static void from_json(const json& j, Config::Optimizations& o)
-{
-	read(j, "Low Performance Mode", o.lowPerformanceMode);
 }
 
 static void from_json(const json& j, Config::Triggerbot& t)
@@ -788,9 +780,6 @@ void Config::load(const char8_t* name, bool incremental) noexcept
 	read(j, "Legitbot Key", legitbotKey);
 	read<value_t::object>(j, "Draw legitbot fov", legitbotFov);
 
-	read<value_t::object>(j, "RCS", recoilControlSystem);
-	read<value_t::object>(j, "Optimizations", optimizations);
-
 	read(j, "Ragebot", ragebot);
 	read(j, "Ragebot Key", ragebotKey);
 	read(j, "Min damage override Key", minDamageOverrideKey);
@@ -983,15 +972,12 @@ static void to_json(json& j, const Config::Legitbot& o, const Config::Legitbot& 
 	WRITE("Min damage", minDamage);
 	WRITE("Killshot", killshot);
 	WRITE("Between shots", betweenShots);
-}
-
-static void to_json(json& j, const Config::RecoilControlSystem& o, const Config::RecoilControlSystem& dummy = {})
-{
-	WRITE("Enabled", enabled);
-	WRITE("Silent", silent);
-	WRITE("Ignore Shots", shotsFired);
-	WRITE("Horizontal", horizontal);
-	WRITE("Vertical", vertical);
+	WRITE("RCS enable", rcs.enabled);
+	WRITE("RCS silent", rcs.silent);
+	WRITE("RCS randomize", rcs.randomize);
+	WRITE("RCS ignore shots", rcs.ignoredShots);
+	WRITE("RCS X", rcs.x);
+	WRITE("RCS Y", rcs.y);
 }
 
 static void to_json(json& j, const Config::Ragebot& o, const Config::Ragebot& dummy = {})
@@ -1020,11 +1006,6 @@ static void to_json(json& j, const Config::Ragebot& o, const Config::Ragebot& du
 	WRITE("Body Multipoint", bodyMultiPoint);
 	WRITE("Min damage", minDamage);
 	WRITE("Min damage override", minDamageOverride);
-}
-
-static void to_json(json& j, const Config::Optimizations& o, const Config::Optimizations& dummy = {})
-{
-	WRITE("Low Performance Mode", lowPerformanceMode);
 }
 
 static void to_json(json& j, const Config::Triggerbot& o, const Config::Triggerbot& dummy = {})
@@ -1561,9 +1542,6 @@ void Config::save(size_t id) const noexcept
 		to_json(j["Legitbot Key"], legitbotKey, KeyBind::NONE);
 		j["Draw legitbot fov"] = legitbotFov;
 
-		j["RCS"] = recoilControlSystem;
-		j["Optimizations"] = optimizations;
-
 		j["Ragebot"] = ragebot;
 		to_json(j["Ragebot Key"], ragebotKey, KeyBind::NONE);
 		to_json(j["Min damage override Key"], minDamageOverrideKey, KeyBind::NONE);
@@ -1626,7 +1604,6 @@ void Config::rename(size_t item, const char* newName) noexcept
 void Config::reset() noexcept
 {
 	legitbot = { };
-	recoilControlSystem = { };
 	legitAntiAim = { };
 	ragebot = { };
 	rageAntiAim = { };

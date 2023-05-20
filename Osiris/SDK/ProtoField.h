@@ -246,19 +246,16 @@ public:
 			bytesRead += length + sizeDelimited;
 			break;
 		case WIRETYPE_START_GROUP:
-			throw("WIRETYPE_START_GROUP unrealised");
-			break;
+			return Field(0, 0, "", "");
 		case WIRETYPE_END_GROUP:
-			throw("WIRETYPE_END_GROUP unrealised");
-			break;
+			return Field(0, 0, "", "");
 		case WIRETYPE_FIXED32:
 			value = std::string{ reinterpret_cast<const char*>((void*)((ptrdiff_t)data + bytesRead)), 4 };
 			full = std::string{ reinterpret_cast<const char*>(data), bytesRead + 4 };
 			bytesRead += 4;
 			break;
 		default:
-			throw("Unknown type %i", type);
-			break;
+			return Field(0, 0, "", "");
 		}
 
 

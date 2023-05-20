@@ -1,30 +1,34 @@
 #pragma once
 
-#include "checksum_crc.h"
+#include <cstdint>
+
+#define CRCPP_BRANCHLESS
+#define CRCPP_USE_CPP11
+#include <CRC.h>
+
 #include "Vector.h"
 
 struct UserCmd {
-	CRC32_t getChecksum() const noexcept
+	std::uint32_t getChecksum() const noexcept
 	{
-		CRC32_t crc;
-		CRC32_Init(&crc);
+		static const auto table = CRC::CRC_32().MakeTable();
 
-		CRC32_ProcessBuffer(&crc, &commandNumber, sizeof(commandNumber));
-		CRC32_ProcessBuffer(&crc, &tickCount, sizeof(tickCount));
-		CRC32_ProcessBuffer(&crc, &viewangles, sizeof(viewangles));
-		CRC32_ProcessBuffer(&crc, &aimdirection, sizeof(aimdirection));
-		CRC32_ProcessBuffer(&crc, &forwardmove, sizeof(forwardmove));
-		CRC32_ProcessBuffer(&crc, &sidemove, sizeof(sidemove));
-		CRC32_ProcessBuffer(&crc, &upmove, sizeof(upmove));
-		CRC32_ProcessBuffer(&crc, &buttons, sizeof(buttons));
-		CRC32_ProcessBuffer(&crc, &impulse, sizeof(impulse));
-		CRC32_ProcessBuffer(&crc, &weaponselect, sizeof(weaponselect));
-		CRC32_ProcessBuffer(&crc, &weaponsubtype, sizeof(weaponsubtype));
-		CRC32_ProcessBuffer(&crc, &randomSeed, sizeof(randomSeed));
-		CRC32_ProcessBuffer(&crc, &mousedx, sizeof(mousedx));
-		CRC32_ProcessBuffer(&crc, &mousedy, sizeof(mousedy));
+		std::uint32_t crc;
 
-		CRC32_Final(&crc);
+		crc = CRC::Calculate(&commandNumber, sizeof(commandNumber), table);
+		crc = CRC::Calculate(&tickCount, sizeof(tickCount), table, crc);
+		crc = CRC::Calculate(&viewangles, sizeof(viewangles), table, crc);
+		crc = CRC::Calculate(&aimdirection, sizeof(aimdirection), table, crc);
+		crc = CRC::Calculate(&forwardmove, sizeof(forwardmove), table, crc);
+		crc = CRC::Calculate(&sidemove, sizeof(sidemove), table, crc);
+		crc = CRC::Calculate(&upmove, sizeof(upmove), table, crc);
+		crc = CRC::Calculate(&buttons, sizeof(buttons), table, crc);
+		crc = CRC::Calculate(&impulse, sizeof(impulse), table, crc);
+		crc = CRC::Calculate(&weaponselect, sizeof(weaponselect), table, crc);
+		crc = CRC::Calculate(&weaponsubtype, sizeof(weaponsubtype), table, crc);
+		crc = CRC::Calculate(&randomSeed, sizeof(randomSeed), table, crc);
+		crc = CRC::Calculate(&mousedx, sizeof(mousedx), table, crc);
+		crc = CRC::Calculate(&mousedy, sizeof(mousedy), table, crc);
 		return crc;
 	}
 
@@ -65,7 +69,7 @@ struct UserCmd {
 struct VerifiedUserCmd {
 public:
 	UserCmd cmd;
-	unsigned long crc;
+	std::uint32_t crc;
 };
 
 int getMaxUserCmdProcessTicks() noexcept;

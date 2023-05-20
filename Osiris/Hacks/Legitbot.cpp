@@ -42,16 +42,16 @@ void Legitbot::run(UserCmd* cmd) noexcept
 
 	const auto aimPunch = activeWeapon->requiresRecoilControl() ? localPlayer->getAimPunch() : Vector{ };
 
-	if (config->recoilControlSystem.enabled && (config->recoilControlSystem.horizontal || config->recoilControlSystem.vertical) && aimPunch.notNull()) {
+	if (cfg[weaponIndex].rcs.enabled && (cfg[weaponIndex].rcs.x || cfg[weaponIndex].rcs.y) && aimPunch.notNull()) {
 		static Vector lastAimPunch{ };
-		if (localPlayer->shotsFired() > config->recoilControlSystem.shotsFired) {
+		if (localPlayer->shotsFired() > cfg[weaponIndex].rcs.ignoredShots) {
 			if (cmd->buttons & UserCmd::IN_ATTACK) {
 				Vector currentPunch = aimPunch;
 
-				currentPunch.x *= config->recoilControlSystem.vertical / 100.f;
-				currentPunch.y *= config->recoilControlSystem.horizontal / 100.f;
+				currentPunch.x *= cfg[weaponIndex].rcs.randomize ? std::uniform_real_distribution<float>(cfg[weaponIndex].rcs.x / 100.f)(PCG::generator) : cfg[weaponIndex].rcs.x / 100.f;
+				currentPunch.y *= cfg[weaponIndex].rcs.randomize ? std::uniform_real_distribution<float>(cfg[weaponIndex].rcs.y / 100.f)(PCG::generator) : cfg[weaponIndex].rcs.y / 100.f;
 
-				if (!config->recoilControlSystem.silent) {
+				if (!cfg[weaponIndex].rcs.silent) {
 					cmd->viewangles.y += lastAimPunch.y - currentPunch.y;
 					cmd->viewangles.x += lastAimPunch.x - currentPunch.x;
 					lastAimPunch.y = currentPunch.y;
@@ -65,7 +65,7 @@ void Legitbot::run(UserCmd* cmd) noexcept
 		} else
 			lastAimPunch = Vector{ };
 
-		if (!config->recoilControlSystem.silent)
+		if (!cfg[weaponIndex].rcs.silent)
 			interfaces->engine->setViewAngles(cmd->viewangles);
 	}
 

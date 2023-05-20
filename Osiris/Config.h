@@ -60,10 +60,6 @@ public:
 	KeyBind ragebotKey{ std::string("ragebot") };
 	KeyBind minDamageOverrideKey{ std::string("min damage override"), Off };
 
-	struct Optimizations {
-		bool lowPerformanceMode{ false };
-	} optimizations;
-
 	struct Fakelag {
 		bool enabled = false;
 		int mode = 0;
@@ -146,18 +142,18 @@ public:
 		int minDamage{ 0 };
 		bool killshot{ false };
 		bool betweenShots{ true };
+		struct RCS {
+			bool enabled{ false };
+			bool silent{ false };
+			bool randomize{ false };
+			int x{ 100 };
+			int y{ 100 };
+			int ignoredShots{ 0 };
+		} rcs;
 	};
 	std::array<Legitbot, 40> legitbot;
 	KeyBind legitbotKey{ std::string("legitbot") };
 	ColorToggle legitbotFov{ {1.0f, 1.0f, 1.0f, 1.0f} };
-
-	struct RecoilControlSystem {
-		bool enabled{ false };
-		bool silent{ false };
-		int shotsFired{ 0 };
-		int horizontal{ 100 };
-		int vertical{ 100 };
-	} recoilControlSystem;
 
 	struct Triggerbot {
 		bool enabled = false;
@@ -280,8 +276,8 @@ public:
 		ColorToggle3 world;
 		ColorToggle3 props;
 		ColorToggle3 sky;
-        ColorToggle molotovColor{ 1.0f, 0.27f, 0.0f, 0.5f };
-        ColorToggle smokeColor{ .75f, .75f, .75f, 0.5f };
+		ColorToggle molotovColor{ 1.0f, 0.27f, 0.0f, 0.5f };
+		ColorToggle smokeColor{ .75f, .75f, .75f, 0.5f };
 		std::string customSkybox;
 		bool deagleSpinner{ false };
 		struct MotionBlur {

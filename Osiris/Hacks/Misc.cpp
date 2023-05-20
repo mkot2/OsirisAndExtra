@@ -20,7 +20,7 @@
 #include "Misc.h"
 #include "Fakelag.h"
 #include "Ragebot.h"
-#include "resolver.h"
+#include "Resolver.h"
 
 #include "../SDK/Client.h"
 #include "../SDK/ClientMode.h"
@@ -1606,7 +1606,7 @@ void Misc::watermark() noexcept
 	frame_rate = 0.9f * frame_rate + 0.1f * memory->globalVars->absoluteFrameTime;
 	GameData::Lock lock;
 	const auto& [exists, alive, inReload, shooting, noScope, nextWeaponAttack, fov, handle, flashDuration, aimPunch, origin, inaccuracy, team, velocityModifier] { GameData::local() };
-	ImGui::Text("Osiris%s | %d fps | %d ms | %s%s%s",
+	ImGui::Text("Osiris%s | %d fps | %d ms%s | %s%s%s",
 #ifdef _DEBUG
 		" [DEBUG]",
 #else
@@ -1614,15 +1614,10 @@ void Misc::watermark() noexcept
 #endif
 		frame_rate != 0.0f ? static_cast<int>(1 / frame_rate) : 0,
 		GameData::getNetOutgoingLatency(),
+		Fakelag::latest_choked_packets != 0 ? std::format(" ({}t choke)", Fakelag::latest_choked_packets).c_str() : "",
 		team == Team::Spectators ? "SPEC" : team == Team::TT ? "T" : team == Team::CT ? "CT" : "NONE",
 		inReload ? " | RELOADING" : "",
 		noScope ? " | NO SCOPE" : "");
-	ImGui::Text("%d ticks FL%s%s%s | Last target: %s",
-		Fakelag::latest_choked_packets,
-		config->tickbase.doubletap.isActive() ? " | DT" : "",
-		config->tickbase.hideshots.isActive() ? " | HS" : "",
-		config->tickbase.teleport && (config->tickbase.doubletap.isActive() || config->tickbase.hideshots.isActive()) ? " | TP" : "",
-		Ragebot::latest_player.c_str());
 	ImGui::End();
 }
 
@@ -1705,7 +1700,7 @@ void Misc::fastStop(UserCmd* cmd) noexcept
 	if (cmd->buttons & (UserCmd::IN_MOVELEFT | UserCmd::IN_MOVERIGHT | UserCmd::IN_FORWARD | UserCmd::IN_BACK))
 		return;
 
-	const auto velocity = localPlayer->velocity();
+	const auto& velocity = localPlayer->velocity();
 	const auto speed = velocity.length2D();
 	if (speed < 15.0f)
 		return;
@@ -1761,42 +1756,38 @@ void Misc::drawBombTimer() noexcept
 		drawDamage = false;
 
 	if (drawDamage) {
-		constexpr double bombDamage = 500.; // This is not constant on every map, and so it might not work
-		constexpr double bombRadius = bombDamage * 3.5; // This is not constant either
-		constexpr double sigma = bombRadius / 3.;
+		constexpr double defaultBombDamage = 500.; // This is not constant on every map, and so it might not work
+		constexpr double defaultBombRadius = defaultBombDamage * 3.5; // This is not constant either
+		constexpr double sigma = defaultBombRadius / 3.;
 
-		constexpr double armorRatio = .5;
-		constexpr double armorBonus = .5;
+		const double distanceToLocalPlayer = ((bombEntity->viewOffset() + bombEntity->origin()) - (targetEntity->viewOffset() + targetEntity->origin())).length();
+		const double gaussianFalloff = std::exp(-distanceToLocalPlayer * distanceToLocalPlayer / (2. * sigma * sigma));
 
-		const double armorValue = static_cast<double>(targetEntity->armor());
-		const int health = targetEntity->health();
+		double bombDamage = defaultBombDamage * gaussianFalloff;
 
-		double calculatedBombDamage = 0.;
-		double distanceToLocalPlayer = (bombEntity->origin() - targetEntity->origin()).length();
-		double gaussianFalloff = std::exp(-distanceToLocalPlayer * distanceToLocalPlayer / (2. * sigma * sigma));
+		if (const double armorValue = static_cast<double>(targetEntity->armor()); armorValue > 0) {
+			constexpr double armorRatio = .5;
+			constexpr double armorBonus = .5;
 
-		calculatedBombDamage = bombDamage * gaussianFalloff;
-
-		if (armorValue > 0) {
-			double newRatio = calculatedBombDamage * armorRatio;
-			double armor = (calculatedBombDamage - newRatio) * armorBonus;
+			double newRatio = bombDamage * armorRatio;
+			double armor = (bombDamage - newRatio) * armorBonus;
 
 			if (armor > armorValue) {
-				armor = armorValue * (1.f / armorBonus);
-				newRatio = calculatedBombDamage - armor;
+				armor = armorValue * (1. / armorBonus);
+				newRatio = bombDamage - armor;
 			}
-			calculatedBombDamage = newRatio;
+			bombDamage = newRatio;
 		}
 
-		int finalBombDamage = static_cast<int>(std::floor(calculatedBombDamage));
-
+		const int health = targetEntity->health();
+		const int finalBombDamage = static_cast<int>(std::floor(bombDamage));
 		if (health <= finalBombDamage) {
 			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
 			ImGui::textUnformattedCentered("Lethal");
 			ImGui::PopStyleColor();
 		} else {
 			std::ostringstream text; text << "Damage: " << std::clamp(finalBombDamage, 0, health - 1);
-			const auto color = Helpers::healthColor(static_cast<float>(std::clamp(1. - (finalBombDamage / static_cast<double>(health)), 0., 1.)));
+			const auto color = Helpers::healthColor(std::clamp(1.f - static_cast<float>(finalBombDamage) / health, 0.f, 1.f));
 			ImGui::PushStyleColor(ImGuiCol_Text, color);
 			ImGui::textUnformattedCentered(text.str().c_str());
 			ImGui::PopStyleColor();

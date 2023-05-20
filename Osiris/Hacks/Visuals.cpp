@@ -666,7 +666,7 @@ void Visuals::colorConsole(int reset) noexcept
             }
 
             if (config->visuals.console.rainbow) {
-                material[num]->colorModulate(rainbowColor(config->visuals.console.rainbowSpeed));
+                material[num]->colorModulate(Helpers::rainbowColor(config->visuals.console.rainbowSpeed));
                 material[num]->alphaModulate(config->visuals.console.color[3]);
             }
             else {

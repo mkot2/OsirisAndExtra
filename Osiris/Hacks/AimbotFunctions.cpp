@@ -341,12 +341,8 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 	Vector top = Vector{ 0, 0, 1 };
 	Vector bottom = Vector{ 0, 0, -1 };
 
-	float headMultiPoint = _headMultiPoint  * 0.01f;
+	float headMultiPoint = _headMultiPoint * 0.01f;
 	float bodyMultiPoint = _bodyMultiPoint * 0.01f;
-	static auto frameRate = 1.0f;
-	frameRate = 0.9f * frameRate + 0.1f * memory->globalVars->absoluteFrameTime;
-	// linear scaling 0 - 15 based on how low our fps is compared to the server's tickrate
-	int toOptimize = std::clamp(static_cast<int>(15 * ((static_cast<int>(1 / frameRate)) <= (1 / memory->globalVars->intervalPerTick)) + 15 * (1 - ((static_cast<int>(1 / frameRate)) - (1 / memory->globalVars->intervalPerTick)) / (1 / memory->globalVars->intervalPerTick)) * ((static_cast<int>(1 / frameRate)) < 2 * (1 / memory->globalVars->intervalPerTick))), 0, 15);
 
 	switch (_hitbox) {
 	case Head:
@@ -358,15 +354,11 @@ std::vector<Vector> AimbotFunction::multiPoint(Entity* entity, const matrix3x4 m
 		vecArray[3] += left * (hitbox->capsuleRadius * headMultiPoint);
 		vecArray[4] += bottom * (hitbox->capsuleRadius * headMultiPoint);
 		break;
-	default://rest
-		if (!config->optimizations.lowPerformanceMode || toOptimize < _hitbox + 1) {
-			for (auto i = 0; i < 3; ++i)
-				vecArray.emplace_back(center);
-
-			vecArray[1] += right * (hitbox->capsuleRadius * bodyMultiPoint);
-			vecArray[2] += left * (hitbox->capsuleRadius * bodyMultiPoint);
-		} else
+	default:
+		for (auto i = 0; i < 3; ++i)
 			vecArray.emplace_back(center);
+		vecArray[1] += right * (hitbox->capsuleRadius * bodyMultiPoint);
+		vecArray[2] += left * (hitbox->capsuleRadius * bodyMultiPoint);
 		break;
 	}
 	return vecArray;
@@ -386,16 +378,16 @@ bool AimbotFunction::hitChance(Entity* localPlayer, Entity* entity, StudioHitbox
 	int hits = 0;
 	const int hitsNeed = static_cast<int>(static_cast<float>(maxSeed) * (static_cast<float>(hitChance) / 100.f));
 
-	const auto weapSpread = activeWeapon->getSpread();
-	const auto weapInaccuracy = activeWeapon->getInaccuracy();
-	const auto localEyePosition = localPlayer->getEyePosition();
-	const auto range = activeWeapon->getWeaponData()->range;
+	const float weapSpread = activeWeapon->getSpread();
+	const float weapInaccuracy = activeWeapon->getInaccuracy();
+	const Vector localEyePosition = localPlayer->getEyePosition();
+	const float range = activeWeapon->getWeaponData()->range;
 
 	for (int i = 0; i < maxSeed; i++) {
 		const float spreadX = std::uniform_real_distribution<float>(0.f, 2.f * std::numbers::pi_v<float>)(PCG::generator);
 		const float spreadY = std::uniform_real_distribution<float>(0.f, 2.f * std::numbers::pi_v<float>)(PCG::generator);
-		auto inaccuracy = weapInaccuracy * std::uniform_real_distribution<float>(0.f, 1.f)(PCG::generator);
-		auto spread = weapSpread * std::uniform_real_distribution<float>(0.f, 1.f)(PCG::generator);
+		const float inaccuracy = weapInaccuracy * std::uniform_real_distribution<float>(0.f, 1.f)(PCG::generator);
+		const float spread = weapSpread * std::uniform_real_distribution<float>(0.f, 1.f)(PCG::generator);
 
 		Vector spreadView{ std::cos(spreadX) * inaccuracy + std::cos(spreadY) * spread,
 						   std::sin(spreadX) * inaccuracy + std::sin(spreadY) * spread };

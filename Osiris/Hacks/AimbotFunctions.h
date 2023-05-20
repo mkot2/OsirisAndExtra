@@ -32,19 +32,19 @@ namespace AimbotFunction
 	};
 
 	struct {
-		bool operator()(Enemies& a, Enemies& b) const
+		bool operator()(const Enemies& a, const Enemies& b) const
 		{
 			return a.health < b.health;
 		}
 	} healthSort;
 	struct {
-		bool operator()(Enemies& a, Enemies& b) const
+		bool operator()(const Enemies& a, const Enemies& b) const
 		{
 			return a.distance < b.distance;
 		}
 	} distanceSort;
 	struct {
-		bool operator()(Enemies& a, Enemies& b) const
+		bool operator()(const Enemies& a, const Enemies& b) const
 		{
 			return a.fov < b.fov;
 		}

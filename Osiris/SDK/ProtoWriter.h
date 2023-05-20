@@ -30,7 +30,7 @@ public:
 			if (!bytesRead) break;
 
 			auto index = field.tag.field;
-			if (index >= vector_size) throw("fields range error: field[%i]", index);
+			if (index >= vector_size) return;
 			fields[index].push_back(field);
 			pos += bytesRead;
 		}

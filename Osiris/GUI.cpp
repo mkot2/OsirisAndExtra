@@ -276,21 +276,25 @@ void GUI::renderLegitbotWindow() noexcept
 	config->legitbot[currentWeapon].minDamage = std::clamp(config->legitbot[currentWeapon].minDamage, 0, 250);
 	ImGui::Checkbox("Killshot", &config->legitbot[currentWeapon].killshot);
 	ImGui::Checkbox("Between shots", &config->legitbot[currentWeapon].betweenShots);
-	ImGui::Checkbox("Recoil control system", &config->recoilControlSystem.enabled);
-	ImGui::PushID("RCS");
-	ImGui::SameLine();
-	if (ImGui::Button("..."))
-		ImGui::OpenPopup("");
-	if (ImGui::BeginPopup("")) {
-		ImGui::Checkbox("Silent", &config->recoilControlSystem.silent);
-		ImGui::PushItemWidth(150.f);
-		ImGui::SliderInt("Ignored shots", &config->recoilControlSystem.shotsFired, 0, 150, "%d");
-		ImGui::SliderInt("Horizontal", &config->recoilControlSystem.horizontal, 0, 100, "%d%%");
-		ImGui::SliderInt("Vertical", &config->recoilControlSystem.vertical, 0, 100, "%d%%");
-		ImGui::PopItemWidth();
-		ImGui::EndPopup();
+
+	if (!config->legitbot[currentWeapon].silent) {
+		ImGui::Checkbox("Recoil control system", &config->legitbot[currentWeapon].rcs.enabled);
+		ImGui::PushID("RCS");
+		ImGui::SameLine();
+		if (ImGui::Button("..."))
+			ImGui::OpenPopup("");
+		if (ImGui::BeginPopup("")) {
+			ImGui::Checkbox("Silent", &config->legitbot[currentWeapon].rcs.silent);
+			ImGui::Checkbox("Randomize", &config->legitbot[currentWeapon].rcs.randomize);
+			ImGui::PushItemWidth(150.f);
+			ImGui::SliderInt("Ignored shots", &config->legitbot[currentWeapon].rcs.ignoredShots, 0, 150, "%d");
+			ImGui::SliderInt("Horizontal", &config->legitbot[currentWeapon].rcs.x, 0, 100, "%d%%");
+			ImGui::SliderInt("Vertical", &config->legitbot[currentWeapon].rcs.y, 0, 100, "%d%%");
+			ImGui::PopItemWidth();
+			ImGui::EndPopup();
+		}
+		ImGui::PopID();
 	}
-	ImGui::PopID();
 	ImGui::Columns(1);
 }
 
@@ -412,7 +416,6 @@ void GUI::renderRagebotWindow() noexcept
 		ImGui::EndPopup();
 	}
 	ImGui::Checkbox("Resolver", &config->ragebot[currentWeapon].resolver);
-	ImGui::Checkbox("Low performance mode", &config->optimizations.lowPerformanceMode);
 	ImGui::Checkbox("Between shots", &config->ragebot[currentWeapon].betweenShots);
 	ImGui::Combo("Priority", &config->ragebot[currentWeapon].priority, "Health\0Distance\0Fov\0");
 	ImGuiCustom::multiCombo("Hitbox", config->ragebot[currentWeapon].hitboxes, "Head\0Chest\0Stomach\0Arms\0Legs\0Feet\0");
