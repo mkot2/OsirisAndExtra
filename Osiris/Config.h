@@ -364,6 +364,7 @@ public:
 		bool moonwalk{ false };
 		bool leg_break{ false };
 		bool blockBot{ false };
+		ColorToggleThickness blockBotVisualize;
 		KeyBind blockBotKey{ std::string("block bot") };
 		bool edgeJump{ false };
 		KeyBind edgeJumpKey{ std::string("edgejump") };

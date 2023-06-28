@@ -61,13 +61,6 @@ namespace Helpers
 			-1;
 	}
 
-	constexpr auto utf8Substr(char* start, char* end, int n) noexcept
-	{
-		while (start < end && --n)
-			start += utf8SeqLen(*start);
-		return start;
-	}
-
 	std::array<float, 3U> rgbToHsv(float r, float g, float b) noexcept;
 	std::array<float, 3U> hsvToRgb(float h, float s, float v) noexcept;
 

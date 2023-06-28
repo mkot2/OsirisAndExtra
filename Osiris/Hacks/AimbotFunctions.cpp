@@ -62,7 +62,7 @@ static bool traceToExit(const Trace& enterTrace, const Vector& start, const Vect
 	return false;
 }
 
-static float handleBulletPenetration(SurfaceData* enterSurfaceData, const Trace& enterTrace, const Vector& direction, Vector& result, float penetration, float damage) noexcept
+static float handleBulletPenetration(const SurfaceData* enterSurfaceData, const Trace& enterTrace, const Vector& direction, Vector& result, float penetration, float damage) noexcept
 {
 	Vector end;
 	Trace exitTrace;
@@ -97,8 +97,8 @@ static float handleBulletPenetration(SurfaceData* enterSurfaceData, const Trace&
 
 void AimbotFunction::calculateArmorDamage(float armorRatio, int armorValue, bool hasHeavyArmor, float& damage) noexcept
 {
-	auto armorScale = 1.0f;
-	auto armorBonusRatio = 0.5f;
+	float armorScale = 1.0f;
+	float armorBonusRatio = 0.5f;
 
 	if (hasHeavyArmor) {
 		armorRatio *= 0.2f;
@@ -106,10 +106,10 @@ void AimbotFunction::calculateArmorDamage(float armorRatio, int armorValue, bool
 		armorScale = 0.25f;
 	}
 
-	auto newDamage = damage * armorRatio;
-	const auto estiminated_damage = (damage - damage * armorRatio) * armorScale * armorBonusRatio;
+	float newDamage = damage * armorRatio;
+	const float estiminatedDamage = (damage - newDamage) * armorScale * armorBonusRatio;
 
-	if (estiminated_damage > armorValue)
+	if (estiminatedDamage > armorValue)
 		newDamage = damage - armorValue / armorBonusRatio;
 
 	damage = newDamage;
@@ -166,7 +166,7 @@ float AimbotFunction::getScanDamage(Entity* entity, const Vector& destination, c
 
 bool AimbotFunction::canScan(Entity* entity, const Vector& destination, const WeaponInfo* weaponData, int minDamage, bool allowFriendlyFire) noexcept
 {
-	return getScanDamage(entity, destination, weaponData, minDamage, allowFriendlyFire) != 0.f;
+	return getScanDamage(entity, destination, weaponData, minDamage, allowFriendlyFire) > 0.05f;
 }
 
 float segmentToSegment(const Vector& s1, const Vector& s2, const Vector& k1, const Vector& k2) noexcept

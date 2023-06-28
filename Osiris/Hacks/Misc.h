@@ -26,6 +26,7 @@ namespace Misc
 	void prePrediction(UserCmd* cmd) noexcept;
 	void drawPlayerList() noexcept;
 	void blockBot(UserCmd* cmd) noexcept;
+	void visualizeBlockBot(ImDrawList* drawList) noexcept;
 	void runFreeCam(UserCmd* cmd, Vector viewAngles) noexcept;
 	void freeCam(ViewSetup* setup) noexcept;
 	void viewModelChanger(ViewSetup* setup) noexcept;

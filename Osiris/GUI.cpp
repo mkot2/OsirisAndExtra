@@ -1471,6 +1471,17 @@ void GUI::renderMiscWindow() noexcept
 	ImGui::PushID("Blockbot Key");
 	ImGui::hotkey2("", config->misc.blockBotKey);
 	ImGui::PopID();
+	ImGui::PushID("Blockbot");
+	ImGui::SameLine();
+	if (ImGui::Button("..."))
+		ImGui::OpenPopup("");
+	if (ImGui::BeginPopup("")) {
+		ImGui::PushItemWidth(150.f);
+		ImGuiCustom::colorPicker("Visualize", config->misc.blockBotVisualize);
+		ImGui::PopItemWidth();
+		ImGui::EndPopup();
+	}
+	ImGui::PopID();
 
 	ImGui::Checkbox("Edge jump", &config->misc.edgeJump);
 	ImGui::SameLine();

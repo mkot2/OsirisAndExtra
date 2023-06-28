@@ -666,6 +666,7 @@ static void from_json(const json& j, Config::Misc& m)
 	read(j, "Knifebot mode", m.knifeBotMode);
 	read(j, "Blockbot", m.blockBot);
 	read(j, "Blockbot Key", m.blockBotKey);
+	read<value_t::object>(j, "Blockbot visualize", m.blockBotVisualize);
 	read(j, "Edge jump", m.edgeJump);
 	read(j, "Edge jump Key", m.edgeJumpKey);
 	read(j, "Mini jump", m.miniJump);
@@ -1343,6 +1344,7 @@ static void to_json(json& j, const Config::Misc& o)
 	WRITE("Knifebot mode", knifeBotMode);
 	WRITE("Blockbot", blockBot);
 	WRITE("Blockbot Key", blockBotKey);
+	WRITE("Blockbot visualize", blockBotVisualize);
 	WRITE("Edge jump", edgeJump);
 	WRITE("Edge jump Key", edgeJumpKey);
 	WRITE("Mini jump", miniJump);

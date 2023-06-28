@@ -149,14 +149,6 @@ struct Vector {
 		return Vector{ x / f, y / f, z / f };
 	}
 
-	constexpr Vector& clamp() noexcept
-	{
-		x = std::clamp(x, -89.f, 89.f);
-		y = std::clamp(y, -180.f, 180.f);
-		z = std::clamp(z, -50.f, 50.f);
-		return *this;
-	}
-
 	constexpr Vector& normalize() noexcept
 	{
 		x = std::isfinite(x) ? std::remainder(x, 360.0f) : 0.0f;
@@ -249,8 +241,9 @@ struct Vector {
 
 	static Vector fromAngle2D(float angle) noexcept
 	{
-		Vector forward; Vector{angle, angle, 0.f}.fromAngle(forward, {}, {});
-		return forward;
+		return Vector{ std::cos(Helpers::deg2rad(angle)),
+					   std::sin(Helpers::deg2rad(angle)),
+					   0.0f };
 	}
 
 	Vector normalized() const noexcept

@@ -16,6 +16,7 @@
 #include "../Helpers.h"
 #include "../GameData.h"
 
+#include "AimbotFunctions.h"
 #include "EnginePrediction.h"
 #include "Misc.h"
 #include "Fakelag.h"
@@ -423,7 +424,7 @@ public:
 			if (oldVelocity != 0.0f) {
 				float deltaSpeed = velocity - oldVelocity;
 				bool gained = deltaSpeed > 0.000001f;
-				bool lost = deltaSpeed < -0.000001f;
+				//bool lost = deltaSpeed < -0.000001f;
 				if (gained) {
 					ticksSynced++;
 				}
@@ -657,7 +658,6 @@ void Misc::edgeBug(UserCmd* cmd, Vector& angView) noexcept
 			if (applyStrafe) {
 				cmd->viewangles += angViewDeltaStrafe;
 				cmd->viewangles.normalize();
-				cmd->viewangles.clamp();
 			} else {
 				cmd->sidemove = 0.f;
 				cmd->forwardmove = 0.f;
@@ -671,7 +671,6 @@ void Misc::edgeBug(UserCmd* cmd, Vector& angView) noexcept
 					appliedStrafeLast = true;
 					angView = (angViewLastStrafe + angViewDeltaStrafe);
 					angView.normalize();
-					angView.clamp();
 					angViewLastStrafe = angView;
 					cmd->sidemove = vecMoveLastStrafe.x;
 					cmd->forwardmove = vecMoveLastStrafe.y;
@@ -855,12 +854,12 @@ void Misc::drawPlayerList() noexcept
 	ImGui::End();
 }
 
+static int blockTargetHandle = 0;
+
 void Misc::blockBot(UserCmd* cmd) noexcept
 {
 	if (!localPlayer || !localPlayer->isAlive())
 		return;
-
-	static int blockTargetHandle = 0;
 
 	if (!config->misc.blockBot || !config->misc.blockBotKey.isActive()) {
 		blockTargetHandle = 0;
@@ -916,6 +915,41 @@ void Misc::blockBot(UserCmd* cmd) noexcept
 			cmd->forwardmove = move.x;
 			cmd->sidemove = move.y;
 		}
+	}
+}
+
+void Misc::visualizeBlockBot(ImDrawList* drawList) noexcept
+{
+	if (!config->misc.blockBotVisualize.enabled)
+		return;
+
+	GameData::Lock lock;
+	const auto& local = GameData::local();
+
+	if (!local.exists || !local.alive)
+		return;
+
+	auto target = GameData::playerByHandle(blockTargetHandle);
+	if (!target || target->dormant || !target->alive)
+		return;
+
+	Vector max = target->obbMaxs + target->origin;
+	Vector min = target->obbMins + target->origin;
+	const auto z = target->origin.z;
+
+	ImVec2 points[4];
+	const auto color = Helpers::calculateColor(config->misc.blockBotVisualize);
+
+	bool draw = Helpers::worldToScreen(Vector{ max.x, max.y, z }, points[0]);
+	draw = draw && Helpers::worldToScreen(Vector{ max.x, min.y, z }, points[1]);
+	draw = draw && Helpers::worldToScreen(Vector{ min.x, min.y, z }, points[2]);
+	draw = draw && Helpers::worldToScreen(Vector{ min.x, max.y, z }, points[3]);
+
+	if (draw) {
+		drawList->AddLine(points[0], points[1], color, config->misc.blockBotVisualize.thickness);
+		drawList->AddLine(points[1], points[2], color, config->misc.blockBotVisualize.thickness);
+		drawList->AddLine(points[2], points[3], color, config->misc.blockBotVisualize.thickness);
+		drawList->AddLine(points[3], points[0], color, config->misc.blockBotVisualize.thickness);
 	}
 }
 
@@ -1302,7 +1336,7 @@ void Misc::updateClanTag(bool tagChanged) noexcept
 	static std::string clanTag;
 	static std::string origTag;
 	static bool flip = false;
-	static size_t count = 0;
+	static std::size_t count = 0;
 
 	if (tagChanged) {
 		clanTag = config->misc.clanTag;
@@ -1321,19 +1355,15 @@ void Misc::updateClanTag(bool tagChanged) noexcept
 		if ((memory->globalVars->realtime - interfaces->engine->getNetworkChannel()->getLatency(0) - lastTime < config->misc.tagUpdateInterval) && (!tagChanged || origTag.empty()) && config->misc.tagType != 5)
 			return;
 
-		auto offset = 0;
+		const int offset = Helpers::utf8SeqLen(origTag[0]);
 
 		switch (config->misc.tagType) {
-			// Don't do anything for static clan tag
-
 		case 1: // Normal animation
-			offset = Helpers::utf8SeqLen(origTag[0]);
 			if (offset != -1 && static_cast<std::size_t>(offset) <= clanTag.length())
 				std::ranges::rotate(clanTag, clanTag.begin() + offset);
 			break;
 
 		case 2: // Auto reverse animation
-			offset = Helpers::utf8SeqLen(origTag[0]);
 			if (origTag.length() > clanTag.length() && !flip)
 				clanTag = origTag.substr(0, clanTag.length() + offset);
 			else if (clanTag.length() == 0)
@@ -1345,7 +1375,6 @@ void Misc::updateClanTag(bool tagChanged) noexcept
 			break;
 
 		case 3: // Reverse auto reverse animation?
-			offset = Helpers::utf8SeqLen(origTag[0]);
 			if (origTag.length() > clanTag.length() && !flip)
 				clanTag = origTag.substr(0, clanTag.length() + offset);
 			else if (clanTag.length() == 0) {
@@ -1359,7 +1388,7 @@ void Misc::updateClanTag(bool tagChanged) noexcept
 
 		case 4: // Custom animation
 			clanTag = config->misc.tagAnimationSteps[count];
-			if (count < config->misc.tagAnimationSteps.size() - 1)
+			if (count < config->misc.tagAnimationSteps.size() - 1u)
 				count++;
 			else
 				count = 0;
@@ -1615,7 +1644,7 @@ void Misc::watermark() noexcept
 		frame_rate != 0.0f ? static_cast<int>(1 / frame_rate) : 0,
 		GameData::getNetOutgoingLatency(),
 		Fakelag::latest_choked_packets != 0 ? std::format(" ({}t choke)", Fakelag::latest_choked_packets).c_str() : "",
-		team == Team::Spectators ? "SPEC" : team == Team::TT ? "T" : team == Team::CT ? "CT" : "NONE",
+		!interfaces->engine->isInGame() ? "NONE" : team == Team::Spectators ? "SPEC" : team == Team::TT ? "T" : team == Team::CT ? "CT" : "NONE",
 		inReload ? " | RELOADING" : "",
 		noScope ? " | NO SCOPE" : "");
 	ImGui::End();
@@ -1763,25 +1792,14 @@ void Misc::drawBombTimer() noexcept
 		const double distanceToLocalPlayer = ((bombEntity->viewOffset() + bombEntity->origin()) - (targetEntity->viewOffset() + targetEntity->origin())).length();
 		const double gaussianFalloff = std::exp(-distanceToLocalPlayer * distanceToLocalPlayer / (2. * sigma * sigma));
 
-		double bombDamage = defaultBombDamage * gaussianFalloff;
+		float bombDamage = static_cast<float>(defaultBombDamage * gaussianFalloff);
 
-		if (const double armorValue = static_cast<double>(targetEntity->armor()); armorValue > 0) {
-			constexpr double armorRatio = .5;
-			constexpr double armorBonus = .5;
-
-			double newRatio = bombDamage * armorRatio;
-			double armor = (bombDamage - newRatio) * armorBonus;
-
-			if (armor > armorValue) {
-				armor = armorValue * (1. / armorBonus);
-				newRatio = bombDamage - armor;
-			}
-			bombDamage = newRatio;
-		}
+		if (const int armorValue = targetEntity->armor(); armorValue && armorValue > 0)
+			AimbotFunction::calculateArmorDamage(.5f, armorValue, targetEntity->hasHeavyArmor(), bombDamage);
 
 		const int health = targetEntity->health();
 		const int finalBombDamage = static_cast<int>(std::floor(bombDamage));
-		if (health <= finalBombDamage) {
+		if (health && health <= finalBombDamage) {
 			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
 			ImGui::textUnformattedCentered("Lethal");
 			ImGui::PopStyleColor();

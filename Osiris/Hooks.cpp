@@ -134,6 +134,7 @@ static HRESULT __stdcall present(IDirect3DDevice9* device, const RECT* src, cons
 		Misc::drawVelocity(ImGui::GetBackgroundDrawList());
 		Misc::noscopeCrosshair();
 		Misc::recoilCrosshair();
+		Misc::visualizeBlockBot(ImGui::GetBackgroundDrawList());
 
 		Legitbot::updateInput();
 		Visuals::updateInput();
@@ -280,6 +281,7 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd, bool& send
 	const auto currentCmd{ *cmd };
 	auto angOldViewPoint{ cmd->viewangles };
 	const auto currentPredictedTick{ interfaces->prediction->split->commandsPredicted - 1 };
+	
 	static auto mouseSensitivity = interfaces->cvar->findVar("sensitivity");
 	static auto mouseYaw = interfaces->cvar->findVar("m_yaw");
 	static auto mousePitch = interfaces->cvar->findVar("m_pitch");
